@@ -80,10 +80,10 @@ class UninstallCommand extends Command
         ]);
 
         $serviceCrawler = new Crawler();
-        $dfConfigs = $serviceCrawler->crawlPackages($input->getArgument(static::ARGUMENT__PATH));
+        $configs = $serviceCrawler->crawlPackages($input->getArgument(static::ARGUMENT__PATH));
 
         $serviceInstaller = new Installer(['mask' => $input->getOption(static::OPTION__MASK)]);
-        $serviceInstaller->uninstallMany($dfConfigs, $output);
+        $serviceInstaller->uninstallMany($configs, $output);
 
         $output->writeln([
             'Done'

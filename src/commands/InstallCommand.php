@@ -1,8 +1,8 @@
 <?php
 namespace extas\commands;
 
-use df\components\Crawler;
-use df\components\Installer;
+use extas\components\packages\Crawler;
+use extas\components\packages\Installer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -89,10 +89,10 @@ class InstallCommand extends Command
         $this->prepareClassContainer();
 
         $serviceCrawler = new Crawler();
-        $dfConfigs = $serviceCrawler->crawlDfPackages(getcwd(), $packageName);
+        $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
 
         $serviceInstaller = new Installer();
-        $serviceInstaller->installMany($dfConfigs, $output);
+        $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
         $output->writeln(['<notice>Finished</notice>']);
@@ -127,17 +127,20 @@ class InstallCommand extends Command
      */
     protected function prepareClassContainer()
     {
-        $extasContainerPath = getenv('EXTAS__CONTAINER_PATH') ?: getcwd() . '/configs/container.php';
-        $dfContainerPath = getenv('DF__CONTAINER_PATH') ?: getcwd() . '/configs/container.json';
+        $lockContainerPath = getenv('EXTAS__CONTAINER_PATH_LOCK')
+            ?: getcwd() . '/configs/container.php';
+
+        $storageContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE')
+            ?: getcwd() . '/configs/container.json';
 
         copy(
-            getcwd(). '/vendor/df/foundation/resources/container.dist.php',
-            $extasContainerPath
+            getcwd(). '/vendor/jeyroik/extas-foundation/resources/container.dist.php',
+            $lockContainerPath
         );
 
         copy(
-            getcwd(). '/vendor/df/foundation/resources/container.json',
-            $dfContainerPath
+            getcwd(). '/vendor/jeyroik/extas-foundation/resources/container.dist.json',
+            $storageContainerPath
         );
     }
 }
