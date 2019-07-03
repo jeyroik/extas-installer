@@ -1,0 +1,17 @@
+#!/usr/bin/php
+<?php
+require getcwd() . '/vendor/autoload.php';
+
+if (is_file(getcwd() . '/.env')) {
+    $dotenv = new \Dotenv\Dotenv(getcwd().'/');
+    $dotenv->load();
+}
+
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->setName(PHP_EOL . ' Extas installer');
+$application->setVersion('1.1');
+$application->add(new \df\commands\InstallCommand());
+$application->add(new \df\commands\UninstallCommand());
+$application->run();
