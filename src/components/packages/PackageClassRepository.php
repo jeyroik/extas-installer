@@ -31,11 +31,11 @@ class PackageClassRepository extends Repository implements IRepository
     {
         parent::__construct($config);
 
-        $envDsn = getenv('DF__' . strtoupper($this->getName())) ?: '';
-        $envDsnLock = getenv('DF__' . strtoupper($this->getName()) . '_LOCK') ?: '';
+        $envDsn = getenv('EXTAS__' . strtoupper($this->getName())) ?: '';
+        $envDsnLock = getenv('EXTAS__' . strtoupper($this->getName()) . '_LOCK') ?: '';
 
-        $this->dsn = $envDsn ?: getenv('DF__BASE_PATH') . $this->dsn;
-        $this->dsnLock = $envDsnLock ?: getenv('DF__BASE_PATH') . $this->dsnLock;
+        $this->dsn = $envDsn ?: getenv('EXTAS__BASE_PATH') . $this->dsn;
+        $this->dsnLock = $envDsnLock ?: getenv('EXTAS__BASE_PATH') . $this->dsnLock;
 
         if (is_file($this->dsn)) {
             $this->data = json_decode(file_get_contents($this->dsn), true);

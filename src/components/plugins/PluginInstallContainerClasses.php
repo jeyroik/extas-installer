@@ -1,8 +1,7 @@
 <?php
 namespace extas\components\plugins;
 
-use df\components\classes\ContainerClassRepository;
-use df\interfaces\classes\IContainerClassRepository;
+use extas\components\packages\PackageClassRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\packages\IPackageClass;
 use extas\interfaces\packages\IPackageClassRepository;
@@ -28,7 +27,7 @@ class PluginInstallContainerClasses extends PluginInstallDefault
     {
         /**
          * todo add createLockFile to the IContainerClassRepository
-         * @var $repo IContainerClassRepository|ContainerClassRepository
+         * @var $repo IPackageClassRepository|PackageClassRepository
          */
         $repo = SystemContainer::getItem($this->selfRepositoryClass);
         $repo->createLockFile();

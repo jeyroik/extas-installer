@@ -32,12 +32,12 @@ class Crawler extends Item implements ICrawler
              * @var $file SplFileInfo
              */
             try {
-                $dfConfig = json_decode($file->getContents(), true);
-                $dfConfig[static::FIELD__WORKING_DIRECTORY] = $file->getPathInfo()->getPathname();
+                $config = json_decode($file->getContents(), true);
+                $config[static::FIELD__WORKING_DIRECTORY] = $file->getPathInfo()->getPathname();
             } catch (\Exception $e) {
                 continue;
             }
-            $extasPackages[$file->getRealPath()] = $dfConfig;
+            $extasPackages[$file->getRealPath()] = $config;
         }
 
         foreach ($this->getPluginsByStage(static::STAGE__CRAWL) as $plugin) {
