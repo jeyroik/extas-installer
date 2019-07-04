@@ -49,7 +49,7 @@ class My extends Item
 
 Из коробки Extas поддерживает MongoDB.
 
-```
+```php
 namespace my\extas;
 
 use extas\components\repositories\Repository;
@@ -93,7 +93,7 @@ class PluginInstallMyNames extends InstallPlugin
 Однако, вы можете использовать любое имя - в этом случае не забудьте указать его в флаге `-p` при установке (см. ниже).
 
 example.json
-```
+```json
 {
     "name": "example",
     "plugins": [
