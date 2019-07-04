@@ -95,7 +95,7 @@ class InstallCommand extends Command
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
-        $output->writeln(['<notice>Finished</notice>']);
+        $output->writeln(['<info>Finished</info>']);
 
         return 0;
     }

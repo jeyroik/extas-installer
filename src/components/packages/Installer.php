@@ -203,6 +203,7 @@ class Installer extends Item implements IInstaller
                 $output->writeln([
                     '<info>Installing stage "' . $stage[IStage::FIELD__NAME] . '"...</info>'
                 ]);
+                $stage[IStage::FIELD__HAS_PLUGINS] = false;
                 $stageObj = new Stage($stage);
                 $stagesRepository->create($stageObj);
                 $output->writeln([
@@ -251,8 +252,11 @@ class Installer extends Item implements IInstaller
     {
         /**
          * @var $pluginRepo IPluginRepository
+         * @var $stageRepo IStageRepository
+         * @var $stage IStage
          */
         $pluginRepo = SystemContainer::getItem(IPluginRepository::class);
+        $stageRepo = SystemContainer::getItem(IStageRepository::class);
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
@@ -266,10 +270,36 @@ class Installer extends Item implements IInstaller
                 ]);
                 $pluginObj = new Plugin($plugin);
                 $pluginRepo->create($pluginObj);
+
+                $stage = $stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
+                $this->updateStageHasPlugins($stage, $pluginObj, $stageRepo);
                 $output->writeln([
                     '<info>Plugin installed.</info>'
                 ]);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $stage IStage|null
+     * @param $pluginObj IPlugin
+     * @param $stageRepo IStageRepository
+     *
+     * @return $this
+     */
+    protected function updateStageHasPlugins($stage, $pluginObj, $stageRepo)
+    {
+        if (!$stage) {
+            $stage = new Stage([
+                IStage::FIELD__NAME => $pluginObj->getStage(),
+                IStage::FIELD__HAS_PLUGINS => true
+            ]);
+            $stageRepo->create($stage);
+        } else {
+            $stage->setHasPlugins(true);
+            $stageRepo->update($stage);
         }
 
         return $this;
