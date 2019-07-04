@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\packages;
 
+use extas\components\plugins\PluginInstallPackageClasses;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtensionRepository;
 use extas\interfaces\extensions\IExtension;
@@ -11,7 +12,6 @@ use extas\interfaces\stages\IStageRepository;
 
 use extas\components\extensions\Extension;
 use extas\components\plugins\Plugin;
-use extas\components\plugins\PluginInstallContainerClasses;
 use extas\components\stages\Stage;
 use extas\components\Item;
 use extas\components\SystemContainer;
@@ -169,7 +169,7 @@ class Installer extends Item implements IInstaller
      */
     protected function installInterfaces($servicesConfigs, $output)
     {
-        $interfaceInstaller = new PluginInstallContainerClasses();
+        $interfaceInstaller = new PluginInstallPackageClasses();
 
         foreach ($servicesConfigs as $servicesConfig) {
             $this->packageConfig = $servicesConfig;
