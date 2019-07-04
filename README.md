@@ -2,6 +2,11 @@
 
 Данный пакет позволяет устаналивать совместимые с Extas'ом сущности.
 
+# Требования
+
+- PHP 7.2+
+- MongoDB 3+
+
 # Установка
 
 ## Установка пакета
@@ -36,9 +41,11 @@
 ```php
 namepsace my\extas;
 
+use extas\components\Item;
+
 class My extends Item
 {
-    protected function getSubjectForExtension()
+    protected function getSubjectForExtension(): string
     {
         return 'my';
     }
@@ -57,7 +64,7 @@ use extas\components\repositories\Repository;
 class MyRepository extends Repository
 {
     protected $pk = 'name';
-    protected $itemClass = my\extas\My::class;
+    protected $itemClass = My::class;
     protected $scope = 'my';
     protected $name = 'names';
     protected $idAs = '';
@@ -81,13 +88,13 @@ class PluginInstallMyNames extends InstallPlugin
 {
     protected $selfSection = 'my_names';
     protected $selfName = 'name';
-    protected $selfRepositoryClass = my\extas\MyRepository::class;
+    protected $selfRepositoryClass = MyRepository::class;
     protected $selfUID = 'name';
-    protected $selfItemClass = my\extas\My::class;
+    protected $selfItemClass = My::class;
 }
 ```
 
-5. Добавляем плагин в нашу конфигурацию для extas'a.
+5. Добавляем плагин и интерфейс репозитория в нашу конфигурацию для extas'a.
 
 По умолчанию, конфигурация находится в корне в файле с именем `extas.json`.
 Однако, вы можете использовать любое имя - в этом случае не забудьте указать его в флаге `-p` при установке (см. ниже).
@@ -102,6 +109,9 @@ example.json
     "my_names": [
         {"name": "Example 1"},
         {"name": "Example 2"}
+    ],
+    "package_classes": [
+      {"interface": "my\\extas\\MyRepository", "class": "my\\extas\\MyRepository"}
     ]
 }
 ```
@@ -136,9 +146,29 @@ Class lock-file updated
 
 Package "example" is installing...
 Plugin "my\extas\PluginInstallMyNames" is already installed.
-Installing name Example 1...
-Name Example 1 installed.
-Installing name Example 2...
-Name Example 2 installed.
+Installing name "Example 1"...
+Name "Example 1" installed.
+Installing name "Example 2"...
+Name "Example 2" installed.
 Finished
 ```
+
+# Настройка
+
+Extas поддерживает некоторые полезные переменные окружения, которые можно использоваться для желаемого размещения данных.
+
+`<scope>__DB` - имя БД для определённого пространства имён (см. MyRepository $scope).
+`<scope>_DB__<repo>` - имя БД для определённого репозитория (см. MyRepository $name).
+`<scope>__DSN` - DSN для определённого пространства имён.
+`<scope>_DSN__<repo>` - DSN для определённого репозитория.
+`<scope>__DRIVER` - драйвер хранилища для определённого пространства имён.
+`<scope>_DRIVER__<repo>` - драйвер хранилища для определённого репозитория.
+
+Таким образом, при желании, можно разместить репозитории в разных бд или даже хранилищах.
+
+Если указанные выше переменные окружения отсутствуют, то применяются соответственно для имени БД, DSN и драйвера:
+- extas
+- mongodb://localhost:27017
+- mongo
+
+Другими словами, по умолчанию, данные скалдываются в `MongoDB`, расположенную `локально` по порту `27017` в базу `extas`.
