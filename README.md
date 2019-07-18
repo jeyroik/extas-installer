@@ -24,7 +24,7 @@
 
 ## Установка сущностей
 
-`/vednor/bin/extas i -p extas.json -s 0 -r 1`
+`/vednor/bin/extas i -p extas.json -s 1 -r 1`
 
 Помощь по комманде можно посмотреть следующим образом:
 
@@ -118,7 +118,7 @@ example.json
 
 6. Устанавливаем плагин.
 
-`vendor/bin/extas i -p example.json -s 0 -r 1`
+`vendor/bin/extas i -p example.json -s 1 -r 1`
 
 Должны увидеть что-то вроде
 
@@ -135,7 +135,7 @@ Finished
 
 7. Устанавливаем сущность
 
-`vendor/bin/extas i -p example.json -s 0 -r 1`
+`vendor/bin/extas i -p example.json -s 1 -r 1`
 
 Должны увидеть что-то вроде
 
