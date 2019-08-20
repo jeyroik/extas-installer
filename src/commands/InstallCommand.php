@@ -127,7 +127,7 @@ class InstallCommand extends Command
      */
     protected function prepareClassContainer()
     {
-        $lockContainerPath = getenv('EXTAS__CONTAINER_PATH_LOCK')
+        $lockContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE_LOCK')
             ?: getcwd() . '/configs/container.php';
 
         $storageContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE')

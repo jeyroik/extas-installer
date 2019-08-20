@@ -17,7 +17,7 @@ class PackageClassRepository extends Repository implements IRepository
     protected $itemClass = PackageClass::class;
     protected $scope = 'extas';
     protected $pk = PackageClass::FIELD__INTERFACE_NAME;
-    protected $name = 'packages_classes';
+    protected $name = 'container_path_storage';
     protected $data = [];
     protected $dsn = '/configs/container.json';
     protected $dsnLock = '/configs/container.php';
