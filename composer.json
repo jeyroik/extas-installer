@@ -7,7 +7,7 @@
     "alcaeus/mongo-php-adapter": "*",
     "symfony/finder": "*",
     "symfony/console": "*",
-    "vlucas/phpdotenv": "^2.4",
+    "vlucas/phpdotenv": "^3.4",
     "jeyroik/extas-foundation": "*"
   },
   "autoload": {
