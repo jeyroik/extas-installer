@@ -38,18 +38,41 @@ abstract class PluginInstallDefault extends Plugin
 
         foreach ($items as $item) {
             $uid = $this->getUidValue($item, $serviceConfig);
-            if ($repo->one([$this->selfUID => $uid])) {
-                $this->alreadyInstalled($uid, $this->selfName, $output);
+            if ($existed = $repo->one([$this->selfUID => $uid])) {
+                $theSame = true;
+                foreach ($item as $field => $value) {
+                    if (isset($existed[$field]) && ($existed[$field] == $value)) {
+                        $theSame = false;
+                        $existed[$field] = $value;
+                    }
+                }
+                if (!$theSame) {
+                    $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
+                } else {
+                    $this->alreadyInstalled($uid, $this->selfName, $output);
+                }
             } else {
-                $this->installing($uid, $this->selfName, $output);
-                $itemClass = $this->selfItemClass;
-                $itemObj = new $itemClass($item);
-                $repo->create($itemObj);
-                $this->installed($uid, $this->selfName, $output);
+                $this->install($uid, $output, $item, $repo, 'create');
             }
         }
 
         $this->afterInstall($items, $repo, $output);
+    }
+
+    /**
+     * @param string $uid
+     * @param OutputInterface $output
+     * @param array $item
+     * @param IRepository $repo
+     * @param string $method
+     */
+    protected function install($uid, $output, $item, $repo, $method = 'create')
+    {
+        $this->installing($uid, $this->selfName, $output);
+        $itemClass = $this->selfItemClass;
+        $itemObj = new $itemClass($item);
+        $repo->$method($itemObj);
+        $this->installed($uid, $this->selfName, $output, $method);
     }
 
     /**

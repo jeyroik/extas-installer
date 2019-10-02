@@ -74,6 +74,7 @@ class InstallCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $start = microtime(true);
         $isSilent = $input->getOption(static::OPTION__SILENT);
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
 
@@ -95,7 +96,8 @@ class InstallCommand extends Command
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
-        $output->writeln(['<info>Finished</info>']);
+        $end = microtime(true) - $start;
+        $output->writeln(['<info>Finished in ' . $end . ' s.</info>']);
 
         return 0;
     }

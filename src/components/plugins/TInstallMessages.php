@@ -39,11 +39,13 @@ trait TInstallMessages
      * @param $id
      * @param $subject
      * @param $output OutputInterface
+     * @param $method
      */
-    protected function installed($id, $subject, $output)
+    protected function installed($id, $subject, $output, $method = 'create')
     {
+        $action = ($method == 'update') ? 'reinstalled' : 'installed';
         $output->writeln([
-            ucfirst($subject) . ' <info>"' . $id . '"</info> installed.'
+            ucfirst($subject) . ' <info>"' . $id . '"</info> ' . $action . '.'
         ]);
     }
 }
