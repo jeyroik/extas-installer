@@ -14,4 +14,5 @@ $application->setName(PHP_EOL . ' Extas installer');
 $application->setVersion('1.1');
 $application->add(new \extas\commands\InstallCommand());
 $application->add(new \extas\commands\UninstallCommand());
+$application->add(new \extas\commands\ExportCommand());
 $application->run();

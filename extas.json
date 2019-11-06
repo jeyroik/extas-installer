@@ -1,0 +1,9 @@
+{
+  "name": "extas/installer",
+  "plugins": [
+    {
+      "class": "extas\\components\\plugins\\PluginExportPackageClasses",
+      "stage": "extas.export"
+    }
+  ]
+}
