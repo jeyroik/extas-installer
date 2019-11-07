@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExportCommand extends Command
 {
     const OPTION__SILENT = 'silent';
-    const DEFAULT__PACKAGE_NAME = 'extas.json';
+    const DEFAULT__PACKAGE_NAME = 'extas__exported.json';
 
     /**
      * Configure the current command.
