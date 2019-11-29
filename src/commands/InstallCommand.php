@@ -85,6 +85,7 @@ class InstallCommand extends Command
         $start = microtime(true);
         $isSilent = $input->getOption(static::OPTION__SILENT);
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
+        $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
 
         if ($isSilent) {
             $output = new NullOutput();
@@ -95,14 +96,12 @@ class InstallCommand extends Command
             '=========================='
         ]);
 
-        $this->prepareClassContainer();
+        $this->prepareClassContainer($rewriteContainer);
 
         $serviceCrawler = new Crawler();
         $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
 
-        $serviceInstaller = new Installer([
-            Installer::FIELD__REWRITE => $input->getOption(static::OPTION__REWRITE_CONTAINER)
-        ]);
+        $serviceInstaller = new Installer([Installer::FIELD__REWRITE => $rewriteContainer]);
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
@@ -136,8 +135,10 @@ class InstallCommand extends Command
 
     /**
      * Copy container base dist
+     *
+     * @param bool $rewriteContainer
      */
-    protected function prepareClassContainer()
+    protected function prepareClassContainer($rewriteContainer = true)
     {
         $lockContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE_LOCK')
             ?: getcwd() . '/configs/container.php';
@@ -145,14 +146,18 @@ class InstallCommand extends Command
         $storageContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE')
             ?: getcwd() . '/configs/container.json';
 
-        copy(
-            getcwd(). '/vendor/jeyroik/extas-foundation/resources/container.dist.php',
-            $lockContainerPath
-        );
+        if ($rewriteContainer || !is_file($lockContainerPath)) {
+            copy(
+                getcwd() . '/vendor/jeyroik/extas-foundation/resources/container.dist.php',
+                $lockContainerPath
+            );
+        }
 
-        copy(
-            getcwd(). '/vendor/jeyroik/extas-foundation/resources/container.dist.json',
-            $storageContainerPath
-        );
+        if ($rewriteContainer || !is_file($storageContainerPath)) {
+            copy(
+                getcwd() . '/vendor/jeyroik/extas-foundation/resources/container.dist.json',
+                $storageContainerPath
+            );
+        }
     }
 }
