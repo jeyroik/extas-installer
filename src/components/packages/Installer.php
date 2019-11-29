@@ -262,13 +262,20 @@ class Installer extends Item implements IInstaller
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
-            if ($pluginRepo->one([IPlugin::FIELD__CLASS => $plugin[IPlugin::FIELD__CLASS]])) {
+            $pluginClass = $plugin[IPlugin::FIELD__CLASS] ?? '';
+            $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
+
+            if ($pluginRepo->one([
+                IPlugin::FIELD__CLASS => $pluginClass,
+                IPlugin::FIELD__STAGE => $pluginStage
+            ])) {
                 $output->writeln([
-                    'Plugin <info>"' . $plugin[IPlugin::FIELD__CLASS] . '"</info> is already installed.'
+                    'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
                 ]);
             } else {
+
                 $output->writeln([
-                    '<info>Installing plugin "' . ($plugin[IPlugin::FIELD__CLASS] ?? '') . '"...</info>'
+                    '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
                 ]);
                 $pluginObj = new Plugin($plugin);
                 $pluginRepo->create($pluginObj);
@@ -349,13 +356,19 @@ class Installer extends Item implements IInstaller
         $extensions = $this->packageConfig[static::FIELD__EXTENSIONS] ?? [];
 
         foreach ($extensions as $extension) {
-            if ($extensionRepo->one([IExtension::FIELD__CLASS => $extension[IExtension::FIELD__CLASS]])) {
+            $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
+            $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
+
+            if ($extensionRepo->one([
+                IExtension::FIELD__CLASS => $extClass,
+                IExtension::FIELD__SUBJECT => $extSubject
+            ])) {
                 $output->writeln([
-                    'Extension <info>"' . $extension[IExtension::FIELD__CLASS] . '"</info> is already installed.'
+                    'Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
                 ]);
             } else {
                 $output->writeln([
-                    '<info>Installing extension "' . ($extension[IExtension::FIELD__CLASS] ?? '') . '"...</info>'
+                    '<info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
                 ]);
                 $extensionObj = new Extension($extension);
                 $extensionRepo->create($extensionObj);
