@@ -22,6 +22,7 @@ interface IInstaller extends IItem
     const FIELD__NAME = 'name';
     const FILED__DESCRIPTION = 'description';
     const FIELD__SCHEMA = 'schema';
+    const FIELD__REWRITE = 'rewrite';
 
     const FIELD__BASE_INTERFACES_PATH = 'base_interfaces_path';
 

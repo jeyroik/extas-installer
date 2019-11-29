@@ -40,7 +40,9 @@ class Installer extends Item implements IInstaller
     {
         $this->many = true;
 
-        $this->installInterfaces($packageConfigs, $output);
+        if($this->config[static::FIELD__REWRITE] ?? true) {
+            $this->installInterfaces($packageConfigs, $output);
+        }
 
         foreach ($packageConfigs as $packageConfig) {
             $this->install($packageConfig, $output);

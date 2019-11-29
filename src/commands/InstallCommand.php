@@ -21,6 +21,7 @@ class InstallCommand extends Command
     const OPTION__SILENT = 'silent';
     const OPTION__PACKAGE_NAME = 'package';
     const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
+    const OPTION__REWRITE_CONTAINER = 'rewrite-container';
 
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
@@ -62,6 +63,13 @@ class InstallCommand extends Command
                 'Rewrite generated data file',
                 false
             )
+            ->addOption(
+                static::OPTION__REWRITE_CONTAINER,
+                'c',
+                InputOption::VALUE_OPTIONAL,
+                'Rewrite class-container file',
+                true
+            )
         ;
     }
 
@@ -83,7 +91,7 @@ class InstallCommand extends Command
         }
 
         $output->writeln([
-            'Extas installer v1.1',
+            'Extas installer v1.2',
             '=========================='
         ]);
 
@@ -92,7 +100,9 @@ class InstallCommand extends Command
         $serviceCrawler = new Crawler();
         $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
 
-        $serviceInstaller = new Installer();
+        $serviceInstaller = new Installer([
+            Installer::FIELD__REWRITE => $input->getOption(static::OPTION__REWRITE_CONTAINER)
+        ]);
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
