@@ -9,7 +9,6 @@ use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginRepository;
 use extas\interfaces\stages\IStage;
 use extas\interfaces\stages\IStageRepository;
-
 use extas\components\extensions\Extension;
 use extas\components\plugins\Plugin;
 use extas\components\stages\Stage;
@@ -262,33 +261,53 @@ class Installer extends Item implements IInstaller
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
-            $pluginClass = $plugin[IPlugin::FIELD__CLASS] ?? '';
             $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
 
-            if ($pluginRepo->one([
-                IPlugin::FIELD__CLASS => $pluginClass,
-                IPlugin::FIELD__STAGE => $pluginStage
-            ])) {
-                $output->writeln([
-                    'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
-                ]);
+            if (is_array($pluginStage)) {
+                foreach ($pluginStage as $stage) {
+                    $plugin[IPlugin::FIELD__STAGE] = $stage;
+                    $this->installPlugin($output, $pluginRepo, $stageRepo, $plugin);
+                }
             } else {
-
-                $output->writeln([
-                    '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
-                ]);
-                $pluginObj = new Plugin($plugin);
-                $pluginRepo->create($pluginObj);
-
-                $stage = $stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
-                $this->updateStageHasPlugins($stage, $pluginObj, $stageRepo);
-                $output->writeln([
-                    '<info>Plugin installed.</info>'
-                ]);
+                $this->installPlugin($output, $pluginRepo, $stageRepo, $plugin);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param IPluginRepository $pluginRepo
+     * @param IStageRepository $stageRepo
+     * @param array $plugin
+     */
+    protected function installPlugin($output, $pluginRepo, $stageRepo, $plugin)
+    {
+        $pluginClass = $plugin[IPlugin::FIELD__CLASS] ?? '';
+        $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
+
+        if ($pluginRepo->one([
+            IPlugin::FIELD__CLASS => $pluginClass,
+            IPlugin::FIELD__STAGE => $pluginStage
+        ])) {
+            $output->writeln([
+                'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
+            ]);
+        } else {
+
+            $output->writeln([
+                '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
+            ]);
+            $pluginObj = new Plugin($plugin);
+            $pluginRepo->create($pluginObj);
+
+            $stage = $stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
+            $this->updateStageHasPlugins($stage, $pluginObj, $stageRepo);
+            $output->writeln([
+                '<info>Plugin installed.</info>'
+            ]);
+        }
     }
 
     /**
@@ -356,29 +375,48 @@ class Installer extends Item implements IInstaller
         $extensions = $this->packageConfig[static::FIELD__EXTENSIONS] ?? [];
 
         foreach ($extensions as $extension) {
-            $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
             $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
-            if ($extensionRepo->one([
-                IExtension::FIELD__CLASS => $extClass,
-                IExtension::FIELD__SUBJECT => $extSubject
-            ])) {
-                $output->writeln([
-                    'Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
-                ]);
+            if (is_array($extSubject)) {
+                foreach ($extSubject as $subject) {
+                    $extension[IExtension::FIELD__SUBJECT] = $subject;
+                    $this->installExtension($output, $extensionRepo, $extension);
+                }
             } else {
-                $output->writeln([
-                    '<info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
-                ]);
-                $extensionObj = new Extension($extension);
-                $extensionRepo->create($extensionObj);
-                $output->writeln([
-                    '<info>Extension installed.</info>'
-                ]);
+                $this->installExtension($output, $extensionRepo, $extension);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param IExtensionRepository $extensionRepo
+     * @param array $extension
+     */
+    protected function installExtension($output, $extensionRepo, $extension)
+    {
+        $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
+        $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
+
+        if ($extensionRepo->one([
+            IExtension::FIELD__CLASS => $extClass,
+            IExtension::FIELD__SUBJECT => $extSubject
+        ])) {
+            $output->writeln([
+                'Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
+            ]);
+        } else {
+            $output->writeln([
+                '<info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
+            ]);
+            $extensionObj = new Extension($extension);
+            $extensionRepo->create($extensionObj);
+            $output->writeln([
+                '<info>Extension installed.</info>'
+            ]);
+        }
     }
 
     /**
