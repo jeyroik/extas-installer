@@ -28,6 +28,9 @@ class Installer extends Item implements IInstaller
     protected $packageConfig = [];
     protected $generatedData = [];
     protected $many = false;
+    protected $systemSettings = [
+        self::FIELD__FLUSH
+    ];
 
     /**
      * @param $packageConfigs array
@@ -43,12 +46,7 @@ class Installer extends Item implements IInstaller
             $this->installInterfaces($packageConfigs, $output);
         }
 
-        foreach ($packageConfigs as $packageConfig) {
-            $packageConfig[static::FIELD__SETTINGS] = $packageConfig[static::FIELD__SETTINGS] ?? [];
-            $packageConfig[static::FIELD__SETTINGS][Installer::FIELD__FLUSH] = explode(
-                ',',
-                $this->config[static::FIELD__FLUSH]
-            );
+        foreach ($packageConfigs as &$packageConfig) {
             $this->install($packageConfig, $output);
         }
 
@@ -70,6 +68,7 @@ class Installer extends Item implements IInstaller
      */
     public function install($packageConfig, $output)
     {
+        $this->prepareSettings($packageConfig);
         $this->packageConfig = $packageConfig;
 
         $packageName = $packageConfig['name'] ?? sha1(json_encode($packageConfig)) . ' (missed "name" section)';
@@ -78,7 +77,8 @@ class Installer extends Item implements IInstaller
             'Package "' . $packageName. '" is installing...',
         ]);
 
-        $this->installStages($output)
+        $this->applySettings($output)
+            ->installStages($output)
             ->installPlugins($output)
             ->installExtensions($output);
 
@@ -131,7 +131,8 @@ class Installer extends Item implements IInstaller
             }
         }
 
-        $this->uninstallExtensions($output)
+        $this->applySettings($output)
+            ->uninstallExtensions($output)
             ->uninstallPlugins($output)
             ->uninstallStages($output);
 
@@ -168,6 +169,22 @@ class Installer extends Item implements IInstaller
     }
 
     /**
+     * @param OutputInterface $output
+     *
+     * @return $this
+     */
+    protected function applySettings($output)
+    {
+        foreach ($this->packageConfig[static::FIELD__SETTINGS] as $setting => $options) {
+            foreach ($this->getPluginsByStage('extas.install.setting.' . $setting) as $plugin) {
+                $plugin($this, $output, $options);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param $servicesConfigs
      * @param $output OutputInterface
      *
@@ -185,6 +202,22 @@ class Installer extends Item implements IInstaller
         $this->packageConfig = null;
 
         return $this;
+    }
+
+    /**
+     * @param $packageConfig
+     */
+    protected function prepareSettings(&$packageConfig)
+    {
+        $settings = $packageConfig[static::FIELD__SETTINGS] ?? [];
+
+        foreach ($this->systemSettings as $setting) {
+            if ($this->config[$setting]) {
+                $settings[$setting] = $this->config[$setting];
+            }
+        }
+
+        $packageConfig[static::FIELD__SETTINGS] = $settings;
     }
 
     /**
