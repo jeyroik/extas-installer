@@ -46,7 +46,7 @@ class Installer extends Item implements IInstaller
             $this->installInterfaces($packageConfigs, $output);
         }
 
-        foreach ($packageConfigs as &$packageConfig) {
+        foreach ($packageConfigs as $packageConfig) {
             $this->install($packageConfig, $output);
         }
 
