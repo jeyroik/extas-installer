@@ -36,12 +36,14 @@ abstract class PluginInstallDefault extends Plugin
         $repo = SystemContainer::getItem($this->selfRepositoryClass);
         $items = $serviceConfig[$this->selfSection] ?? [];
 
+        $this->applySettings($repo, $serviceConfig[IInstaller::FIELD__SETTINGS] ?? [], $output);
+
         foreach ($items as $item) {
             $uid = $this->getUidValue($item, $serviceConfig);
             if ($existed = $repo->one([$this->selfUID => $uid])) {
                 $theSame = true;
                 foreach ($item as $field => $value) {
-                    if (isset($existed[$field]) && ($existed[$field] == $value)) {
+                    if (isset($existed[$field]) && ($existed[$field] != $value)) {
                         $theSame = false;
                         $existed[$field] = $value;
                     }
@@ -57,6 +59,30 @@ abstract class PluginInstallDefault extends Plugin
         }
 
         $this->afterInstall($items, $repo, $output);
+    }
+
+    /**
+     * @param IRepository $repo
+     * @param array $settings
+     * @param OutputInterface $output
+     */
+    protected function applySettings($repo, $settings, OutputInterface $output)
+    {
+        $settingsMap = [
+            IInstaller::FIELD__FLUSH => function ($options) use ($repo, $output) {
+                if (in_array($this->selfSection, $options) || in_array('*', $options)) {
+                    $repo->drop() && $output->writeln([
+                        '<info> [!] Flushed ' . $this->selfSection . '</info>'
+                    ]);
+                }
+            }
+        ];
+
+        foreach ($settings as $setting => $options) {
+            if (isset($settingsMap[$setting])) {
+                $settingsMap[$setting]($options);
+            }
+        }
     }
 
     /**

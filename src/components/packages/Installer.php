@@ -44,6 +44,11 @@ class Installer extends Item implements IInstaller
         }
 
         foreach ($packageConfigs as $packageConfig) {
+            $packageConfig[static::FIELD__SETTINGS] = $packageConfig[static::FIELD__SETTINGS] ?? [];
+            $packageConfig[static::FIELD__SETTINGS][Installer::FIELD__FLUSH] = explode(
+                ',',
+                $this->config[static::FIELD__FLUSH]
+            );
             $this->install($packageConfig, $output);
         }
 

@@ -22,6 +22,7 @@ class InstallCommand extends Command
     const OPTION__PACKAGE_NAME = 'package';
     const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
     const OPTION__REWRITE_CONTAINER = 'rewrite-container';
+    const OPTION__FLUSH = 'flush';
 
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
@@ -69,6 +70,12 @@ class InstallCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Rewrite class-container file',
                 true
+            )->addOption(
+                static::OPTION__FLUSH,
+                'f',
+                InputOption::VALUE_OPTIONAL,
+                'Flush data before install',
+                ''
             )
         ;
     }
@@ -86,6 +93,7 @@ class InstallCommand extends Command
         $isSilent = $input->getOption(static::OPTION__SILENT);
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
         $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
+        $flush = $input->getOption(static::OPTION__FLUSH);
 
         if ($isSilent) {
             $output = new NullOutput();
@@ -101,7 +109,10 @@ class InstallCommand extends Command
         $serviceCrawler = new Crawler();
         $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
 
-        $serviceInstaller = new Installer([Installer::FIELD__REWRITE => $rewriteContainer]);
+        $serviceInstaller = new Installer([
+            Installer::FIELD__REWRITE => $rewriteContainer,
+            Installer::FIELD__FLUSH => $flush
+        ]);
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
 
