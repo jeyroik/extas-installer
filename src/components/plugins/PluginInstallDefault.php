@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins;
 
+use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
@@ -21,6 +22,8 @@ abstract class PluginInstallDefault extends Plugin
     protected $selfRepositoryClass = '';
     protected $selfUID = '';
     protected $selfItemClass = '';
+
+    protected $isRewriteAllowed = null;
 
     /**
      * @param $installer IInstaller
@@ -46,7 +49,7 @@ abstract class PluginInstallDefault extends Plugin
                         $existed[$field] = $value;
                     }
                 }
-                if (!$theSame) {
+                if (!$theSame && $this->isRewriteAllow($serviceConfig)) {
                     $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
                 } else {
                     $this->alreadyInstalled($uid, $this->selfName, $output);
@@ -57,6 +60,23 @@ abstract class PluginInstallDefault extends Plugin
         }
 
         $this->afterInstall($items, $repo, $output);
+    }
+
+    /**
+     * @param $config
+     *
+     * @return bool
+     */
+    protected function isRewriteAllow($config): bool
+    {
+        if (is_null($this->isRewriteAllowed)) {
+            if (isset($config[ICrawler::FIELD__SETTINGS])) {
+                $settings = $config[ICrawler::FIELD__SETTINGS];
+                $this->isRewriteAllowed = $settings[ICrawler::SETTING__REWRITE_ALLOW] ?? false;
+            }
+        }
+
+        return $this->isRewriteAllowed;
     }
 
     /**

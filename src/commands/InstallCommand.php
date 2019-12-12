@@ -23,6 +23,7 @@ class InstallCommand extends Command
     const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
     const OPTION__REWRITE_CONTAINER = 'rewrite-container';
     const OPTION__FLUSH = 'flush';
+    const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
 
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
@@ -71,6 +72,12 @@ class InstallCommand extends Command
                 'Rewrite class-container file',
                 true
             )->addOption(
+                static::OPTION__REWRITE_ENTITY_ALLOW,
+                'e',
+                InputOption::VALUE_OPTIONAL,
+                'Allow rewrite entity if it exists',
+                true
+            )->addOption(
                 static::OPTION__FLUSH,
                 'f',
                 InputOption::VALUE_OPTIONAL,
@@ -94,6 +101,7 @@ class InstallCommand extends Command
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
         $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
         $flush = $input->getOption(static::OPTION__FLUSH);
+        $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
 
         if ($isSilent) {
             $output = new NullOutput();
@@ -106,7 +114,11 @@ class InstallCommand extends Command
 
         $this->prepareClassContainer($rewriteContainer);
 
-        $serviceCrawler = new Crawler();
+        $serviceCrawler = new Crawler([
+            Crawler::FIELD__SETTINGS => [
+                Crawler::SETTING__REWRITE_ALLOW => $rewriteAllow
+            ],
+        ]);
         $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
 
         $serviceInstaller = new Installer([

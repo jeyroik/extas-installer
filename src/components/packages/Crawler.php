@@ -34,6 +34,7 @@ class Crawler extends Item implements ICrawler
             try {
                 $config = json_decode($file->getContents(), true);
                 $config[static::FIELD__WORKING_DIRECTORY] = $file->getPathInfo()->getPathname();
+                $config[static::FIELD__SETTINGS] = $this->config[static::FIELD__SETTINGS] ?? [];
             } catch (\Exception $e) {
                 continue;
             }
