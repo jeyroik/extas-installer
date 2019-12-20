@@ -18,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InstallCommand extends Command
 {
-    const OPTION__SILENT = 'silent';
     const OPTION__PACKAGE_NAME = 'package';
     const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
     const OPTION__REWRITE_CONTAINER = 'rewrite-container';
@@ -44,13 +43,6 @@ class InstallCommand extends Command
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp('This command allows you to install entities using extas-compatible package file.')
-            ->addOption(
-                static::OPTION__SILENT,
-                's',
-                InputOption::VALUE_OPTIONAL,
-                'Do not show output',
-                true
-            )
             ->addOption(
                 static::OPTION__PACKAGE_NAME,
                 'p',
@@ -97,15 +89,10 @@ class InstallCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $start = microtime(true);
-        $isSilent = $input->getOption(static::OPTION__SILENT);
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
         $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
         $flush = $input->getOption(static::OPTION__FLUSH);
         $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
-
-        if ($isSilent) {
-            $output = new NullOutput();
-        }
 
         $output->writeln([
             'Extas installer v1.2',
