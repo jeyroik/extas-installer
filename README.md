@@ -24,7 +24,7 @@
 
 ## Установка сущностей
 
-`/vednor/bin/extas i -p extas.json -s 1 -r 1`
+`/vednor/bin/extas i -p extas.json -r 1`
 
 Помощь по комманде можно посмотреть следующим образом:
 
