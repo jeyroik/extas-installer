@@ -9,7 +9,7 @@ use extas\interfaces\repositories\IRepository;
  * @package extas\interfaces\packages\installers
  * @author jeyroik@gmail.com
  */
-interface InstallerOptionRepository extends IRepository
+interface IInstallerOptionRepository extends IRepository
 {
 
 }
