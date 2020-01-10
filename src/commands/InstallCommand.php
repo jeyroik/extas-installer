@@ -4,10 +4,10 @@ namespace extas\commands;
 use extas\components\packages\Crawler;
 use extas\components\packages\Installer;
 
+use extas\components\Plugins;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -18,14 +18,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InstallCommand extends Command
 {
-    const OPTION__PACKAGE_NAME = 'package';
-    const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
-    const OPTION__REWRITE_CONTAINER = 'rewrite-container';
-    const OPTION__FLUSH = 'flush';
-    const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
-
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
+
+    protected const VERSION = '0.5.0';
+    protected const OPTION__PACKAGE_NAME = 'package';
+    protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
+    protected const OPTION__REWRITE_CONTAINER = 'rewrite-container';
+    protected const OPTION__FLUSH = 'flush';
+    protected const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
 
     /**
      * Configure the current command.
@@ -77,6 +78,37 @@ class InstallCommand extends Command
                 ''
             )
         ;
+
+        $this->configureByPlugins();
+    }
+
+    /**
+     * @return $this
+     */
+    protected function configureByPlugins()
+    {
+        $addedOptions = [
+            static::OPTION__PACKAGE_NAME => true,
+            static::OPTION__REWRITE_GENERATED_DATA => true,
+            static::OPTION__REWRITE_CONTAINER => true,
+            static::OPTION__REWRITE_ENTITY_ALLOW => true,
+            static::OPTION__FLUSH => true
+        ];
+
+        foreach (Plugins::byStage('extas.install.options') as $plugin) {
+            $option = $plugin();
+
+            if (!isset($option[0]) || isset($addedOptions[$option[0]])) {
+                // incorrect option or already exists
+                continue;
+            }
+
+            if (count($option) === 5) {
+                $this->addOption(...$option);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -95,7 +127,7 @@ class InstallCommand extends Command
         $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
 
         $output->writeln([
-            'Extas installer v1.2',
+            'Extas installer v' . static::VERSION,
             '=========================='
         ]);
 
@@ -110,7 +142,8 @@ class InstallCommand extends Command
 
         $serviceInstaller = new Installer([
             Installer::FIELD__REWRITE => $rewriteContainer,
-            Installer::FIELD__FLUSH => $flush
+            Installer::FIELD__FLUSH => $flush,
+            Installer::FIELD__INPUT => $input
         ]);
         $serviceInstaller->installMany($configs, $output);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);

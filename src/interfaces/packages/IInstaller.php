@@ -2,6 +2,7 @@
 namespace extas\interfaces\packages;
 
 use extas\interfaces\IItem;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -25,6 +26,7 @@ interface IInstaller extends IItem
     const FIELD__REWRITE = 'rewrite';
     const FIELD__FLUSH = 'flush';
     const FIELD__SETTINGS = 'installer_settings';
+    const FIELD__INPUT = 'input';
 
     const FIELD__BASE_INTERFACES_PATH = 'base_interfaces_path';
 
@@ -68,6 +70,11 @@ interface IInstaller extends IItem
      * @return array
      */
     public function getGeneratedData();
+
+    /**
+     * @return null|InputInterface
+     */
+    public function getInput(): ?InputInterface;
 
     /**
      * @param $subject string

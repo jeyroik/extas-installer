@@ -1,8 +1,12 @@
 <?php
 namespace extas\components\plugins;
 
+use extas\components\packages\installers\InstallerOptions;
+use extas\interfaces\IHasClass;
 use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
+use extas\interfaces\packages\installers\IInstallerStageItem;
+use extas\interfaces\packages\installers\IInstallerStageItems;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class PluginInstallDefault extends Plugin
 {
     use TInstallMessages;
+
+    protected const STAGE__ITEMS = 'items';
+    protected const STAGE__ITEM = 'item';
 
     protected $selfSection = '';
     protected $selfName = '';
@@ -37,9 +44,16 @@ abstract class PluginInstallDefault extends Plugin
          * @var $repo IRepository
          */
         $repo = SystemContainer::getItem($this->selfRepositoryClass);
-        $items = $serviceConfig[$this->selfSection] ?? [];
+        $items = $this->getItemsByOptions($installer, $output);
+        empty($items) && $items = $serviceConfig[$this->selfSection] ?? [];
 
         foreach ($items as $item) {
+            $operated = $this->operateItemByOptions($installer, $output, $item);
+
+            if ($operated) {
+                continue;
+            }
+
             $uid = $this->getUidValue($item, $serviceConfig);
             if ($existed = $repo->one([$this->selfUID => $uid])) {
                 $theSame = true;
@@ -63,11 +77,65 @@ abstract class PluginInstallDefault extends Plugin
     }
 
     /**
+     * @param IInstaller $installer
+     * @param OutputInterface $output
+     * @param array $item
+     *
+     * @return bool
+     */
+    protected function operateItemByOptions($installer, $output, $item)
+    {
+        $operated = false;
+        foreach(InstallerOptions::byStage(static::STAGE__ITEM, $installer->getInput()) as $option) {
+            /**
+             * @var $option IHasClass
+             */
+            $option->buildClassWithParameters([
+                IInstallerStageItem::FIELD__INSTALLER => $installer,
+                IInstallerStageItem::FIELD__PLUGIN => $this,
+                IInstallerStageItem::FIELD__OUTPUT => $output,
+                IInstallerStageItem::FIELD__ITEM => $item,
+                IInstallerStageItem::FIELD__IS_OPERATED => $operated
+            ]);
+
+            $operated = $option();
+        }
+
+        return $operated;
+    }
+
+    /**
+     * @param IInstaller $installer
+     * @param OutputInterface $output
+     *
+     * @return array
+     */
+    protected function getItemsByOptions($installer, $output)
+    {
+        $items = [];
+        foreach(InstallerOptions::byStage(static::STAGE__ITEMS, $installer->getInput()) as $option) {
+            /**
+             * @var $option IHasClass
+             */
+            $option->buildClassWithParameters([
+                IInstallerStageItems::FIELD__INSTALLER => $installer,
+                IInstallerStageItems::FIELD__PLUGIN => $this,
+                IInstallerStageItems::FIELD__OUTPUT => $output,
+                IInstallerStageItems::FIELD__ITEMS => $items
+            ]);
+
+            $items = $option();
+        }
+
+        return $items;
+    }
+
+    /**
      * @param $config
      *
      * @return bool
      */
-    protected function isRewriteAllow($config): bool
+    public function isRewriteAllow($config): bool
     {
         if (is_null($this->isRewriteAllowed)) {
             if (isset($config[ICrawler::FIELD__SETTINGS])) {
@@ -86,7 +154,7 @@ abstract class PluginInstallDefault extends Plugin
      * @param IRepository $repo
      * @param string $method
      */
-    protected function install($uid, $output, $item, $repo, $method = 'create')
+    public function install($uid, $output, $item, $repo, $method = 'create')
     {
         $this->installing($uid, $this->selfName, $output);
         $itemClass = $this->selfItemClass;
@@ -100,7 +168,7 @@ abstract class PluginInstallDefault extends Plugin
      * @param $repo IRepository
      * @param $output OutputInterface
      */
-    protected function afterInstall($items, $repo, $output)
+    public function afterInstall($items, $repo, $output)
     {
         // You can do something here
     }
@@ -111,7 +179,7 @@ abstract class PluginInstallDefault extends Plugin
      *
      * @return string
      */
-    protected function getUidValue(&$item, $packageConfig)
+    public function getUidValue(&$item, $packageConfig)
     {
         return $item[$this->selfUID];
     }

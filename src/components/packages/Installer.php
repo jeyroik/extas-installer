@@ -1,10 +1,13 @@
 <?php
 namespace extas\components\packages;
 
+use extas\components\packages\installers\InstallerOptions;
 use extas\components\plugins\PluginInstallPackageClasses;
+use extas\interfaces\IHasClass;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtensionRepository;
 use extas\interfaces\extensions\IExtension;
+use extas\interfaces\packages\installers\IInstallerStagePackage;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginRepository;
 use extas\interfaces\stages\IStage;
@@ -15,6 +18,7 @@ use extas\components\stages\Stage;
 use extas\components\Item;
 use extas\components\SystemContainer;
 
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -25,6 +29,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Installer extends Item implements IInstaller
 {
+    protected const STAGE__PACKAGE = 'package';
+
     protected $packageConfig = [];
     protected $generatedData = [];
     protected $many = false;
@@ -51,13 +57,44 @@ class Installer extends Item implements IInstaller
         }
 
         foreach ($packageConfigs as $packageConfig) {
+            $operated = $this->operatePackageByOptions($packageConfig);
+
+            if ($operated) {
+                continue;
+            }
+
             $this->packageConfig = $packageConfig;
+
             foreach ($this->getPluginsByStage(static::STAGE__INSTALL) as $plugin) {
                 $plugin($this, $output);
             }
         }
 
         return $output;
+    }
+
+    /**
+     * @param array $packageConfig
+     *
+     * @return bool
+     */
+    protected function operatePackageByOptions(array $packageConfig)
+    {
+        $operated = false;
+        foreach (InstallerOptions::byStage(static::STAGE__PACKAGE, $this->getInput()) as $option) {
+            /**
+             * @var $option IHasClass
+             */
+            $option->buildClassWithParameters([
+                IInstallerStagePackage::FIELD__INSTALLER => $this,
+                IInstallerStagePackage::FIELD__PACKAGE_CONFIG => $packageConfig,
+                IInstallerStagePackage::FIELD__IS_OPERATED => $operated
+            ]);
+
+            $operated = $option();
+        }
+
+        return $operated;
     }
 
     /**
@@ -494,6 +531,14 @@ class Installer extends Item implements IInstaller
     {
         return (strpos($subject, $this->getOptionMask()) !== false)
             || ($this->getOptionMask() == static::OPTION__MASK__ANY);
+    }
+
+    /**
+     * @return null|InputInterface
+     */
+    public function getInput(): ?InputInterface
+    {
+        return $this->config[static::FIELD__INPUT] ?? null;
     }
 
     /**
