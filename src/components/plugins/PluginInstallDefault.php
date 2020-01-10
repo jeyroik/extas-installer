@@ -183,4 +183,44 @@ abstract class PluginInstallDefault extends Plugin
     {
         return $item[$this->selfUID];
     }
+
+    /**
+     * @return string
+     */
+    public function getPluginItemClass(): string
+    {
+        return $this->selfItemClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginName(): string
+    {
+        return $this->selfName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginRepositoryInterface(): string
+    {
+        return $this->selfRepositoryClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginSection(): string
+    {
+        return $this->selfSection;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginUidField(): string
+    {
+        return $this->selfUID;
+    }
 }

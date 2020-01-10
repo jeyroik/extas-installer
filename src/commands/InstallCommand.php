@@ -4,7 +4,9 @@ namespace extas\commands;
 use extas\components\packages\Crawler;
 use extas\components\packages\Installer;
 
+use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\Plugins;
+use extas\interfaces\packages\installers\IInstallerOption;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -87,7 +89,7 @@ class InstallCommand extends Command
      */
     protected function configureByPlugins()
     {
-        $addedOptions = [
+        $reservedOptions = [
             static::OPTION__PACKAGE_NAME => true,
             static::OPTION__REWRITE_GENERATED_DATA => true,
             static::OPTION__REWRITE_CONTAINER => true,
@@ -95,17 +97,17 @@ class InstallCommand extends Command
             static::OPTION__FLUSH => true
         ];
 
-        foreach (Plugins::byStage('extas.install.options') as $plugin) {
-            $option = $plugin();
+        /**
+         * @var $options IInstallerOption[]
+         */
+        $repo = new InstallerOptionRepository();
+        $options = $repo->all([]);
 
-            if (!isset($option[0]) || isset($addedOptions[$option[0]])) {
-                // incorrect option or already exists
+        foreach ($options as $option) {
+            if (isset($reservedOptions[$option->getName()])) {
                 continue;
             }
-
-            if (count($option) === 5) {
-                $this->addOption(...$option);
-            }
+            $this->addOption(...$option->__toInputOption());
         }
 
         return $this;
