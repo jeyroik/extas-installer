@@ -1,16 +1,22 @@
 <?php
 namespace extas\interfaces\packages\installers;
 
+use extas\interfaces\packages\installers\dispatchers\IHasInstaller;
+use extas\interfaces\packages\installers\dispatchers\IHasOutput;
+use extas\interfaces\packages\installers\dispatchers\IHasPlugin;
+
 /**
  * Interface IInstallerStageItems
  *
  * @package extas\interfaces\packages\installers
  * @author jeyroik@gmail.com
  */
-interface IInstallerStageItems
+interface IInstallerStageItems extends IHasInstaller, IHasPlugin, IHasOutput
 {
-    const FIELD__INSTALLER = 'installer';
-    const FIELD__PLUGIN = 'plugin';
-    const FIELD__OUTPUT = 'output';
-    const FIELD__ITEMS = 'items';
+    /**
+     * Return items
+     *
+     * @return array
+     */
+    public function __invoke(): array;
 }

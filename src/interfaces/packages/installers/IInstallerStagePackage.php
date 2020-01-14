@@ -1,15 +1,27 @@
 <?php
 namespace extas\interfaces\packages\installers;
 
+use extas\interfaces\packages\installers\dispatchers\IHasInstaller;
+
 /**
  * Interface IInstallerStagePackage
  *
  * @package extas\interfaces\packages\installers
  * @author jeyroik@gmail.com
  */
-interface IInstallerStagePackage
+interface IInstallerStagePackage extends IHasInstaller
 {
-    const FIELD__INSTALLER = 'installer';
     const FIELD__PACKAGE_CONFIG = 'package_config';
-    const FIELD__IS_OPERATED = 'operated';
+
+    /**
+     * Return bool is package operated
+     *
+     * @return bool
+     */
+    public function __invoke(): bool;
+
+    /**
+     * @return array
+     */
+    public function getPackageConfig(): array;
 }

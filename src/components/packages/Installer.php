@@ -87,8 +87,7 @@ class Installer extends Item implements IInstaller
              */
             $option->buildClassWithParameters([
                 IInstallerStagePackage::FIELD__INSTALLER => $this,
-                IInstallerStagePackage::FIELD__PACKAGE_CONFIG => $packageConfig,
-                IInstallerStagePackage::FIELD__IS_OPERATED => $operated
+                IInstallerStagePackage::FIELD__PACKAGE_CONFIG => $packageConfig
             ]);
 
             $operated = $option();
@@ -120,8 +119,11 @@ class Installer extends Item implements IInstaller
             ->installExtensions($output);
 
         if (!$this->many) {
-            foreach ($this->getPluginsByStage(static::STAGE__INSTALL) as $plugin) {
-                $plugin($this, $output);
+            $operated = $this->operatePackageByOptions($packageConfig);
+            if (!$operated) {
+                foreach ($this->getPluginsByStage(static::STAGE__INSTALL) as $plugin) {
+                    $plugin($this, $output);
+                }
             }
         }
 

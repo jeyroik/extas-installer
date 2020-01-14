@@ -8,6 +8,9 @@ if (is_file(getcwd() . '/.env')) {
 }
 
 use Symfony\Component\Console\Application;
+use extas\components\SystemContainer;
+use extas\interfaces\plugins\IPluginRepository;
+use extas\components\Plugins;
 
 $application = new Application();
 $application->setName(PHP_EOL . ' Extas installer');
@@ -15,4 +18,11 @@ $application->setVersion('1.2');
 $application->add(new \extas\commands\InstallCommand());
 $application->add(new \extas\commands\UninstallCommand());
 $application->add(new \extas\commands\ExportCommand());
+
+if (SystemContainer::hasItem(IPluginRepository::class)) {
+    foreach (Plugins::byStage('extas.installer.command') as $plugin) {
+        $application->add($plugin());
+    }
+}
+
 $application->run();

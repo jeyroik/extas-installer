@@ -7,6 +7,7 @@ use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\packages\installers\IInstallerStageItems;
+use extas\interfaces\plugins\IPluginInstallDefault;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\components\plugins
  * @author jeyroik@gmail.com
  */
-abstract class PluginInstallDefault extends Plugin
+abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefault
 {
     use TInstallMessages;
 
@@ -94,8 +95,7 @@ abstract class PluginInstallDefault extends Plugin
                 IInstallerStageItem::FIELD__INSTALLER => $installer,
                 IInstallerStageItem::FIELD__PLUGIN => $this,
                 IInstallerStageItem::FIELD__OUTPUT => $output,
-                IInstallerStageItem::FIELD__ITEM => $item,
-                IInstallerStageItem::FIELD__IS_OPERATED => $operated
+                IInstallerStageItem::FIELD__ITEM => $item
             ]);
 
             $operated = $option();
@@ -120,8 +120,7 @@ abstract class PluginInstallDefault extends Plugin
             $option->buildClassWithParameters([
                 IInstallerStageItems::FIELD__INSTALLER => $installer,
                 IInstallerStageItems::FIELD__PLUGIN => $this,
-                IInstallerStageItems::FIELD__OUTPUT => $output,
-                IInstallerStageItems::FIELD__ITEMS => $items
+                IInstallerStageItems::FIELD__OUTPUT => $output
             ]);
 
             $items = $option();
@@ -179,7 +178,7 @@ abstract class PluginInstallDefault extends Plugin
      *
      * @return string
      */
-    public function getUidValue(&$item, $packageConfig)
+    public function getUidValue(&$item, $packageConfig): string
     {
         return $item[$this->selfUID];
     }
