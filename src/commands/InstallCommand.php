@@ -3,9 +3,7 @@ namespace extas\commands;
 
 use extas\components\packages\Crawler;
 use extas\components\packages\Installer;
-
 use extas\components\packages\installers\InstallerOptionRepository;
-use extas\components\Plugins;
 use extas\interfaces\packages\installers\IInstallerOption;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

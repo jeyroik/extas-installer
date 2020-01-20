@@ -3,6 +3,7 @@ namespace extas\components\plugins;
 
 use extas\components\packages\installers\InstallerOptions;
 use extas\interfaces\IHasClass;
+use extas\interfaces\IItem;
 use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
@@ -56,7 +57,8 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             }
 
             $uid = $this->getUidValue($item, $serviceConfig);
-            if ($existed = $repo->one([$this->selfUID => $uid])) {
+
+            if ($existed = $this->findItem($item, $serviceConfig, $repo)) {
                 $theSame = true;
                 foreach ($item as $field => $value) {
                     if (isset($existed[$field]) && ($existed[$field] != $value)) {
@@ -75,6 +77,20 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
         }
 
         $this->afterInstall($items, $repo, $output);
+    }
+
+    /**
+     * @param array $item
+     * @param array $serviceConfig
+     * @param IRepository $repo
+     *
+     * @return IItem|null
+     */
+    protected function findItem($item, $serviceConfig, $repo): ?IItem
+    {
+        $uid = $this->getUidValue($item, $serviceConfig);
+
+        return $repo->one([$this->selfUID => $uid]);
     }
 
     /**
