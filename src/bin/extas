@@ -14,7 +14,8 @@ use extas\components\Plugins;
 
 $application = new Application();
 $application->setName(PHP_EOL . ' Extas installer');
-$application->setVersion('1.2');
+$application->setVersion('2.0');
+$application->add(new \extas\commands\InitCommand());
 $application->add(new \extas\commands\InstallCommand());
 $application->add(new \extas\commands\UninstallCommand());
 $application->add(new \extas\commands\ExportCommand());

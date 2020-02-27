@@ -11,7 +11,7 @@ use extas\interfaces\plugins\IPluginInstallDefault;
  */
 interface IHasPlugin
 {
-    const FIELD__PLUGIN = 'plugin';
+    public const FIELD__PLUGIN = 'plugin';
 
     /**
      * @return IPluginInstallDefault|null

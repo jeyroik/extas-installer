@@ -4,43 +4,28 @@
 
 # Требования
 
-- PHP 7.2+
+- PHP 7.4+
 - MongoDB 3+
 
 # Установка
 
 ## Установка пакета
 
-`composer require jeyroik/extas-installer:*`
+`# composer require jeyroik/extas-installer:*`
 
-## Подготовка к установке сущностей
+## Инициализация Extas'a
 
-Копируем дистрибутивы конфигураций:
+`# vendor/bin/extas init`
 
-- `cp vendor/jeyroik/extas-foundation/resources/env.dist .env` Базовый набор переменных окружения.
-- `cp vendor/jeyroik/extas-foundation/resources/drivers.dist.json /path/to/configs/drivers.json`
-
-Прежде, чем двигаться дальше, убедитесь, что актуализировали под свои нужды скопированные дистрибутивы.
+Эта команда создаст дефолтные контейнеры классов.
 
 ## Установка сущностей
 
-`/vednor/bin/extas i -p extas.json -r 1`
-
-Помощь по комманде можно посмотреть следующим образом:
-
-`/vendor/bin/extas i --help`
-
-`i` - это короткая форма команды `install`.
+`# vednor/bin/extas install`
 
 ## Экспорт сущностей
 
-`/vendor/bin/extas e`
-
-Помощь по комманде можно посмотреть следующим образом:
-
-`/vendor/bin/extas e --help`
-
-`e` - это короткая форма команды `export`.
+`# vendor/bin/extas export`
 
 # Использование
 
@@ -92,15 +77,15 @@ class MyRepository extends Repository
 ```php
 namespace my\extas;
 
-use extas\components\plugins\PluginInstallDefault as InstallPlugin
+use extas\components\plugins\PluginInstallDefault;
 
-class PluginInstallMyNames extends InstallPlugin
+class PluginInstallMyNames extends PluginInstallDefault
 {
-    protected $selfSection = 'my_names';
-    protected $selfName = 'name';
-    protected $selfRepositoryClass = MyRepository::class;
-    protected $selfUID = 'name';
-    protected $selfItemClass = My::class;
+    protected string $selfSection = 'my_names';
+    protected string $selfName = 'my name';
+    protected string $selfRepositoryClass = MyRepository::class;
+    protected string $selfUID = 'name';
+    protected string $selfItemClass = My::class;
 }
 ```
 
@@ -128,31 +113,18 @@ example.json
 
 6. Устанавливаем плагин.
 
-`vendor/bin/extas i -p example.json -s 1 -r 1`
+`# vendor/bin/extas i -p example.json -s 1 -r 1`
 
 Должны увидеть что-то вроде
 
 ```
-Extas installer v1.1
+Extas installer v2.0
 ==========================
 Class lock-file updated
 
 Package "example" is installing...
 Installing plugin "my\extas\PluginInstallMyNames"...
 Plugin installed.
-Finished
-```
-
-7. Устанавливаем сущность
-
-`vendor/bin/extas i -p example.json -s 1 -r 1`
-
-Должны увидеть что-то вроде
-
-```
-Extas installer v1.1
-==========================
-Class lock-file updated
 
 Package "example" is installing...
 Plugin "my\extas\PluginInstallMyNames" is already installed.
@@ -160,7 +132,8 @@ Installing name "Example 1"...
 Name "Example 1" installed.
 Installing name "Example 2"...
 Name "Example 2" installed.
-Finished
+
+Finished in 1s
 ```
 
 # Настройка

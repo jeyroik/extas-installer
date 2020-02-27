@@ -11,7 +11,7 @@ use extas\interfaces\packages\IInstaller;
  */
 interface IHasInstaller
 {
-    const FIELD__INSTALLER = 'installer';
+    public const FIELD__INSTALLER = 'installer';
 
     /**
      * @return IInstaller|null

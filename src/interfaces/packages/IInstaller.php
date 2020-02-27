@@ -13,29 +13,24 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 interface IInstaller extends IItem
 {
-    const SUBJECT = 'extas.installer';
+    public const SUBJECT = 'extas.installer';
 
-    const FIELD__SERVICE_TEMPLATES = 'service_templates';
-    const FIELD__STAGES = 'stages';
-    const FIELD__PLUGINS = 'plugins';
-    const FIELD__EXTENSIONS = 'extensions';
-    const FILED__OPTIONS = 'options';
-    const FIELD__NAME = 'name';
-    const FILED__DESCRIPTION = 'description';
-    const FIELD__SCHEMA = 'schema';
-    const FIELD__REWRITE = 'rewrite';
-    const FIELD__FLUSH = 'flush';
-    const FIELD__SETTINGS = 'installer_settings';
-    const FIELD__INPUT = 'input';
+    public const FIELD__STAGES = 'stages';
+    public const FIELD__PLUGINS = 'plugins';
+    public const FIELD__EXTENSIONS = 'extensions';
+    public const FIELD__NAME = 'name';
+    public const FIELD__SCHEMA = 'schema';
+    public const FIELD__REWRITE = 'rewrite';
+    public const FIELD__FLUSH = 'flush';
+    public const FIELD__SETTINGS = 'installer_settings';
+    public const FIELD__INPUT = 'input';
 
-    const FIELD__BASE_INTERFACES_PATH = 'base_interfaces_path';
+    public const OPTION__MASK = 'mask';
+    public const OPTION__MASK__ANY = '*';
+    public const DIRECTIVE__GENERATE = '@directive.generate()';
 
-    const OPTION__MASK = 'mask';
-    const OPTION__MASK__ANY = '*';
-    const DIRECTIVE__GENERATE = '@directive.generate()';
-
-    const STAGE__INSTALL = 'extas.install';
-    const STAGE__UNINSTALL = 'extas.uninstall';
+    public const STAGE__INSTALL = 'extas.install';
+    public const STAGE__UNINSTALL = 'extas.uninstall';
 
     /**
      * @param $packageConfigs array

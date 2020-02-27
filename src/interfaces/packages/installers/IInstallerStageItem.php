@@ -1,9 +1,9 @@
 <?php
 namespace extas\interfaces\packages\installers;
 
-use extas\interfaces\packages\installers\dispatchers\IHasInstaller;
-use extas\interfaces\packages\installers\dispatchers\IHasOutput;
-use extas\interfaces\packages\installers\dispatchers\IHasPlugin;
+use extas\interfaces\packages\installers\IHasInstaller;
+use extas\interfaces\packages\installers\IHasOutput;
+use extas\interfaces\packages\installers\IHasPlugin;
 
 /**
  * Interface IInstallerStageItem
@@ -13,7 +13,7 @@ use extas\interfaces\packages\installers\dispatchers\IHasPlugin;
  */
 interface IInstallerStageItem extends IHasInstaller, IHasPlugin, IHasOutput
 {
-    const FIELD__ITEM = 'item';
+    public const FIELD__ITEM = 'item';
 
     /**
      * Return bool is item operated

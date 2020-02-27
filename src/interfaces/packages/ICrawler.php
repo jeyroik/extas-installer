@@ -12,11 +12,11 @@ use extas\interfaces\IItem;
  */
 interface ICrawler extends IItem
 {
-    const SUBJECT = 'extas.crawler';
-    const STAGE__CRAWL = 'extas.crawl.packages';
-    const FIELD__WORKING_DIRECTORY = '__wd__';
-    const FIELD__SETTINGS = '__settings__';
-    const SETTING__REWRITE_ALLOW = 'rewrite_allow';
+    public const SUBJECT = 'extas.crawler';
+    public const STAGE__CRAWL = 'extas.crawl.packages';
+    public const FIELD__WORKING_DIRECTORY = '__wd__';
+    public const FIELD__SETTINGS = '__settings__';
+    public const SETTING__REWRITE_ALLOW = 'rewrite_allow';
 
     /**
      * @param $path

@@ -16,22 +16,22 @@ abstract class PluginInstallListDefault extends Plugin
 {
     use TInstallMessages;
 
-    public $preDefinedStage = 'extas.install';
+    public string $preDefinedStage = 'extas.install';
 
-    protected $selfListSection = '';
-    protected $selfItemSection = 'items';
+    protected string $selfListSection = '';
+    protected string $selfItemSection = 'items';
 
-    protected $selfListName = '';
-    protected $selfItemName = '';
+    protected string $selfListName = '';
+    protected string $selfItemName = '';
 
-    protected $selfListRepositoryClass = '';
-    protected $selfItemRepositoryClass = '';
+    protected string $selfListRepositoryClass = '';
+    protected string $selfItemRepositoryClass = '';
 
-    protected $selfListPK = '';
-    protected $selfItemPK = '';
+    protected string $selfListPK = '';
+    protected string $selfItemPK = '';
 
-    protected $selfListClass = '';
-    protected $selfItemClass = '';
+    protected string $selfListClass = '';
+    protected string $selfItemClass = '';
 
     /**
      * @param $installer IInstaller

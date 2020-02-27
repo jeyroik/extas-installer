@@ -16,11 +16,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class PluginInstallPackageClasses extends PluginInstallDefault
 {
-    protected $selfUID = IPackageClass::FIELD__INTERFACE_NAME;
-    protected $selfSection = 'package_classes';
-    protected $selfRepositoryClass = IPackageClassRepository::class;
-    protected $selfName = 'Interface';
-    protected $selfItemClass = PackageClass::class;
+    protected string $selfUID = IPackageClass::FIELD__INTERFACE_NAME;
+    protected string $selfSection = 'package_classes';
+    protected string $selfRepositoryClass = IPackageClassRepository::class;
+    protected string $selfName = 'Interface';
+    protected string $selfItemClass = PackageClass::class;
 
     /**
      * @param $output OutputInterface

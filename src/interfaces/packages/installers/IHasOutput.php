@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 interface IHasOutput
 {
-    const FIELD__OUTPUT = 'output';
+    public const FIELD__OUTPUT = 'output';
 
     /**
      * @return null|OutputInterface

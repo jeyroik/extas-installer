@@ -12,9 +12,9 @@ use extas\interfaces\packages\installers\IInstallerOptionRepository;
  */
 class PluginInstallOptionsForInstaller extends PluginInstallDefault
 {
-    protected $selfItemClass = InstallerOption::class;
-    protected $selfName = 'installer option';
-    protected $selfSection = 'installer_options';
-    protected $selfUID = InstallerOption::FIELD__NAME;
-    protected $selfRepositoryClass = IInstallerOptionRepository::class;
+    protected string $selfItemClass = InstallerOption::class;
+    protected string $selfName = 'installer option';
+    protected string $selfSection = 'installer_options';
+    protected string $selfUID = InstallerOption::FIELD__NAME;
+    protected string $selfRepositoryClass = IInstallerOptionRepository::class;
 }

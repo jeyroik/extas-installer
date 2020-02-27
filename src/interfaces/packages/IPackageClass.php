@@ -11,10 +11,10 @@ use extas\interfaces\IItem;
  */
 interface IPackageClass extends IItem
 {
-    const SUBJECT = 'extas.package.class';
+    public const SUBJECT = 'extas.package.class';
 
-    const FIELD__INTERFACE_NAME = 'interface';
-    const FIELD__CLASS_NAME = 'class';
+    public const FIELD__INTERFACE_NAME = 'interface';
+    public const FIELD__CLASS_NAME = 'class';
 
     /**
      * @return string

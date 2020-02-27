@@ -14,9 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class PluginExportDefault extends Plugin
 {
-    protected $selfSection = '';
-    protected $selfName = '';
-    protected $selfRepositoryClass = '';
+    protected string $selfSection = '';
+    protected string $selfName = '';
+    protected string $selfRepositoryClass = '';
 
     /**
      * @param array $config

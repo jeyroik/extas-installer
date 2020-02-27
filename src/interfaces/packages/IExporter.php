@@ -12,9 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 interface IExporter extends IItem
 {
-    const SUBJECT = 'extas.exporter';
+    public const SUBJECT = 'extas.exporter';
 
-    const FIELD__PATH = 'path';
+    public const FIELD__PATH = 'path';
 
     /**
      * @param string $fileName

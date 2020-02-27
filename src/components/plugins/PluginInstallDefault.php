@@ -26,13 +26,13 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     protected const STAGE__ITEMS = 'items';
     protected const STAGE__ITEM = 'item';
 
-    protected $selfSection = '';
-    protected $selfName = '';
-    protected $selfRepositoryClass = '';
-    protected $selfUID = '';
-    protected $selfItemClass = '';
+    protected string $selfSection = '';
+    protected string $selfName = '';
+    protected string $selfRepositoryClass = '';
+    protected string $selfUID = '';
+    protected string $selfItemClass = '';
 
-    protected $isRewriteAllowed = null;
+    protected bool $isRewriteAllowed = true;
 
     /**
      * @param $installer IInstaller

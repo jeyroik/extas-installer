@@ -1,7 +1,7 @@
 <?php
 namespace extas\interfaces\packages\installers;
 
-use extas\interfaces\packages\installers\dispatchers\IHasInstaller;
+use extas\interfaces\packages\installers\IHasInstaller;
 
 /**
  * Interface IInstallerStagePackage
@@ -11,7 +11,7 @@ use extas\interfaces\packages\installers\dispatchers\IHasInstaller;
  */
 interface IInstallerStagePackage extends IHasInstaller
 {
-    const FIELD__PACKAGE_CONFIG = 'package_config';
+    public const FIELD__PACKAGE_CONFIG = 'package_config';
 
     /**
      * Return bool is package operated

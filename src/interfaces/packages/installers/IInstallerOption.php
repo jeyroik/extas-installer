@@ -14,12 +14,12 @@ use extas\interfaces\IItem;
  */
 interface IInstallerOption extends IItem, IHasName, IHasDescription, IHasClass
 {
-    const SUBJECT = 'extas.installer.option';
+    public const SUBJECT = 'extas.installer.option';
 
-    const FIELD__SHORTCUT = 'shortcut';
-    const FIELD__DEFAULT = 'default';
-    const FIELD__MODE = 'mode';
-    const FIELD__STAGE = 'stage';
+    public const FIELD__SHORTCUT = 'shortcut';
+    public const FIELD__DEFAULT = 'default';
+    public const FIELD__MODE = 'mode';
+    public const FIELD__STAGE = 'stage';
 
     /**
      * @return array
