@@ -14,13 +14,13 @@ use extas\interfaces\repositories\IRepository;
  */
 class PackageClassRepository extends Repository implements IRepository
 {
-    protected $itemClass = PackageClass::class;
-    protected $scope = 'extas';
-    protected $pk = PackageClass::FIELD__INTERFACE_NAME;
-    protected $name = 'container_path_storage';
-    protected $data = [];
-    protected $dsn = '/configs/container.json';
-    protected $dsnLock = '/configs/container.php';
+    protected string $itemClass = PackageClass::class;
+    protected string $scope = 'extas';
+    protected string $pk = PackageClass::FIELD__INTERFACE_NAME;
+    protected string $name = 'container_path_storage';
+    protected array $data = [];
+    protected string $dsn = '/configs/container.json';
+    protected string $dsnLock = '/configs/container.php';
 
     /**
      * CompareRepository constructor.

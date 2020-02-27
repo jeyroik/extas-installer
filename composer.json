@@ -8,7 +8,7 @@
     "symfony/finder": "*",
     "symfony/console": "*",
     "vlucas/phpdotenv": "^3.4",
-    "jeyroik/extas-foundation": "*"
+    "jeyroik/extas-foundation": "1.*"
   },
   "autoload": {
     "psr-4": {

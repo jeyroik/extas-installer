@@ -31,10 +31,10 @@ class Installer extends Item implements IInstaller
 {
     protected const STAGE__PACKAGE = 'package';
 
-    protected $packageConfig = [];
-    protected $generatedData = [];
-    protected $many = false;
-    protected $systemSettings = [
+    protected array $packageConfig = [];
+    protected array $generatedData = [];
+    protected bool $many = false;
+    protected array $systemSettings = [
         self::FIELD__FLUSH
     ];
 

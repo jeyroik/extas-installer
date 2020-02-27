@@ -11,9 +11,9 @@ use extas\components\repositories\Repository;
  */
 class InstallerOptionRepository extends Repository
 {
-    protected $itemClass = InstallerOption::class;
-    protected $name = 'installer_options';
-    protected $pk = InstallerOption::FIELD__NAME;
-    protected $scope = 'extas';
-    protected $idAs = '';
+    protected string $itemClass = InstallerOption::class;
+    protected string $name = 'installer_options';
+    protected string $pk = InstallerOption::FIELD__NAME;
+    protected string $scope = 'extas';
+    protected string $idAs = '';
 }
