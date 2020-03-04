@@ -1,9 +1,13 @@
 <?php
 
-use \PHPUnit\Framework\TestCase;
-use \extas\components\plugins\Plugin;
+use PHPUnit\Framework\TestCase;
+use extas\components\plugins\Plugin;
 use extas\components\plugins\PluginRepository;
-use \extas\interfaces\repositories\IRepository;
+use extas\interfaces\repositories\IRepository;
+use extas\components\SystemContainer;
+use extas\interfaces\stages\IStageRepository;
+use extas\components\stages\Stage;
+use extas\components\packages\Exporter;
 
 /**
  * Class ExporterTest
@@ -17,6 +21,11 @@ class ExporterTest extends TestCase
      */
     protected ?IRepository $pluginRepo = null;
 
+    /**
+     * @var IRepository|null
+     */
+    protected ?IRepository $stageRepo = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,6 +37,7 @@ class ExporterTest extends TestCase
                 parent::$stagesWithPlugins = [];
             }
         };
+        $this->stageRepo = SystemContainer::getItem(IStageRepository::class);
     }
 
     /**
@@ -40,15 +50,18 @@ class ExporterTest extends TestCase
 
     public function testExportEntities()
     {
-
+        $this->pluginRepo->reload();
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => 'NotExistingClass',
             Plugin::FIELD__STAGE => 'extas.export.test'
         ]));
+        $this->stageRepo->create(new Stage([
+            Stage::FIELD__NAME => 'extas.export.test',
+            Stage::FIELD__HAS_PLUGINS => true
+        ]));
 
-        $exporter = new \extas\components\packages\Exporter();
+        $exporter = new Exporter();
         $this->expectExceptionMessage('Unknown class "NotExistingClass"');
-        $this->pluginRepo->reload();
         $exporter->export(['test']);
     }
 
@@ -59,8 +72,12 @@ class ExporterTest extends TestCase
             Plugin::FIELD__CLASS => 'NotExistingClass',
             Plugin::FIELD__STAGE => 'extas.export'
         ]));
+        $this->stageRepo->create(new Stage([
+            Stage::FIELD__NAME => 'extas.export.test',
+            Stage::FIELD__HAS_PLUGINS => true
+        ]));
 
-        $exporter = new \extas\components\packages\Exporter();
+        $exporter = new Exporter();
         $this->expectExceptionMessage('Unknown class "NotExistingClass"');
         $exporter->export();
     }
