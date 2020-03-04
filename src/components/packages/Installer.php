@@ -238,7 +238,7 @@ class Installer extends Item implements IInstaller
             $interfaceInstaller($this, $output);
         }
         $interfaceInstaller->updateLockFile($output);
-        $this->packageConfig = null;
+        $this->packageConfig = [];
 
         return $this;
     }
