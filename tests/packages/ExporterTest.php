@@ -61,7 +61,7 @@ class ExporterTest extends TestCase
         ]));
 
         $exporter = new Exporter();
-        $this->expectExceptionMessage('Class "NotExistingClass" not found');
+        $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         $exporter->export(['test']);
     }
 
@@ -78,7 +78,7 @@ class ExporterTest extends TestCase
         ]));
 
         $exporter = new Exporter();
-        $this->expectExceptionMessage('Class "NotExistingClass" not found');
+        $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         $exporter->export();
     }
 }
