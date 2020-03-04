@@ -40,7 +40,7 @@ class ExporterTest extends TestCase
 
     public function testExportEntities()
     {
-        $this->pluginRepo->reload();
+
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => 'NotExistingClass',
             Plugin::FIELD__STAGE => 'extas.export.test'
@@ -48,6 +48,7 @@ class ExporterTest extends TestCase
 
         $exporter = new \extas\components\packages\Exporter();
         $this->expectExceptionMessage('Unknown class "NotExistingClass"');
+        $this->pluginRepo->reload();
         $exporter->export(['test']);
     }
 
