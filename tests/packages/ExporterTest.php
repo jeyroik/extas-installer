@@ -22,7 +22,12 @@ class ExporterTest extends TestCase
         parent::setUp();
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->pluginRepo = new PluginRepository();
+        $this->pluginRepo = new class extends PluginRepository {
+            public function reload()
+            {
+                parent::$stagesWithPlugins = [];
+            }
+        };
     }
 
     /**
@@ -35,6 +40,7 @@ class ExporterTest extends TestCase
 
     public function testExportEntities()
     {
+        $this->pluginRepo->reload();
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => 'NotExistingClass',
             Plugin::FIELD__STAGE => 'extas.export.test'
@@ -47,6 +53,7 @@ class ExporterTest extends TestCase
 
     public function testExport()
     {
+        $this->pluginRepo->reload();
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => 'NotExistingClass',
             Plugin::FIELD__STAGE => 'extas.export'
