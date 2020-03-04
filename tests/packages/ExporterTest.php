@@ -26,6 +26,11 @@ class ExporterTest extends TestCase
      */
     protected ?IRepository $stageRepo = null;
 
+    /**
+     * @var string
+     */
+    protected string $currentStage = '';
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -45,20 +50,15 @@ class ExporterTest extends TestCase
      */
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
+        if ($this->currentStage) {
+            $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
+            $this->stageRepo->delete([Stage::FIELD__NAME => $this->currentStage]);
+        }
     }
 
     public function testExportEntities()
     {
-        $this->pluginRepo->reload();
-        $this->pluginRepo->create(new Plugin([
-            Plugin::FIELD__CLASS => 'NotExistingClass',
-            Plugin::FIELD__STAGE => 'extas.export.test'
-        ]));
-        $this->stageRepo->create(new Stage([
-            Stage::FIELD__NAME => 'extas.export.test',
-            Stage::FIELD__HAS_PLUGINS => true
-        ]));
+        $this->createPluginAndStage('.test');
 
         $exporter = new Exporter();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
@@ -67,18 +67,32 @@ class ExporterTest extends TestCase
 
     public function testExport()
     {
-        $this->pluginRepo->reload();
-        $this->pluginRepo->create(new Plugin([
-            Plugin::FIELD__CLASS => 'NotExistingClass',
-            Plugin::FIELD__STAGE => 'extas.export'
-        ]));
-        $this->stageRepo->create(new Stage([
-            Stage::FIELD__NAME => 'extas.export',
-            Stage::FIELD__HAS_PLUGINS => true
-        ]));
+        $this->createPluginAndStage('');
 
         $exporter = new Exporter();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         $exporter->export();
+    }
+
+    /**
+     * Create plugin and stage records.
+     *
+     * @param string $stageSuffix
+     */
+    protected function createPluginAndStage(string $stageSuffix)
+    {
+        $this->pluginRepo->reload();
+        $plugin = new Plugin([
+            Plugin::FIELD__CLASS => 'NotExistingClass',
+            Plugin::FIELD__STAGE => 'extas.export' . $stageSuffix
+        ]);
+        $this->pluginRepo->create($plugin);
+
+        $stage = new Stage([
+            Stage::FIELD__NAME => 'extas.export' . $stageSuffix,
+            Stage::FIELD__HAS_PLUGINS => true
+        ]);
+        $this->stageRepo->create($stage);
+        $this->currentStage = 'extas.export' . $stageSuffix;
     }
 }
