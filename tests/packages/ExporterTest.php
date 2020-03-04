@@ -73,7 +73,7 @@ class ExporterTest extends TestCase
             Plugin::FIELD__STAGE => 'extas.export'
         ]));
         $this->stageRepo->create(new Stage([
-            Stage::FIELD__NAME => 'extas.export.test',
+            Stage::FIELD__NAME => 'extas.export',
             Stage::FIELD__HAS_PLUGINS => true
         ]));
 
