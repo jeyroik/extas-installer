@@ -19,11 +19,13 @@ class CrawlerTest extends TestCase
 
     public function testCrawlPackages()
     {
+        $key = __DIR__ . '/test.extas.json';
+
         $must = [
-            __DIR__ => json_decode(file_get_contents(__DIR__ . '/test.extas.json'),true)
+            $key => json_decode(file_get_contents(__DIR__ . '/test.extas.json'),true)
         ];
-        $must[__DIR__][Crawler::FIELD__SETTINGS] = 'test.settings';
-        $must[__DIR__][Crawler::FIELD__WORKING_DIRECTORY] = __DIR__;
+        $must[$key][Crawler::FIELD__SETTINGS] = 'test.settings';
+        $must[$key][Crawler::FIELD__WORKING_DIRECTORY] = __DIR__;
 
         $crawler = new Crawler([
             Crawler::FIELD__SETTINGS => 'test.settings'
