@@ -10,6 +10,13 @@ use extas\components\packages\Crawler;
  */
 class CrawlerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env->load();
+    }
+
     public function testCrawlPackages()
     {
         $must = [
