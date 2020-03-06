@@ -34,17 +34,37 @@ class Installer extends Item implements IInstaller
     protected array $packageConfig = [];
     protected array $generatedData = [];
     protected bool $many = false;
+
+    protected ?IPluginRepository $pluginRepo = null;
+    protected ?IStageRepository $stageRepo = null;
+
+    /**
+     * @deprecated
+     * @var array
+     */
     protected array $systemSettings = [
         self::FIELD__FLUSH
     ];
 
     /**
+     * Installer constructor.
+     * @param array $config
+     */
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+
+        $this->pluginRepo = SystemContainer::getItem(IPluginRepository::class);
+        $this->stageRepo = SystemContainer::getItem(IStageRepository::class);
+    }
+
+    /**
      * @param $packageConfigs array
      * @param $output OutputInterface
      *
-     * @return bool|string
+     * @return OutputInterface
      */
-    public function installMany($packageConfigs, $output)
+    public function installMany(array $packageConfigs, OutputInterface $output): OutputInterface
     {
         $this->many = true;
 
@@ -102,7 +122,7 @@ class Installer extends Item implements IInstaller
      *
      * @return bool|string
      */
-    public function install($packageConfig, $output)
+    public function install(array $packageConfig, OutputInterface $output)
     {
         $this->prepareSettings($packageConfig);
         $this->packageConfig = $packageConfig;
@@ -136,7 +156,7 @@ class Installer extends Item implements IInstaller
      *
      * @return bool|string
      */
-    public function uninstallMany($packagesConfigs, $output)
+    public function uninstallMany(array $packagesConfigs, OutputInterface $output)
     {
         $this->many = true;
 
@@ -160,7 +180,7 @@ class Installer extends Item implements IInstaller
      *
      * @return bool|string
      */
-    public function uninstall($packageConfig, $output)
+    public function uninstall(array $packageConfig, OutputInterface $output)
     {
         $this->packageConfig = $packageConfig;
 
@@ -181,7 +201,7 @@ class Installer extends Item implements IInstaller
     /**
      * @return array
      */
-    public function getGeneratedData()
+    public function getGeneratedData(): array
     {
         return $this->generatedData;
     }
@@ -202,7 +222,7 @@ class Installer extends Item implements IInstaller
     /**
      * @return array
      */
-    public function getPackageConfig()
+    public function getPackageConfig(): array
     {
         return $this->packageConfig;
     }
@@ -212,7 +232,7 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function applySettings($output)
+    protected function applySettings(OutputInterface $output)
     {
         foreach ($this->packageConfig[static::FIELD__SETTINGS] as $setting => $options) {
             foreach ($this->getPluginsByStage('extas.install.setting.' . $setting) as $plugin) {
@@ -229,7 +249,7 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function installInterfaces($servicesConfigs, $output)
+    protected function installInterfaces(array $servicesConfigs, OutputInterface $output)
     {
         $interfaceInstaller = new PluginInstallPackageClasses();
 
@@ -246,7 +266,7 @@ class Installer extends Item implements IInstaller
     /**
      * @param $packageConfig
      */
-    protected function prepareSettings(&$packageConfig)
+    protected function prepareSettings(array &$packageConfig)
     {
         $settings = $packageConfig[static::FIELD__SETTINGS] ?? [];
 
@@ -264,16 +284,12 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function installStages($output)
+    protected function installStages(OutputInterface $output)
     {
-        /**
-         * @var $stagesRepository IStageRepository
-         */
-        $stagesRepository = SystemContainer::getItem(IStageRepository::class);
         $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
 
         foreach ($stages as $stage) {
-            if ($stagesRepository->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]])) {
+            if ($this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]])) {
                 $output->writeln([
                     'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is already installed.'
                 ]);
@@ -283,7 +299,7 @@ class Installer extends Item implements IInstaller
                 ]);
                 $stage[IStage::FIELD__HAS_PLUGINS] = false;
                 $stageObj = new Stage($stage);
-                $stagesRepository->create($stageObj);
+                $this->stageRepo->create($stageObj);
                 $output->writeln([
                     '<info>Stage installed.</info>'
                 ]);
@@ -298,21 +314,13 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function uninstallStages($output)
+    protected function uninstallStages(OutputInterface $output)
     {
-        if (!$this->isMasked(static::FIELD__STAGES)) {
-            return $this;
-        }
-
-        /**
-         * @var $stagesRepository IStageRepository
-         */
-        $stagesRepository = SystemContainer::getItem(IStageRepository::class);
         $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
 
         foreach ($stages as $stage) {
-            $stage = $stagesRepository->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]]);
-            $stagesRepository->delete($stage);
+            $stage = $this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]]);
+            $this->stageRepo->delete($stage);
             $output->writeln([
                 'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is uninstalled.'
             ]);
@@ -326,15 +334,8 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function installPlugins($output)
+    protected function installPlugins(OutputInterface $output)
     {
-        /**
-         * @var $pluginRepo IPluginRepository
-         * @var $stageRepo IStageRepository
-         * @var $stage IStage
-         */
-        $pluginRepo = SystemContainer::getItem(IPluginRepository::class);
-        $stageRepo = SystemContainer::getItem(IStageRepository::class);
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
@@ -343,10 +344,10 @@ class Installer extends Item implements IInstaller
             if (is_array($pluginStage)) {
                 foreach ($pluginStage as $stage) {
                     $plugin[IPlugin::FIELD__STAGE] = $stage;
-                    $this->installPlugin($output, $pluginRepo, $stageRepo, $plugin);
+                    $this->installPlugin($output, $plugin);
                 }
             } else {
-                $this->installPlugin($output, $pluginRepo, $stageRepo, $plugin);
+                $this->installPlugin($output, $plugin);
             }
         }
 
@@ -355,16 +356,17 @@ class Installer extends Item implements IInstaller
 
     /**
      * @param OutputInterface $output
-     * @param IPluginRepository $pluginRepo
-     * @param IStageRepository $stageRepo
      * @param array $plugin
      */
-    protected function installPlugin($output, $pluginRepo, $stageRepo, $plugin)
+    protected function installPlugin(
+        OutputInterface $output,
+        array $plugin
+    )
     {
         $pluginClass = $plugin[IPlugin::FIELD__CLASS] ?? '';
         $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
 
-        if ($pluginRepo->one([
+        if ($this->pluginRepo->one([
             IPlugin::FIELD__CLASS => $pluginClass,
             IPlugin::FIELD__STAGE => $pluginStage
         ])) {
@@ -377,10 +379,10 @@ class Installer extends Item implements IInstaller
                 '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
             ]);
             $pluginObj = new Plugin($plugin);
-            $pluginRepo->create($pluginObj);
+            $this->pluginRepo->create($pluginObj);
 
-            $stage = $stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
-            $this->updateStageHasPlugins($stage, $pluginObj, $stageRepo);
+            $stage = $this->stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
+            $this->updateStageHasPlugins($stage, $pluginObj);
             $output->writeln([
                 '<info>Plugin installed.</info>'
             ]);
@@ -390,21 +392,20 @@ class Installer extends Item implements IInstaller
     /**
      * @param $stage IStage|null
      * @param $pluginObj IPlugin
-     * @param $stageRepo IStageRepository
      *
      * @return $this
      */
-    protected function updateStageHasPlugins($stage, $pluginObj, $stageRepo)
+    protected function updateStageHasPlugins(?IStage $stage, IPlugin $pluginObj)
     {
         if (!$stage) {
             $stage = new Stage([
                 IStage::FIELD__NAME => $pluginObj->getStage(),
                 IStage::FIELD__HAS_PLUGINS => true
             ]);
-            $stageRepo->create($stage);
+            $this->stageRepo->create($stage);
         } else {
             $stage->setHasPlugins(true);
-            $stageRepo->update($stage);
+            $this->stageRepo->update($stage);
         }
 
         return $this;
@@ -415,21 +416,13 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function uninstallPlugins($output)
+    protected function uninstallPlugins(OutputInterface $output)
     {
-        if (!$this->isMasked(static::FIELD__PLUGINS)) {
-            return $this;
-        }
-
-        /**
-         * @var $pluginRepo IPluginRepository
-         */
-        $pluginRepo = SystemContainer::getItem(IPluginRepository::class);
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
-            $plugin = $pluginRepo->one([IPlugin::FIELD__CLASS => $plugin[IPlugin::FIELD__CLASS]]);
-            $pluginRepo->delete($plugin);
+            $plugin = $this->pluginRepo->one([IPlugin::FIELD__CLASS => $plugin[IPlugin::FIELD__CLASS]]);
+            $this->pluginRepo->delete($plugin);
             $output->writeln([
                 'Plugin <info>"' . $plugin[IPlugin::FIELD__CLASS] . '"</info> uninstalled.'
             ]);
@@ -443,7 +436,7 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function installExtensions($output)
+    protected function installExtensions(OutputInterface $output)
     {
         /**
          * @var $extensionRepo IExtensionRepository
@@ -472,7 +465,7 @@ class Installer extends Item implements IInstaller
      * @param IExtensionRepository $extensionRepo
      * @param array $extension
      */
-    protected function installExtension($output, $extensionRepo, $extension)
+    protected function installExtension(OutputInterface $output, IExtensionRepository $extensionRepo, array $extension)
     {
         $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
@@ -501,12 +494,8 @@ class Installer extends Item implements IInstaller
      *
      * @return $this
      */
-    protected function uninstallExtensions($output)
+    protected function uninstallExtensions(OutputInterface $output)
     {
-        if (!$this->isMasked(static::FIELD__EXTENSIONS)) {
-            return $this;
-        }
-
         /**
          * @var $extensionRepo IExtensionRepository
          */
@@ -525,6 +514,7 @@ class Installer extends Item implements IInstaller
     }
 
     /**
+     * @deprecated
      * @param $subject
      *
      * @return bool
@@ -544,9 +534,10 @@ class Installer extends Item implements IInstaller
     }
 
     /**
+     * @deprecated
      * @return string
      */
-    public function getOptionMask()
+    public function getOptionMask(): string
     {
         return $this->config[static::OPTION__MASK] ?? '*';
     }

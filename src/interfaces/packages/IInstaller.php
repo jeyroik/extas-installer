@@ -25,8 +25,15 @@ interface IInstaller extends IItem
     public const FIELD__SETTINGS = 'installer_settings';
     public const FIELD__INPUT = 'input';
 
+    /**
+     * @deprecated
+     */
     public const OPTION__MASK = 'mask';
     public const OPTION__MASK__ANY = '*';
+
+    /**
+     * @todo mv to player package
+     */
     public const DIRECTIVE__GENERATE = '@directive.generate()';
 
     public const STAGE__INSTALL = 'extas.install';
@@ -36,9 +43,9 @@ interface IInstaller extends IItem
      * @param $packageConfigs array
      * @param $output OutputInterface
      *
-     * @return bool|string
+     * @return OutputInterface
      */
-    public function installMany($packageConfigs, $output);
+    public function installMany(array $packageConfigs, OutputInterface $output): OutputInterface;
 
     /**
      * @param $packageConfig array
@@ -46,12 +53,12 @@ interface IInstaller extends IItem
      *
      * @return bool|string
      */
-    public function install($packageConfig, $output);
+    public function install(array $packageConfig, OutputInterface $output);
 
     /**
      * @return array
      */
-    public function getPackageConfig();
+    public function getPackageConfig(): array;
 
     /**
      * @param $name
@@ -64,7 +71,7 @@ interface IInstaller extends IItem
     /**
      * @return array
      */
-    public function getGeneratedData();
+    public function getGeneratedData(): array;
 
     /**
      * @return null|InputInterface
