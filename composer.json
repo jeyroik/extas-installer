@@ -2,11 +2,8 @@
   "name": "jeyroik/extas-installer",
   "description": "Extas installer package",
   "require": {
-    "psr/container": "*",
-    "league/container": "*",
-    "alcaeus/mongo-php-adapter": "*",
-    "symfony/finder": "*",
-    "symfony/console": "*",
+    "symfony/finder": "5.*",
+    "symfony/console": "5.*",
     "jeyroik/extas-foundation": "2.*"
   },
   "require-dev": {
