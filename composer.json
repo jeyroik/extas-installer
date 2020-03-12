@@ -7,11 +7,12 @@
     "alcaeus/mongo-php-adapter": "*",
     "symfony/finder": "*",
     "symfony/console": "*",
-    "jeyroik/extas-foundation": "1.*"
+    "jeyroik/extas-foundation": "2.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
-    "vlucas/phpdotenv": "^3.4"
+    "vlucas/phpdotenv": "^3.4",
+    "jeyroik/extas-repositories-mongo": "0.*"
   },
   "autoload": {
     "psr-4": {
