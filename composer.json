@@ -9,7 +9,6 @@
   "require-dev": {
     "phpunit/phpunit": "^9",
     "vlucas/phpdotenv": "^3.4",
-    "alcaeus/mongo-php-adapter": "1.*",
     "jeyroik/extas-repositories-mongo": "0.*"
   },
   "autoload": {
