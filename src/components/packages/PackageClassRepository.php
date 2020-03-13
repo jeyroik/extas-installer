@@ -44,10 +44,12 @@ class PackageClassRepository extends Repository implements IRepository
 
     /**
      * @param $where
+     * @param int $offset
+     * @param array $fields
      *
      * @return mixed|null
      */
-    public function one($where)
+    public function one($where, int $offset = 0, array $fields = [])
     {
         foreach ($this->data as $item) {
             $equal = true;
@@ -72,10 +74,13 @@ class PackageClassRepository extends Repository implements IRepository
 
     /**
      * @param $where
+     * @param int $limit
+     * @param int $offset
+     * @param array $fields
      *
      * @return array
      */
-    public function all($where)
+    public function all($where, int $limit = 0, int $offset = 0, array $fields = [])
     {
         $items = [];
 

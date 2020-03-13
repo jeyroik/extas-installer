@@ -18,6 +18,7 @@ class InstallerOptions
      * @param null|InputInterface $input
      *
      * @return \Generator|IHasClass
+     * @throws \Exception
      */
     public static function byStage(string $stage, ?InputInterface $input)
     {
