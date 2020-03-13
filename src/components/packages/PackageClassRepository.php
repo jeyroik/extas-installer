@@ -74,13 +74,14 @@ class PackageClassRepository extends Repository implements IRepository
 
     /**
      * @param $where
-     * @param int $limit
-     * @param int $offset
+     * @param int $limit there is no realization
+     * @param int $offset there is no realization
+     * @param array $orderBy there is no realization
      * @param array $fields
      *
      * @return array
      */
-    public function all($where, int $limit = 0, int $offset = 0, array $fields = [])
+    public function all($where, int $limit = 0, int $offset = 0, array $orderBy = [], array $fields = [])
     {
         $items = [];
 
