@@ -129,9 +129,10 @@ class InstallCommand extends DefaultCommand
         $serviceInstaller = new Installer([
             Installer::FIELD__REWRITE => $rewriteContainer,
             Installer::FIELD__FLUSH => $flush,
-            Installer::FIELD__INPUT => $input
+            Installer::FIELD__INPUT => $input,
+            Installer::FIELD__OUTPUT => $output
         ]);
-        $serviceInstaller->installMany($configs, $output);
+        $serviceInstaller->installMany($configs);
         $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
     }
 
