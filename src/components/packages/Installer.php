@@ -37,6 +37,7 @@ class Installer extends Item implements IInstaller
 
     protected ?IPluginRepository $pluginRepo = null;
     protected ?IStageRepository $stageRepo = null;
+    protected ?OutputInterface $output = null;
 
     /**
      * @deprecated
@@ -60,20 +61,19 @@ class Installer extends Item implements IInstaller
 
     /**
      * @param $packageConfigs array
-     * @param $output OutputInterface
      *
-     * @return OutputInterface
+     * @return bool
      */
-    public function installMany(array $packageConfigs, OutputInterface $output): OutputInterface
+    public function installMany(array $packageConfigs): bool
     {
         $this->many = true;
 
         if($this->config[static::FIELD__REWRITE] ?? true) {
-            $this->installInterfaces($packageConfigs, $output);
+            $this->installInterfaces($packageConfigs);
         }
 
         foreach ($packageConfigs as $packageConfig) {
-            $this->install($packageConfig, $output);
+            $this->install($packageConfig);
         }
 
         foreach ($packageConfigs as $packageConfig) {
@@ -86,17 +86,18 @@ class Installer extends Item implements IInstaller
             $this->packageConfig = $packageConfig;
 
             foreach ($this->getPluginsByStage(static::STAGE__INSTALL) as $plugin) {
-                $plugin($this, $output);
+                $plugin($this, $this->getOutput());
             }
         }
 
-        return $output;
+        return true;
     }
 
     /**
      * @param array $packageConfig
      *
      * @return bool
+     * @throws 
      */
     protected function operatePackageByOptions(array $packageConfig)
     {
@@ -118,84 +119,80 @@ class Installer extends Item implements IInstaller
 
     /**
      * @param $packageConfig array
-     * @param $output OutputInterface
-     *
      * @return bool|string
      */
-    public function install(array $packageConfig, OutputInterface $output)
+    public function install(array $packageConfig)
     {
         $this->prepareSettings($packageConfig);
         $this->packageConfig = $packageConfig;
 
         $packageName = $packageConfig['name'] ?? sha1(json_encode($packageConfig)) . ' (missed "name" section)';
-        $output->writeln([
+        $this->output([
             '',
             'Package "' . $packageName. '" is installing...',
         ]);
 
-        $this->applySettings($output)
-            ->installStages($output)
-            ->installPlugins($output)
-            ->installExtensions($output);
+        $this->applySettings()
+            ->installStages()
+            ->installPlugins()
+            ->installExtensions();
 
         if (!$this->many) {
             $operated = $this->operatePackageByOptions($packageConfig);
             if (!$operated) {
                 foreach ($this->getPluginsByStage(static::STAGE__INSTALL) as $plugin) {
-                    $plugin($this, $output);
+                    $plugin($this, $this->getOutput());
                 }
             }
         }
 
-        return $output;
+        return true;
     }
 
     /**
      * @param $packagesConfigs array
-     * @param $output OutputInterface
      *
      * @return bool|string
      */
-    public function uninstallMany(array $packagesConfigs, OutputInterface $output)
+    public function uninstallMany(array $packagesConfigs)
     {
         $this->many = true;
 
         foreach ($packagesConfigs as $packageConfig) {
             $this->packageConfig = $packageConfig;
             foreach ($this->getPluginsByStage(static::STAGE__UNINSTALL) as $plugin) {
-                $plugin($this, $output);
+                $plugin($this, $this->getOutput());
             }
         }
 
         foreach ($packagesConfigs as $packageConfig) {
-            $this->uninstall($packageConfig, $output);
+            $this->uninstall($packageConfig);
         }
 
-        return $output;
+        return true;
     }
 
     /**
      * @param $packageConfig array
-     * @param $output OutputInterface
      *
      * @return bool|string
      */
-    public function uninstall(array $packageConfig, OutputInterface $output)
+    public function uninstall(array $packageConfig)
     {
         $this->packageConfig = $packageConfig;
 
         if (!$this->many) {
             foreach ($this->getPluginsByStage(static::STAGE__UNINSTALL) as $plugin) {
-                $plugin($this, $output);
+                $plugin($this, $this->getOutput());
             }
         }
 
-        $this->applySettings($output)
-            ->uninstallExtensions($output)
-            ->uninstallPlugins($output)
-            ->uninstallStages($output);
+        $this->applySettings()
+            ->uninstallExtensions()
+            ->uninstallPlugins()
+            ->uninstallStages();
 
-        return $output;
+        return true;
     }
 
     /**
@@ -228,15 +225,13 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param OutputInterface $output
-     *
      * @return $this
      */
-    protected function applySettings(OutputInterface $output)
+    protected function applySettings()
     {
         foreach ($this->packageConfig[static::FIELD__SETTINGS] as $setting => $options) {
             foreach ($this->getPluginsByStage('extas.install.setting.' . $setting) as $plugin) {
-                $plugin($this, $output, $options);
+                $plugin($this, $this->getOutput(), $options);
             }
         }
 
@@ -245,19 +240,18 @@ class Installer extends Item implements IInstaller
 
     /**
      * @param $servicesConfigs
-     * @param $output OutputInterface
      *
      * @return $this
      */
-    protected function installInterfaces(array $servicesConfigs, OutputInterface $output)
+    protected function installInterfaces(array $servicesConfigs)
     {
         $interfaceInstaller = new PluginInstallPackageClasses();
 
         foreach ($servicesConfigs as $servicesConfig) {
             $this->packageConfig = $servicesConfig;
-            $interfaceInstaller($this, $output);
+            $interfaceInstaller($this, $this->getOutput());
         }
-        $interfaceInstaller->updateLockFile($output);
+        $interfaceInstaller->updateLockFile($this->getOutput());
         $this->packageConfig = [];
 
         return $this;
@@ -280,27 +274,25 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function installStages(OutputInterface $output)
+    protected function installStages()
     {
         $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
 
         foreach ($stages as $stage) {
             if ($this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]])) {
-                $output->writeln([
+                $this->output([
                     'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is already installed.'
                 ]);
             } else {
-                $output->writeln([
+                $this->output([
                     '<info>Installing stage "' . $stage[IStage::FIELD__NAME] . '"...</info>'
                 ]);
                 $stage[IStage::FIELD__HAS_PLUGINS] = false;
                 $stageObj = new Stage($stage);
                 $this->stageRepo->create($stageObj);
-                $output->writeln([
+                $this->output([
                     '<info>Stage installed.</info>'
                 ]);
             }
@@ -310,18 +302,16 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function uninstallStages(OutputInterface $output)
+    protected function uninstallStages()
     {
         $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
 
         foreach ($stages as $stage) {
             $stage = $this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]]);
             $this->stageRepo->delete($stage);
-            $output->writeln([
+            $this->output([
                 'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is uninstalled.'
             ]);
         }
@@ -330,11 +320,9 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function installPlugins(OutputInterface $output)
+    protected function installPlugins()
     {
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
@@ -344,10 +332,10 @@ class Installer extends Item implements IInstaller
             if (is_array($pluginStage)) {
                 foreach ($pluginStage as $stage) {
                     $plugin[IPlugin::FIELD__STAGE] = $stage;
-                    $this->installPlugin($output, $plugin);
+                    $this->installPlugin($plugin);
                 }
             } else {
-                $this->installPlugin($output, $plugin);
+                $this->installPlugin($plugin);
             }
         }
 
@@ -355,11 +343,9 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param OutputInterface $output
      * @param array $plugin
      */
     protected function installPlugin(
-        OutputInterface $output,
         array $plugin
     )
     {
@@ -370,12 +356,12 @@ class Installer extends Item implements IInstaller
             IPlugin::FIELD__CLASS => $pluginClass,
             IPlugin::FIELD__STAGE => $pluginStage
         ])) {
-            $output->writeln([
+            $this->output([
                 'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
             ]);
         } else {
 
-            $output->writeln([
+            $this->output([
                 '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
             ]);
             $pluginObj = new Plugin($plugin);
@@ -383,7 +369,7 @@ class Installer extends Item implements IInstaller
 
             $stage = $this->stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
             $this->updateStageHasPlugins($stage, $pluginObj);
-            $output->writeln([
+            $this->output([
                 '<info>Plugin installed.</info>'
             ]);
         }
@@ -403,27 +389,31 @@ class Installer extends Item implements IInstaller
                 IStage::FIELD__HAS_PLUGINS => true
             ]);
             $this->stageRepo->create($stage);
+            $this->output([
+                'Created new stage <info>"' . $pluginObj->getStage() . '"</info>.'
+            ]);
         } else {
             $stage->setHasPlugins(true);
             $this->stageRepo->update($stage);
+            $this->output([
+                'Update stage <info>"' . $stage->getName() . '"</info> has plugins attribute.'
+            ]);
         }
 
         return $this;
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function uninstallPlugins(OutputInterface $output)
+    protected function uninstallPlugins()
     {
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
             $plugin = $this->pluginRepo->one([IPlugin::FIELD__CLASS => $plugin[IPlugin::FIELD__CLASS]]);
             $this->pluginRepo->delete($plugin);
-            $output->writeln([
+            $this->output([
                 'Plugin <info>"' . $plugin[IPlugin::FIELD__CLASS] . '"</info> uninstalled.'
             ]);
         }
@@ -432,11 +422,9 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function installExtensions(OutputInterface $output)
+    protected function installExtensions()
     {
         /**
          * @var $extensionRepo IExtensionRepository
@@ -450,10 +438,10 @@ class Installer extends Item implements IInstaller
             if (is_array($extSubject)) {
                 foreach ($extSubject as $subject) {
                     $extension[IExtension::FIELD__SUBJECT] = $subject;
-                    $this->installExtension($output, $extensionRepo, $extension);
+                    $this->installExtension($extensionRepo, $extension);
                 }
             } else {
-                $this->installExtension($output, $extensionRepo, $extension);
+                $this->installExtension($extensionRepo, $extension);
             }
         }
 
@@ -461,11 +449,10 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param OutputInterface $output
      * @param IExtensionRepository $extensionRepo
      * @param array $extension
      */
-    protected function installExtension(OutputInterface $output, IExtensionRepository $extensionRepo, array $extension)
+    protected function installExtension(IExtensionRepository $extensionRepo, array $extension)
     {
         $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
@@ -474,27 +461,25 @@ class Installer extends Item implements IInstaller
             IExtension::FIELD__CLASS => $extClass,
             IExtension::FIELD__SUBJECT => $extSubject
         ])) {
-            $output->writeln([
+            $this->output([
                 'Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
             ]);
         } else {
-            $output->writeln([
+            $this->output([
                 '<info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
             ]);
             $extensionObj = new Extension($extension);
             $extensionRepo->create($extensionObj);
-            $output->writeln([
+            $this->output([
                 '<info>Extension installed.</info>'
             ]);
         }
     }
 
     /**
-     * @param $output OutputInterface
-     *
      * @return $this
      */
-    protected function uninstallExtensions(OutputInterface $output)
+    protected function uninstallExtensions()
     {
         /**
          * @var $extensionRepo IExtensionRepository
@@ -505,7 +490,7 @@ class Installer extends Item implements IInstaller
         foreach ($extensions as $extension) {
             $extensionObj = $extensionRepo->one([IExtension::FIELD__CLASS => $extension[IExtension::FIELD__CLASS]]);
             $extensionRepo->delete($extensionObj);
-            $output->writeln([
+            $this->output([
                 'Extension <info>"' . $extension[IExtension::FIELD__CLASS] . '"</info> uninstalled.'
             ]);
         }
@@ -534,12 +519,28 @@ class Installer extends Item implements IInstaller
     }
 
     /**
+     * @return OutputInterface|null
+     */
+    public function getOutput(): ?OutputInterface
+    {
+        return $this->config[static::FIELD__OUTPUT] ?? null;
+    }
+    
+    /**
      * @deprecated
      * @return string
      */
     public function getOptionMask(): string
     {
         return $this->config[static::OPTION__MASK] ?? '*';
+    }
+
+    /**
+     * @param $messages
+     */
+    protected function output($messages)
+    {
+        $this->config[static::FIELD__OUTPUT]->writeln($messages);
     }
 
     /**

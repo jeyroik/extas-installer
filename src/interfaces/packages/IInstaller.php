@@ -24,6 +24,7 @@ interface IInstaller extends IItem
     public const FIELD__FLUSH = 'flush';
     public const FIELD__SETTINGS = 'installer_settings';
     public const FIELD__INPUT = 'input';
+    public const FIELD__OUTPUT = 'output';
 
     /**
      * @deprecated
@@ -41,19 +42,17 @@ interface IInstaller extends IItem
 
     /**
      * @param $packageConfigs array
-     * @param $output OutputInterface
      *
-     * @return OutputInterface
+     * @return bool
      */
-    public function installMany(array $packageConfigs, OutputInterface $output): OutputInterface;
+    public function installMany(array $packageConfigs): bool;
 
     /**
      * @param $packageConfig array
-     * @param $output OutputInterface
      *
      * @return bool|string
      */
-    public function install(array $packageConfig, OutputInterface $output);
+    public function install(array $packageConfig);
 
     /**
      * @return array
@@ -77,6 +76,11 @@ interface IInstaller extends IItem
      * @return null|InputInterface
      */
     public function getInput(): ?InputInterface;
+
+    /**
+     * @return OutputInterface|null
+     */
+    public function getOutput(): ?OutputInterface;
 
     /**
      * @param $subject string
