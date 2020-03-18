@@ -4,10 +4,8 @@ use PHPUnit\Framework\TestCase;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\PluginRepository;
 use extas\interfaces\repositories\IRepository;
-use extas\components\SystemContainer;
-use extas\interfaces\stages\IStageRepository;
-use extas\components\stages\Stage;
 use extas\components\packages\Exporter;
+use Dotenv\Dotenv;
 
 /**
  * Class ExporterTest
@@ -22,11 +20,6 @@ class ExporterTest extends TestCase
     protected ?IRepository $pluginRepo = null;
 
     /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $stageRepo = null;
-
-    /**
      * @var string
      */
     protected string $currentStage = '';
@@ -34,7 +27,7 @@ class ExporterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->pluginRepo = new class extends PluginRepository {
             public function reload()
@@ -42,7 +35,6 @@ class ExporterTest extends TestCase
                 parent::$stagesWithPlugins = [];
             }
         };
-        $this->stageRepo = SystemContainer::getItem(IStageRepository::class);
     }
 
     /**
@@ -50,15 +42,12 @@ class ExporterTest extends TestCase
      */
     public function tearDown(): void
     {
-        if ($this->currentStage) {
-            $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
-            $this->stageRepo->delete([Stage::FIELD__NAME => $this->currentStage]);
-        }
+        $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
     }
 
     public function testExportEntities()
     {
-        $this->createPluginAndStage('.test');
+        $this->createPlugin('.test');
 
         $exporter = new Exporter();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
@@ -67,7 +56,7 @@ class ExporterTest extends TestCase
 
     public function testExport()
     {
-        $this->createPluginAndStage('');
+        $this->createPlugin('');
 
         $exporter = new Exporter();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
@@ -79,7 +68,7 @@ class ExporterTest extends TestCase
      *
      * @param string $stageSuffix
      */
-    protected function createPluginAndStage(string $stageSuffix)
+    protected function createPlugin(string $stageSuffix)
     {
         $this->pluginRepo->reload();
         $plugin = new Plugin([
@@ -87,12 +76,5 @@ class ExporterTest extends TestCase
             Plugin::FIELD__STAGE => 'extas.export' . $stageSuffix
         ]);
         $this->pluginRepo->create($plugin);
-
-        $stage = new Stage([
-            Stage::FIELD__NAME => 'extas.export' . $stageSuffix,
-            Stage::FIELD__HAS_PLUGINS => true
-        ]);
-        $this->stageRepo->create($stage);
-        $this->currentStage = 'extas.export' . $stageSuffix;
     }
 }

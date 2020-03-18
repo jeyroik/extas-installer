@@ -2,6 +2,7 @@
 
 use \PHPUnit\Framework\TestCase;
 use extas\components\packages\Crawler;
+use Dotenv\Dotenv;
 
 /**
  * Class CrawlerTest
@@ -13,7 +14,7 @@ class CrawlerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
     }
 
