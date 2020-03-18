@@ -274,6 +274,8 @@ class Installer extends Item implements IInstaller
     }
 
     /**
+     * todo: mv install stages to a plugin
+     *
      * @return $this
      */
     protected function installStages()
@@ -289,7 +291,7 @@ class Installer extends Item implements IInstaller
                 $this->output([
                     '<info>Installing stage "' . $stage[IStage::FIELD__NAME] . '"...</info>'
                 ]);
-                $stage[IStage::FIELD__HAS_PLUGINS] = false;
+
                 $stageObj = new Stage($stage);
                 $this->stageRepo->create($stageObj);
                 $this->output([
@@ -367,40 +369,10 @@ class Installer extends Item implements IInstaller
             $pluginObj = new Plugin($plugin);
             $this->pluginRepo->create($pluginObj);
 
-            $stage = $this->stageRepo->one([IStage::FIELD__NAME => $pluginObj->getStage()]);
-            $this->updateStageHasPlugins($stage, $pluginObj);
             $this->output([
                 '<info>Plugin installed.</info>'
             ]);
         }
-    }
-
-    /**
-     * @param $stage IStage|null
-     * @param $pluginObj IPlugin
-     *
-     * @return $this
-     */
-    protected function updateStageHasPlugins(?IStage $stage, IPlugin $pluginObj)
-    {
-        if (!$stage) {
-            $stage = new Stage([
-                IStage::FIELD__NAME => $pluginObj->getStage(),
-                IStage::FIELD__HAS_PLUGINS => true
-            ]);
-            $this->stageRepo->create($stage);
-            $this->output([
-                'Created new stage <info>"' . $pluginObj->getStage() . '"</info>.'
-            ]);
-        } else {
-            $stage->setHasPlugins(true);
-            $this->stageRepo->update($stage);
-            $this->output([
-                'Update stage <info>"' . $stage->getName() . '"</info> has plugins attribute.'
-            ]);
-        }
-
-        return $this;
     }
 
     /**
