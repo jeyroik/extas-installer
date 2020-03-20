@@ -34,7 +34,7 @@
 1. Создаём класс сущности.
 
 ```php
-namepsace my\extas;
+namespace my\extas;
 
 use extas\components\Item;
 
@@ -58,11 +58,11 @@ use extas\components\repositories\Repository;
 
 class MyRepository extends Repository
 {
-    protected $pk = 'name';
-    protected $itemClass = My::class;
-    protected $scope = 'my';
-    protected $name = 'names';
-    protected $idAs = '';
+    protected string $pk = 'name';
+    protected string $itemClass = My::class;
+    protected string $scope = 'my';
+    protected string $name = 'names';
+    protected string $idAs = '';
 }
 ```
 
@@ -113,7 +113,7 @@ example.json
 
 6. Устанавливаем плагин.
 
-`# vendor/bin/extas i -p example.json -s 1 -r 1`
+`# vendor/bin/extas i`
 
 Должны увидеть что-то вроде
 
