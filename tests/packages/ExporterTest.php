@@ -19,11 +19,6 @@ class ExporterTest extends TestCase
      */
     protected ?IRepository $pluginRepo = null;
 
-    /**
-     * @var string
-     */
-    protected string $currentStage = '';
-
     protected function setUp(): void
     {
         parent::setUp();
