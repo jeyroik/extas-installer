@@ -7,6 +7,7 @@ use extas\components\plugins\Plugin;
 use extas\components\Plugins;
 use extas\interfaces\repositories\IRepository;
 use extas\components\packages\Installer;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Class InstallerTest
@@ -43,7 +44,9 @@ class InstallerTest extends TestCase
 
     public function testInstall()
     {
-        $installer = new Installer();
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
         $installer->install([
             'name' => 'test',
             'plugins' => [
@@ -61,7 +64,9 @@ class InstallerTest extends TestCase
 
     public function testInstallMany()
     {
-        $installer = new Installer();
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
         $installer->installMany([
             [
                 'name' => 'test',
