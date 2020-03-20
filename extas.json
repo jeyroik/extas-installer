@@ -4,6 +4,10 @@
     {
       "class": "extas\\components\\plugins\\PluginExportPackageClasses",
       "stage": "extas.export"
+    },
+    {
+      "class": "extass\\components\\plugins\\PluginInstallStages",
+      "stage": "extas.install"
     }
   ]
 }

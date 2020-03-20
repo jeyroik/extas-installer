@@ -23,7 +23,6 @@ class InstallCommand extends DefaultCommand
     protected const OPTION__PACKAGE_NAME = 'package';
     protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
     protected const OPTION__REWRITE_CONTAINER = 'rewrite-container';
-    protected const OPTION__FLUSH = 'flush';
     protected const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
 
     protected string $commandTitle = 'Extas installer';
@@ -64,12 +63,6 @@ class InstallCommand extends DefaultCommand
                 InputOption::VALUE_OPTIONAL,
                 'Allow rewrite entity if it exists',
                 true
-            )->addOption(
-                static::OPTION__FLUSH,
-                'f',
-                InputOption::VALUE_OPTIONAL,
-                'Flush data before install',
-                ''
             )
         ;
 
@@ -78,6 +71,7 @@ class InstallCommand extends DefaultCommand
 
     /**
      * @return $this
+     * @throws
      */
     protected function configureByPlugins()
     {
@@ -86,7 +80,6 @@ class InstallCommand extends DefaultCommand
             static::OPTION__REWRITE_GENERATED_DATA => true,
             static::OPTION__REWRITE_CONTAINER => true,
             static::OPTION__REWRITE_ENTITY_ALLOW => true,
-            static::OPTION__FLUSH => true
         ];
 
         /**
@@ -116,7 +109,6 @@ class InstallCommand extends DefaultCommand
     {
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
         $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
-        $flush = $input->getOption(static::OPTION__FLUSH);
         $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
 
         $serviceCrawler = new Crawler([
@@ -128,7 +120,6 @@ class InstallCommand extends DefaultCommand
 
         $serviceInstaller = new Installer([
             Installer::FIELD__REWRITE => $rewriteContainer,
-            Installer::FIELD__FLUSH => $flush,
             Installer::FIELD__INPUT => $input,
             Installer::FIELD__OUTPUT => $output
         ]);

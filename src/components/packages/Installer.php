@@ -10,11 +10,8 @@ use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\installers\IInstallerStagePackage;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\plugins\IPluginRepository;
-use extas\interfaces\stages\IStage;
-use extas\interfaces\stages\IStageRepository;
 use extas\components\extensions\Extension;
 use extas\components\plugins\Plugin;
-use extas\components\stages\Stage;
 use extas\components\Item;
 use extas\components\SystemContainer;
 
@@ -36,16 +33,7 @@ class Installer extends Item implements IInstaller
     protected bool $many = false;
 
     protected ?IPluginRepository $pluginRepo = null;
-    protected ?IStageRepository $stageRepo = null;
     protected ?OutputInterface $output = null;
-
-    /**
-     * @deprecated
-     * @var array
-     */
-    protected array $systemSettings = [
-        self::FIELD__FLUSH
-    ];
 
     /**
      * Installer constructor.
@@ -56,7 +44,6 @@ class Installer extends Item implements IInstaller
         parent::__construct($config);
 
         $this->pluginRepo = SystemContainer::getItem(IPluginRepository::class);
-        $this->stageRepo = SystemContainer::getItem(IStageRepository::class);
     }
 
     /**
@@ -123,7 +110,6 @@ class Installer extends Item implements IInstaller
      */
     public function install(array $packageConfig)
     {
-        $this->prepareSettings($packageConfig);
         $this->packageConfig = $packageConfig;
 
         $packageName = $packageConfig['name'] ?? sha1(json_encode($packageConfig)) . ' (missed "name" section)';
@@ -133,7 +119,6 @@ class Installer extends Item implements IInstaller
         ]);
 
         $this->applySettings()
-            ->installStages()
             ->installPlugins()
             ->installExtensions();
 
@@ -189,8 +174,7 @@ class Installer extends Item implements IInstaller
 
         $this->applySettings()
             ->uninstallExtensions()
-            ->uninstallPlugins()
-            ->uninstallStages();
+            ->uninstallPlugins();
 
         return true;
     }
@@ -253,70 +237,6 @@ class Installer extends Item implements IInstaller
         }
         $interfaceInstaller->updateLockFile($this->getOutput());
         $this->packageConfig = [];
-
-        return $this;
-    }
-
-    /**
-     * @param $packageConfig
-     */
-    protected function prepareSettings(array &$packageConfig)
-    {
-        $settings = $packageConfig[static::FIELD__SETTINGS] ?? [];
-
-        foreach ($this->systemSettings as $setting) {
-            if ($this->config[$setting]) {
-                $settings[$setting] = $this->config[$setting];
-            }
-        }
-
-        $packageConfig[static::FIELD__SETTINGS] = $settings;
-    }
-
-    /**
-     * todo: mv install stages to a plugin
-     *
-     * @return $this
-     */
-    protected function installStages()
-    {
-        $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
-
-        foreach ($stages as $stage) {
-            if ($this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]])) {
-                $this->output([
-                    'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is already installed.'
-                ]);
-            } else {
-                $this->output([
-                    '<info>Installing stage "' . $stage[IStage::FIELD__NAME] . '"...</info>'
-                ]);
-
-                $stageObj = new Stage($stage);
-                $this->stageRepo->create($stageObj);
-                $this->output([
-                    '<info>Stage installed.</info>'
-                ]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function uninstallStages()
-    {
-        $stages = $this->packageConfig[static::FIELD__STAGES] ?? [];
-
-        foreach ($stages as $stage) {
-            $stage = $this->stageRepo->one([IStage::FIELD__NAME => $stage[IStage::FIELD__NAME]]);
-            $this->stageRepo->delete($stage);
-            $this->output([
-                'Stage <info>"' . $stage[IStage::FIELD__NAME] . '"</info> is uninstalled.'
-            ]);
-        }
 
         return $this;
     }
@@ -471,18 +391,6 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @deprecated
-     * @param $subject
-     *
-     * @return bool
-     */
-    public function isMasked($subject): bool
-    {
-        return (strpos($subject, $this->getOptionMask()) !== false)
-            || ($this->getOptionMask() == static::OPTION__MASK__ANY);
-    }
-
-    /**
      * @return null|InputInterface
      */
     public function getInput(): ?InputInterface
@@ -496,15 +404,6 @@ class Installer extends Item implements IInstaller
     public function getOutput(): ?OutputInterface
     {
         return $this->config[static::FIELD__OUTPUT] ?? null;
-    }
-    
-    /**
-     * @deprecated
-     * @return string
-     */
-    public function getOptionMask(): string
-    {
-        return $this->config[static::OPTION__MASK] ?? '*';
     }
 
     /**

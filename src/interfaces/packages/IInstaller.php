@@ -15,27 +15,14 @@ interface IInstaller extends IItem
 {
     public const SUBJECT = 'extas.installer';
 
-    public const FIELD__STAGES = 'stages';
     public const FIELD__PLUGINS = 'plugins';
     public const FIELD__EXTENSIONS = 'extensions';
     public const FIELD__NAME = 'name';
     public const FIELD__SCHEMA = 'schema';
     public const FIELD__REWRITE = 'rewrite';
-    public const FIELD__FLUSH = 'flush';
     public const FIELD__SETTINGS = 'installer_settings';
     public const FIELD__INPUT = 'input';
     public const FIELD__OUTPUT = 'output';
-
-    /**
-     * @deprecated
-     */
-    public const OPTION__MASK = 'mask';
-    public const OPTION__MASK__ANY = '*';
-
-    /**
-     * @todo mv to player package
-     */
-    public const DIRECTIVE__GENERATE = '@directive.generate()';
 
     public const STAGE__INSTALL = 'extas.install';
     public const STAGE__UNINSTALL = 'extas.uninstall';
@@ -81,11 +68,4 @@ interface IInstaller extends IItem
      * @return OutputInterface|null
      */
     public function getOutput(): ?OutputInterface;
-
-    /**
-     * @param $subject string
-     *
-     * @return bool
-     */
-    public function isMasked($subject): bool;
 }
