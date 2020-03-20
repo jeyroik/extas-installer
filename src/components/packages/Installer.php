@@ -118,8 +118,7 @@ class Installer extends Item implements IInstaller
             'Package "' . $packageName. '" is installing...',
         ]);
 
-        $this->applySettings()
-            ->installPlugins()
+        $this->installPlugins()
             ->installExtensions();
 
         if (!$this->many) {
@@ -172,8 +171,7 @@ class Installer extends Item implements IInstaller
             }
         }
 
-        $this->applySettings()
-            ->uninstallExtensions()
+        $this->uninstallExtensions()
             ->uninstallPlugins();
 
         return true;
@@ -206,20 +204,6 @@ class Installer extends Item implements IInstaller
     public function getPackageConfig(): array
     {
         return $this->packageConfig;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function applySettings()
-    {
-        foreach ($this->packageConfig[static::FIELD__SETTINGS] as $setting => $options) {
-            foreach ($this->getPluginsByStage('extas.install.setting.' . $setting) as $plugin) {
-                $plugin($this, $this->getOutput(), $options);
-            }
-        }
-
-        return $this;
     }
 
     /**
