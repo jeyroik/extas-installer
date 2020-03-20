@@ -4,7 +4,7 @@
   "require": {
     "symfony/finder": "5.*",
     "symfony/console": "5.*",
-    "jeyroik/extas-foundation": "3.*"
+    "jeyroik/extas-base": "1.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
