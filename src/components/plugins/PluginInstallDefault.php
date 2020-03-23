@@ -37,6 +37,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     /**
      * @param $installer IInstaller
      * @param $output OutputInterface
+     * @throws \Exception
      */
     public function __invoke($installer, $output)
     {
@@ -46,6 +47,11 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
          * @var $repo IRepository
          */
         $repo = SystemContainer::getItem($this->selfRepositoryClass);
+
+        if (!$repo || is_string($repo)) {
+            throw new \Exception('Can not find repository "' . $this->selfRepositoryClass . '"');
+        }
+
         $items = $this->getItemsByOptions($installer, $output);
         empty($items) && $items = $serviceConfig[$this->selfSection] ?? [];
 
@@ -99,6 +105,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
      * @param array $item
      *
      * @return bool
+     * @throws
      */
     protected function operateItemByOptions($installer, $output, $item)
     {
@@ -125,6 +132,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
      * @param OutputInterface $output
      *
      * @return array
+     * @throws
      */
     protected function getItemsByOptions($installer, $output)
     {
