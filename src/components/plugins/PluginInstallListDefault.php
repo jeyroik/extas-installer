@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class PluginInstallListDefault
  *
+ * @deprecated
  * @package extas\components\plugins
  * @author jeyroik@gmail.com
  */
