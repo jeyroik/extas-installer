@@ -56,6 +56,7 @@ class InstallerTest extends TestCase
                 ]
             ]
         ]);
+        $this->pluginRepo->reload();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         foreach(Plugins::byStage('test.install.stage') as $plugin) {
             $plugin();
@@ -78,6 +79,7 @@ class InstallerTest extends TestCase
                 ]
             ]
         ]);
+        $this->pluginRepo->reload();
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         foreach(Plugins::byStage('test.install.stage') as $plugin) {
             $plugin();
