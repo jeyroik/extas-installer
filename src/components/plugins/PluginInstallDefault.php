@@ -1,13 +1,17 @@
 <?php
 namespace extas\components\plugins;
 
+use extas\components\packages\entities\Entity;
 use extas\components\packages\installers\InstallerOptions;
+use extas\components\packages\PackageEntity;
 use extas\interfaces\IHasClass;
 use extas\interfaces\IItem;
+use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\packages\installers\IInstallerStageItems;
+use extas\interfaces\packages\IPackageEntityRepository;
 use extas\interfaces\plugins\IPluginInstallDefault;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
@@ -33,6 +37,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     protected string $selfItemClass = '';
 
     protected bool $isRewriteAllowed = true;
+    protected array $packageConfig = [];
 
     /**
      * @param $installer IInstaller
@@ -41,7 +46,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
      */
     public function __invoke($installer, $output)
     {
-        $serviceConfig = $installer->getPackageConfig();
+        $this->packageConfig = $installer->getPackageConfig();
 
         /**
          * @var $repo IRepository
@@ -53,7 +58,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
         }
 
         $items = $this->getItemsByOptions($installer, $output);
-        empty($items) && $items = $serviceConfig[$this->selfSection] ?? [];
+        empty($items) && $items = $this->packageConfig[$this->selfSection] ?? [];
 
         foreach ($items as $item) {
             $operated = $this->operateItemByOptions($installer, $output, $item);
@@ -62,9 +67,9 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
                 continue;
             }
 
-            $uid = $this->getUidValue($item, $serviceConfig);
+            $uid = $this->getUidValue($item, $this->packageConfig);
 
-            if ($existed = $this->findItem($item, $serviceConfig, $repo)) {
+            if ($existed = $this->findItem($item, $repo)) {
                 $theSame = true;
                 foreach ($item as $field => $value) {
                     if (isset($existed[$field]) && ($existed[$field] != $value)) {
@@ -72,7 +77,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
                         $existed[$field] = $value;
                     }
                 }
-                if (!$theSame && $this->isRewriteAllow($serviceConfig)) {
+                if (!$theSame && $this->isRewriteAllow($this->packageConfig)) {
                     $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
                 } else {
                     $this->alreadyInstalled($uid, $this->selfName, $output);
@@ -87,14 +92,13 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
 
     /**
      * @param array $item
-     * @param array $serviceConfig
      * @param IRepository $repo
      *
      * @return IItem|null
      */
-    protected function findItem($item, $serviceConfig, $repo): ?IItem
+    protected function findItem($item, $repo): ?IItem
     {
-        $uid = $this->getUidValue($item, $serviceConfig);
+        $uid = $this->getUidValue($item, $this->packageConfig);
 
         return $repo->one([$this->selfUID => $uid]);
     }
@@ -184,6 +188,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
         $itemObj = new $itemClass($item);
         $repo->$method($itemObj);
         $this->installed($uid, $this->selfName, $output, $method);
+        $this->installPackageEntity($item);
     }
 
     /**
@@ -245,5 +250,47 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     public function getPluginUidField(): string
     {
         return $this->selfUID;
+    }
+
+    /**
+     * @param array $item
+     */
+    protected function installPackageEntity(array $item): void
+    {
+        $packageEntity = new PackageEntity([
+            PackageEntity::FIELD__PACKAGE => $this->packageConfig['name'] ?? 'unknown',
+            PackageEntity::FIELD__ENTITY => $this->selfSection,
+            PackageEntity::FIELD__QUERY => $this->getPackageEntityQuery($item)
+        ]);
+
+        /**
+         * @var $repo IPackageEntityRepository
+         */
+        $repo = SystemContainer::getItem(IPackageEntityRepository::class);
+        $repo->create($packageEntity);
+
+        /**
+         * @var $entityRepo IEntityRepository
+         */
+        $entityRepo = SystemContainer::getItem(IEntityRepository::class);
+        $entity = $entityRepo->one([Entity::FIELD__NAME => $this->selfSection]);
+        if (!$entity) {
+            $entity = new Entity([
+                Entity::FIELD__NAME => $this->selfSection,
+                Entity::FIELD__CLASS => $this->selfRepositoryClass
+            ]);
+            $entityRepo->create($entity);
+        }
+    }
+
+    /**
+     * @param array $item
+     * @return array
+     */
+    protected function getPackageEntityQuery(array $item)
+    {
+        return [
+            $this->selfUID => $this->getUidValue($item, $this->packageConfig)
+        ];
     }
 }

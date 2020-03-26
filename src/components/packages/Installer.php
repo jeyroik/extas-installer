@@ -134,50 +134,6 @@ class Installer extends Item implements IInstaller
     }
 
     /**
-     * @param $packagesConfigs array
-     *
-     * @return bool|string
-     */
-    public function uninstallMany(array $packagesConfigs)
-    {
-        $this->many = true;
-
-        foreach ($packagesConfigs as $packageConfig) {
-            $this->packageConfig = $packageConfig;
-            foreach ($this->getPluginsByStage(static::STAGE__UNINSTALL) as $plugin) {
-                $plugin($this, $this->getOutput());
-            }
-        }
-
-        foreach ($packagesConfigs as $packageConfig) {
-            $this->uninstall($packageConfig);
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $packageConfig array
-     *
-     * @return bool|string
-     */
-    public function uninstall(array $packageConfig)
-    {
-        $this->packageConfig = $packageConfig;
-
-        if (!$this->many) {
-            foreach ($this->getPluginsByStage(static::STAGE__UNINSTALL) as $plugin) {
-                $plugin($this, $this->getOutput());
-            }
-        }
-
-        $this->uninstallExtensions()
-            ->uninstallPlugins();
-
-        return true;
-    }
-
-    /**
      * @return array
      */
     public function getGeneratedData(): array

@@ -3,6 +3,7 @@ namespace extas\commands;
 
 use extas\components\packages\Installer;
 use extas\components\packages\Crawler;
+use extas\components\packages\UnInstaller;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,7 +17,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UninstallCommand extends DefaultCommand
 {
+    public const OPTION__PACKAGE = 'package-name';
+    public const OPTION__ENTITY = 'entity';
+
+
     const ARGUMENT__PATH = 'path';
+
+    const OPTION__ALL = 'all';
     const OPTION__MASK = 'mask';
 
     protected string $commandVersion = '1.0.0';
@@ -32,22 +39,25 @@ class UninstallCommand extends DefaultCommand
             ->setName('uninstall')
 
             // the short description shown while running "php bin/console list"
-            ->setDescription('Uninstall entities by extas-compatible package file')
+            ->setDescription('Uninstall extas packages and/or entities')
 
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp('This command allows you to uninstall entities by extas-compatible package file.')
-            ->addArgument(
-                static::ARGUMENT__PATH,
-                InputArgument::REQUIRED,
-                'Path to search packages'
+            ->addOption(
+                static::OPTION__PACKAGE,
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Package name for uninstall. Leave blank to uninstall all packages. ' .
+                'Example: "extas/installer"',
+                ''
             )
             ->addOption(
-                static::OPTION__MASK,
-                'm',
+                static::OPTION__ENTITY,
+                'e',
                 InputOption::VALUE_OPTIONAL,
-                'Mask for deleting (ex. plugins)',
-                '*'
+                'Entity name for uninstall. Leave blank to delete all entities. Example: plugins',
+                ''
             )
         ;
     }
@@ -58,10 +68,12 @@ class UninstallCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $serviceCrawler = new Crawler();
-        $configs = $serviceCrawler->crawlPackages($input->getArgument(static::ARGUMENT__PATH));
-
-        $serviceInstaller = new Installer(['mask' => $input->getOption(static::OPTION__MASK)]);
-        $serviceInstaller->uninstallMany($configs, $output);
+        $unInstaller = new UnInstaller([
+            UnInstaller::FIELD__PACKAGE => $input->getOption(static::OPTION__PACKAGE),
+            UnInstaller::FIELD__ENTITY => $input->getOption(static::OPTION__ENTITY),
+            UnInstaller::FIELD__INPUT => $input,
+            UnInstaller::FIELD__OUTPUT => $output
+        ]);
+        $unInstaller->uninstall();
     }
 }
