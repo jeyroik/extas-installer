@@ -18,6 +18,10 @@
     {
       "class": "extas\\components\\plugins\\PluginInstallStages",
       "stage": "extas.install"
+    },
+    {
+      "class": "extas\\components\\plugins\\repositories\\PluginUuidField",
+      "stage": "extas.package_entities.before.create"
     }
   ]
 }

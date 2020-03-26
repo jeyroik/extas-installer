@@ -239,24 +239,6 @@ class Installer extends Item implements IInstaller
     /**
      * @return $this
      */
-    protected function uninstallPlugins()
-    {
-        $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
-
-        foreach ($plugins as $plugin) {
-            $plugin = $this->pluginRepo->one([IPlugin::FIELD__CLASS => $plugin[IPlugin::FIELD__CLASS]]);
-            $this->pluginRepo->delete($plugin);
-            $this->output([
-                'Plugin <info>"' . $plugin[IPlugin::FIELD__CLASS] . '"</info> uninstalled.'
-            ]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
     protected function installExtensions()
     {
         /**
@@ -307,28 +289,6 @@ class Installer extends Item implements IInstaller
                 '<info>Extension installed.</info>'
             ]);
         }
-    }
-
-    /**
-     * @return $this
-     */
-    protected function uninstallExtensions()
-    {
-        /**
-         * @var $extensionRepo IExtensionRepository
-         */
-        $extensionRepo = SystemContainer::getItem(IExtensionRepository::class);
-        $extensions = $this->packageConfig[static::FIELD__EXTENSIONS] ?? [];
-
-        foreach ($extensions as $extension) {
-            $extensionObj = $extensionRepo->one([IExtension::FIELD__CLASS => $extension[IExtension::FIELD__CLASS]]);
-            $extensionRepo->delete($extensionObj);
-            $this->output([
-                'Extension <info>"' . $extension[IExtension::FIELD__CLASS] . '"</info> uninstalled.'
-            ]);
-        }
-
-        return $this;
     }
 
     /**

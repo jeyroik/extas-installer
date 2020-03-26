@@ -260,7 +260,8 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
         $packageEntity = new PackageEntity([
             PackageEntity::FIELD__PACKAGE => $this->packageConfig['name'] ?? 'unknown',
             PackageEntity::FIELD__ENTITY => $this->selfSection,
-            PackageEntity::FIELD__QUERY => $this->getPackageEntityQuery($item)
+            PackageEntity::FIELD__QUERY => $this->getPackageEntityQuery($item),
+            PackageEntity::FIELD__ID => '@uuid4'
         ]);
 
         /**
