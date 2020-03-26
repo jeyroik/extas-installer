@@ -37,6 +37,7 @@ class UninstallCommand extends DefaultCommand
         $this
             // the name of the command (the part after "bin/console")
             ->setName('uninstall')
+            ->setAliases(['u'])
 
             // the short description shown while running "php bin/console list"
             ->setDescription('Uninstall extas packages and/or entities')
