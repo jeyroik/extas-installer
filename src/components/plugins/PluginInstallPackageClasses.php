@@ -6,6 +6,7 @@ use extas\components\packages\PackageClassRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\packages\IPackageClass;
 use extas\interfaces\packages\IPackageClassRepository;
+use extas\interfaces\repositories\IRepository;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -38,5 +39,21 @@ class PluginInstallPackageClasses extends PluginInstallDefault
         $output->writeln([
             '<info>Classes lock-file updated</info>'
         ]);
+    }
+
+    /**
+     * @param string $uid
+     * @param OutputInterface $output
+     * @param array $item
+     * @param IRepository $repo
+     * @param string $method
+     */
+    public function install($uid, $output, $item, $repo, $method = 'create')
+    {
+        $this->installing($uid, $this->selfName, $output);
+        $itemClass = $this->selfItemClass;
+        $itemObj = new $itemClass($item);
+        $repo->$method($itemObj);
+        $this->installed($uid, $this->selfName, $output, $method);
     }
 }

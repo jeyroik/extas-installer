@@ -166,6 +166,7 @@ class Installer extends Item implements IInstaller
      * @param $servicesConfigs
      *
      * @return $this
+     * @throws
      */
     protected function installInterfaces(array $servicesConfigs)
     {
