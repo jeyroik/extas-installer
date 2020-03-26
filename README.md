@@ -26,7 +26,7 @@
 ## Удаление сущностей
 
 - `# vendor/bin/extas uninstall` удалить все сущности во всех пакетах
-- `# vendor/bin/extas uninstall -p <package.name>` удалить все сущности из пакета `<package.name>`
+- `# vendor/bin/extas uninstall -p <package.name>` удалить все сущности из пакета `<package.name>`. Имя пакета можно найти в `extas.json` в поле `name`. Например, у текущего пакета имя `extas/installer`.
 - `# vendor/bin/extas uninstall -p <package1.name>,<package2.name>` удалить все сущности из пакетов `<package1.name>`, `<package2.name>`
 - `# vendor/bin/extas uninstall -e <entity.name>` удалить во всех пакетах сущность `<entity.name>`. В качестве имени сущности используется имя секции в `extas.json`.
 - `# vendor/bin/extas uninstall -p <package.name> -e <entity.name>` удалить сущность `<entity.anem>` из пакета `<package.name>`
