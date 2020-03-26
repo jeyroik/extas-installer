@@ -1,5 +1,15 @@
 {
   "name": "extas/installer",
+  "package_classes": [
+    {
+      "class": "extas\\components\\packages\\PackageEntityRepository",
+      "interface": "extas\\interfaces\\packages\\IPackageEntityRepository"
+    },
+    {
+      "class": "extas\\components\\packages\\entities\\EntityRepository",
+      "interface": "extas\\interfaces\\packages\\entities\\EntityRepository"
+    }
+  ],
   "plugins": [
     {
       "class": "extas\\components\\plugins\\PluginExportPackageClasses",
