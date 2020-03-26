@@ -278,7 +278,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
         if (!$entity) {
             $entity = new Entity([
                 Entity::FIELD__NAME => $this->selfSection,
-                Entity::FIELD__CLASS => $this->selfRepositoryClass
+                Entity::FIELD__CLASS => get_class(SystemContainer::getItem($this->selfRepositoryClass))
             ]);
             $entityRepo->create($entity);
         }
