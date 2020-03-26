@@ -35,7 +35,7 @@ class UnInstaller extends Item implements IUnInstaller
         foreach ($packageEntities as $packageEntity) {
             $entityName = $packageEntity->getEntity();
             if (!isset($entitiesByNames[$entityName])) {
-                $this->getOutput()->writeln(['<error>Unknown entity "' . $entityName . '"</error>']);
+                $this->output(['<error>Unknown entity "' . $entityName . '"</error>']);
                 continue;
             }
 
@@ -89,8 +89,10 @@ class UnInstaller extends Item implements IUnInstaller
      */
     protected function commitUninstall(array $query, string $entityName, IPackageEntity $packageEntity)
     {
-        array_unshift($query, '<info>Uninstalled "' . $entityName . '" described as:</info>');
-        $this->getOutput()->writeln($query);
+        $this->output(['<info>Uninstalled "' . $entityName . '" described as:</info>']);
+        foreach ($query as $field => $value) {
+            $this->output([$field . ' = ' . $value]);
+        }
 
         $stage = 'uninstalled.' . $packageEntity->getPackage();
         foreach ($this->getPluginsByStage($stage) as $plugin) {
@@ -198,6 +200,14 @@ class UnInstaller extends Item implements IUnInstaller
         } else {
             return ['*'];
         }
+    }
+
+    /**
+     * @param $messages
+     */
+    protected function output($messages)
+    {
+        $this->config[static::FIELD__OUTPUT]->writeln($messages);
     }
 
     /**
