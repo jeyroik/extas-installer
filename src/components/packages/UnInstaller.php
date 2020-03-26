@@ -20,6 +20,21 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UnInstaller extends Item implements IUnInstaller
 {
+    protected ?IPackageEntityRepository $packageEntityRepo = null;
+    protected ?IEntityRepository $entityRepo = null;
+
+    /**
+     * UnInstaller constructor.
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+
+        $this->packageEntityRepo = SystemContainer::getItem(IPackageEntityRepository::class);
+        $this->entityRepo = SystemContainer::getItem(IEntityRepository::class);
+    }
+
     /**
      * @return bool
      */
@@ -94,6 +109,8 @@ class UnInstaller extends Item implements IUnInstaller
             $this->output([$field . ' = ' . $value]);
         }
 
+        $this->packageEntityRepo->delete('', $packageEntity);
+
         $stage = 'uninstalled.' . $packageEntity->getPackage();
         foreach ($this->getPluginsByStage($stage) as $plugin) {
             $plugin($packageEntity);
@@ -142,11 +159,7 @@ class UnInstaller extends Item implements IUnInstaller
      */
     protected function getPackageEntities($query): array
     {
-        /**
-         * @var $repo IPackageEntityRepository
-         */
-        $repo = SystemContainer::getItem(IPackageEntityRepository::class);
-        return $repo->all($query);
+        return $this->packageEntityRepo->all($query);
     }
 
     /**
@@ -155,12 +168,10 @@ class UnInstaller extends Item implements IUnInstaller
     protected function getEntitiesByNames(): array
     {
         /**
-         * @var $entityRepo IEntityRepository
          * @var $entities IEntity[]
          * @var $entitiesByNames IEntity[]
          */
-        $entityRepo = SystemContainer::getItem(IEntityRepository::class);
-        $entities = $entityRepo->all([]);
+        $entities = $this->entityRepo->all([]);
         $entitiesByNames = [];
         foreach ($entities as $entity) {
             $entitiesByNames[$entity->getName()] = $entity;
