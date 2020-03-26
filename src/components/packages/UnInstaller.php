@@ -198,7 +198,7 @@ class UnInstaller extends Item implements IUnInstaller
             }
             return $names;
         } else {
-            return ['*'];
+            return [];
         }
     }
 
