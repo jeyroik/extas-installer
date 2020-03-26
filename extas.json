@@ -7,7 +7,7 @@
     },
     {
       "class": "extas\\components\\packages\\entities\\EntityRepository",
-      "interface": "extas\\interfaces\\packages\\entities\\EntityRepository"
+      "interface": "extas\\interfaces\\packages\\entities\\IEntityRepository"
     }
   ],
   "plugins": [
