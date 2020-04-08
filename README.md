@@ -1,3 +1,6 @@
+![tests](https://github.com/jeyroik/extas-installer/workflows/PHP%20Composer/badge.svg?branch=master&event=push)
+![codecov.io](https://codecov.io/gh/jeyroik/extas-installer/coverage.svg?branch=master)
+
 # Описание
 
 Данный пакет позволяет устаналивать совместимые с Extas'ом сущности.
