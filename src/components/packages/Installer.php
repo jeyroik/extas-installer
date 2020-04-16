@@ -213,35 +213,37 @@ class Installer extends Item implements IInstaller
                     IPlugin::FIELD__STAGE => $stage
                 ]);
             }
-        }
-
-        if (is_array($pluginClass)) {
-            foreach ($pluginClass as $class) {
-                $this->installPlugin([
-                    IPlugin::FIELD__CLASS => $class,
-                    IPlugin::FIELD__STAGE => $pluginStage
-                ]);
-            }
-        }
-
-        if ($this->pluginRepo->one([
-            IPlugin::FIELD__CLASS => $pluginClass,
-            IPlugin::FIELD__STAGE => $pluginStage
-        ])) {
-            $this->output([
-                'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
-            ]);
         } else {
 
-            $this->output([
-                '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
-            ]);
-            $pluginObj = new Plugin($plugin);
-            $this->pluginRepo->create($pluginObj);
+            if (is_array($pluginClass)) {
+                foreach ($pluginClass as $class) {
+                    $this->installPlugin([
+                        IPlugin::FIELD__CLASS => $class,
+                        IPlugin::FIELD__STAGE => $pluginStage
+                    ]);
+                }
+            } else {
 
-            $this->output([
-                '<info>Plugin installed.</info>'
-            ]);
+                if ($this->pluginRepo->one([
+                    IPlugin::FIELD__CLASS => $pluginClass,
+                    IPlugin::FIELD__STAGE => $pluginStage
+                ])) {
+                    $this->output([
+                        'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
+                    ]);
+                } else {
+
+                    $this->output([
+                        '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
+                    ]);
+                    $pluginObj = new Plugin($plugin);
+                    $this->pluginRepo->create($pluginObj);
+
+                    $this->output([
+                        '<info>Plugin installed.</info>'
+                    ]);
+                }
+            }
         }
     }
 
