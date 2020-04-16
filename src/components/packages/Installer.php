@@ -190,16 +190,7 @@ class Installer extends Item implements IInstaller
         $plugins = $this->packageConfig[static::FIELD__PLUGINS] ?? [];
 
         foreach ($plugins as $plugin) {
-            $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
-
-            if (is_array($pluginStage)) {
-                foreach ($pluginStage as $stage) {
-                    $plugin[IPlugin::FIELD__STAGE] = $stage;
-                    $this->installPlugin($plugin);
-                }
-            } else {
-                $this->installPlugin($plugin);
-            }
+            $this->installPlugin($plugin);
         }
 
         return $this;
@@ -214,6 +205,24 @@ class Installer extends Item implements IInstaller
     {
         $pluginClass = $plugin[IPlugin::FIELD__CLASS] ?? '';
         $pluginStage = $plugin[IPlugin::FIELD__STAGE] ?? '';
+
+        if (is_array($pluginStage)) {
+            foreach ($pluginStage as $stage) {
+                $this->installPlugin([
+                    IPlugin::FIELD__CLASS => $pluginClass,
+                    IPlugin::FIELD__STAGE => $stage
+                ]);
+            }
+        }
+
+        if (is_array($pluginClass)) {
+            foreach ($pluginClass as $class) {
+                $this->installPlugin([
+                    IPlugin::FIELD__CLASS => $class,
+                    IPlugin::FIELD__STAGE => $pluginStage
+                ]);
+            }
+        }
 
         if ($this->pluginRepo->one([
             IPlugin::FIELD__CLASS => $pluginClass,

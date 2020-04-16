@@ -85,4 +85,87 @@ class InstallerTest extends TestCase
             $plugin();
         }
     }
+
+    public function testInstallOnePluginForMultipleStages()
+    {
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $installer->installMany([
+            [
+                'name' => 'test',
+                'plugins' => [
+                    [
+                        Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
+                        Plugin::FIELD__CLASS => \tests\TestPlugin::class
+                    ]
+                ]
+            ]
+        ]);
+        $this->pluginRepo->reload();
+
+        foreach(Plugins::byStage('test.install.stage') as $plugin) {
+            $this->assertEquals(\tests\TestPlugin::class, get_class($plugin));
+        }
+
+        foreach(Plugins::byStage('test2.install.stage') as $plugin) {
+            $this->assertEquals(\tests\TestPlugin::class, get_class($plugin));
+        }
+
+        $this->pluginRepo->delete([Plugin::FIELD__CLASS => \tests\TestPlugin::class]);
+    }
+
+    public function testInstallMultiplePluginForOneStage()
+    {
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $installer->installMany([
+            [
+                'name' => 'test',
+                'plugins' => [
+                    [
+                        Plugin::FIELD__STAGE => 'test.install.stage',
+                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class]
+                    ]
+                ]
+            ]
+        ]);
+        $this->pluginRepo->reload();
+
+        foreach(Plugins::byStage('test.install.stage') as $plugin) {
+            $this->assertTrue(in_array(get_class($plugin), [\tests\TestPlugin::class, \tests\Test2Plugin::class]));
+        }
+
+        $this->pluginRepo->delete([Plugin::FIELD__STAGE => 'test.install.stage']);
+    }
+
+    public function testInstallMultiplePluginForMultipleStages()
+    {
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $installer->installMany([
+            [
+                'name' => 'test',
+                'plugins' => [
+                    [
+                        Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
+                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class]
+                    ]
+                ]
+            ]
+        ]);
+        $this->pluginRepo->reload();
+
+        foreach(Plugins::byStage('test.install.stage') as $plugin) {
+            $this->assertTrue(in_array(get_class($plugin), [\tests\TestPlugin::class, \tests\Test2Plugin::class]));
+        }
+
+        foreach(Plugins::byStage('test2.install.stage') as $plugin) {
+            $this->assertTrue(in_array(get_class($plugin), [\tests\TestPlugin::class, \tests\Test2Plugin::class]));
+        }
+
+        $this->pluginRepo->delete([Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage']]);
+    }
 }
