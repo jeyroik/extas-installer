@@ -15,6 +15,7 @@ use extas\components\plugins\Plugin;
 use extas\components\Item;
 use extas\components\SystemContainer;
 
+use extas\interfaces\repositories\IRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -229,7 +230,8 @@ class Installer extends Item implements IInstaller
                     IPlugin::FIELD__STAGE => $pluginStage
                 ])) {
                     $this->output([
-                        'Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
+                        '[NOTICE] Plugin <info>"' . $pluginClass . '" [ ' . $pluginStage
+                        . ' ]</info> is already installed.'
                     ]);
                 } else {
 
@@ -240,7 +242,7 @@ class Installer extends Item implements IInstaller
                     $this->pluginRepo->create($pluginObj);
 
                     $this->output([
-                        '<info>Plugin installed.</info>'
+                        '[CREATE] <info>Plugin installed.</info>'
                     ]);
                 }
             }
@@ -283,21 +285,44 @@ class Installer extends Item implements IInstaller
         $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
-        if ($extensionRepo->one([
+        if ($existed = $extensionRepo->one([
             IExtension::FIELD__CLASS => $extClass,
             IExtension::FIELD__SUBJECT => $extSubject
         ])) {
             $this->output([
-                'Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
+                '[NOTICE] Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> is already installed.'
             ]);
+            $this->updateExtensionMethods($existed, $extension, $extensionRepo);
         } else {
             $this->output([
-                '<info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
+                '[INFO] <info>Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
             ]);
             $extensionObj = new Extension($extension);
             $extensionRepo->create($extensionObj);
             $this->output([
-                '<info>Extension installed.</info>'
+                '[CREATE] <info>Extension installed.</info>'
+            ]);
+        }
+    }
+
+    /**
+     * @param IExtension $existed
+     * @param array $extension
+     * @param IRepository $extensionRepo
+     */
+    protected function updateExtensionMethods(IExtension $existed, array $extension, IRepository $extensionRepo): void
+    {
+        if ($existed->getMethods() != $extension[IExtension::FIELD__METHODS]) {
+            $newMethods = array_diff($existed->getMethods(), $extension[IExtension::FIELD__METHODS]);
+            $existed->setMethods(array_merge($existed->getMethods(), $newMethods));
+
+            $extensionRepo->update($existed);
+
+            $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
+            $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
+
+            $this->output([
+                '[UPDATE] Extension <info>"' . $extClass . '" [ ' . $extSubject . ' ]</info> methods have been updated.'
             ]);
         }
     }

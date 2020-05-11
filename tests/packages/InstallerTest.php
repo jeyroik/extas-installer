@@ -1,5 +1,9 @@
 <?php
+namespace tests\packages;
 
+use extas\components\extensions\Extension;
+use extas\components\extensions\ExtensionRepository;
+use extas\interfaces\extensions\IExtension;
 use \PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 use extas\components\plugins\PluginRepository;
@@ -19,13 +23,15 @@ class InstallerTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $pluginRepo = null;
+    protected IRepository $pluginRepo;
+    protected IRepository $extRepo;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
+        $this->extRepo = new ExtensionRepository();
         $this->pluginRepo = new class extends PluginRepository {
             public function reload()
             {
@@ -40,6 +46,7 @@ class InstallerTest extends TestCase
     public function tearDown(): void
     {
         $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
+        $this->extRepo->delete([Extension::FIELD__CLASS => 'NotExistingClass']);
     }
 
     public function testInstall()
@@ -167,5 +174,35 @@ class InstallerTest extends TestCase
         }
 
         $this->pluginRepo->delete([Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage']]);
+    }
+
+    public function testExtensionMethodsUpdate()
+    {
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput()
+        ]);
+        $installer->install([
+            'name' => 'test',
+            'extensions' => [
+                [
+                    Extension::FIELD__CLASS => 'NotExistingClass',
+                    Extension::FIELD__SUBJECT => '*',
+                    Extension::FIELD__METHODS => ['test']
+                ],
+                [
+                    Extension::FIELD__CLASS => 'NotExistingClass',
+                    Extension::FIELD__SUBJECT => '*',
+                    Extension::FIELD__METHODS => ['test1']
+                ]
+            ]
+        ]);
+
+        /**
+         * @var IExtension[] $extensions
+         */
+        $extensions = $this->extRepo->all([Extension::FIELD__CLASS => 'NotExistingClass']);
+        $this->assertCount(1, $extensions);
+        $ext = array_shift($extensions);
+        $this->assertEquals(['test', 'test1'], $ext->getMethods());
     }
 }
