@@ -312,10 +312,10 @@ class Installer extends Item implements IInstaller
      */
     protected function updateExtensionMethods(IExtension $existed, array $extension, IRepository $extensionRepo): void
     {
-        if ($existed->getMethods() != $extension[IExtension::FIELD__METHODS]) {
-            $newMethods = array_diff($extension[IExtension::FIELD__METHODS], $existed->getMethods());
-            $existed->setMethods(array_merge($existed->getMethods(), $newMethods));
+        $newMethods = array_diff($extension[IExtension::FIELD__METHODS], $existed->getMethods());
 
+        if (!empty($newMethods)) {
+            $existed->setMethods(array_merge($existed->getMethods(), $newMethods));
             $extensionRepo->update($existed);
 
             $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
