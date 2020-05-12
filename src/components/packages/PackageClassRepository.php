@@ -14,11 +14,12 @@ use extas\interfaces\repositories\IRepository;
  */
 class PackageClassRepository extends Repository implements IRepository
 {
+    protected static array $data = [];
+    
     protected string $itemClass = PackageClass::class;
     protected string $scope = 'extas';
     protected string $pk = PackageClass::FIELD__INTERFACE_NAME;
     protected string $name = 'container_path_storage';
-    protected array $data = [];
     protected string $dsn = '/configs/container.json';
     protected string $dsnLock = '/configs/container.php';
 
@@ -38,7 +39,7 @@ class PackageClassRepository extends Repository implements IRepository
         $this->dsnLock = $envDsnLock ?: getenv('EXTAS__BASE_PATH') . $this->dsnLock;
 
         if (is_file($this->dsn)) {
-            $this->data = json_decode(file_get_contents($this->dsn), true);
+            self::$data = json_decode(file_get_contents($this->dsn), true);
         }
     }
 
@@ -51,7 +52,7 @@ class PackageClassRepository extends Repository implements IRepository
      */
     public function one($where, int $offset = 0, array $fields = [])
     {
-        foreach ($this->data as $item) {
+        foreach (self::$data as $item) {
             $equal = true;
             foreach ($where as $field => $value) {
                 if (!isset($item[$field])) {
@@ -85,7 +86,7 @@ class PackageClassRepository extends Repository implements IRepository
     {
         $items = [];
 
-        foreach ($this->data as $item) {
+        foreach (self::$data as $item) {
             $equal = true;
             foreach ($where as $field => $value) {
                 if (!isset($item[$field])) {
@@ -113,7 +114,7 @@ class PackageClassRepository extends Repository implements IRepository
      */
     public function create($item)
     {
-        $this->data[] = $item instanceof IItem ? $item->__toArray() : (array) $item;
+        self::$data[] = $item instanceof IItem ? $item->__toArray() : (array) $item;
         $this->commit();
 
         return true;
@@ -132,7 +133,7 @@ class PackageClassRepository extends Repository implements IRepository
 
         if (isset($byUid[$uid])) {
             $byUid[$uid] = $item->__toArray();
-            $this->data = array_values($byUid);
+            self::$data = array_values($byUid);
             $this->commit();
             return 1;
         }
@@ -162,7 +163,7 @@ class PackageClassRepository extends Repository implements IRepository
             }
         }
 
-        $this->data = array_values($byUID);
+        self::$data = array_values($byUID);
         $this->commit();
 
         return $deleted;
@@ -204,7 +205,7 @@ class PackageClassRepository extends Repository implements IRepository
      */
     public function commit(): bool
     {
-        file_put_contents($this->dsn, json_encode($this->data));
+        file_put_contents($this->dsn, json_encode(self::$data));
         return true;
     }
 
@@ -215,12 +216,12 @@ class PackageClassRepository extends Repository implements IRepository
     {
         $result = '<?php' . PHP_EOL . 'return [' . PHP_EOL;
 
-        foreach ($this->data as $index => $item) {
+        foreach (self::$data as $index => $item) {
             $result .= $item[IPackageClass::FIELD__INTERFACE_NAME] . '::class'
                 . ' => '
                 . $item[IPackageClass::FIELD__CLASS_NAME] . '::class';
 
-            if (isset($this->data[$index+1])) {
+            if (isset(self::$data[$index+1])) {
                 $result .= ',' . PHP_EOL;
             }
         }
@@ -258,6 +259,6 @@ class PackageClassRepository extends Repository implements IRepository
      */
     protected function getDataByUID()
     {
-        return array_column($this->data, null, $this->pk);
+        return array_column(self::$data, null, $this->pk);
     }
 }
