@@ -39,14 +39,14 @@ class PackageClassRepositoryTest extends TestCase
         $byClass = array_column($classes, null, PackageClass::FIELD__CLASS_NAME);
         $this->assertArrayHasKey('test', $byClass);
 
-        $class->setInterfaceName('is ok');
+        $class->setClassName('is ok');
         $repo->update($class);
-        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'test']);
-        $this->assertEquals('is ok', $class->getInterfaceName());
+        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'is ok']);
+        $this->assertNotEmpty($class);
 
-        $repo->delete([IPackageClass::FIELD__CLASS_NAME => 'test']);
+        $repo->delete([IPackageClass::FIELD__CLASS_NAME => 'is ok']);
 
-        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'test']);
+        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'is ok']);
         $this->assertEmpty($class);
     }
 }
