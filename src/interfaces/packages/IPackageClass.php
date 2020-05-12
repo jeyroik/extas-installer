@@ -19,12 +19,12 @@ interface IPackageClass extends IItem
     /**
      * @return string
      */
-    public function getInterfaceName(): string;
+    public function getInterface(): string;
 
     /**
      * @return string
      */
-    public function getClassName(): string;
+    public function getClass(): string;
 
     /**
      * @param string $interface
