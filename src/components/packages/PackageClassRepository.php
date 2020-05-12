@@ -149,16 +149,54 @@ class PackageClassRepository extends Repository implements IRepository
     public function delete($where, $item = null): int
     {
         $byUID = $this->getDataByUID();
-        $uid = $this->getItemUID($item);
+        $deleted = 0;
 
-        if (isset($byUID[$uid])) {
-            unset($byUID[$uid]);
-            $this->data = array_values($byUID);
-            $this->commit();
-            return 1;
+        if ($item) {
+            $this->deleteByUid($this->getItemUID($item), $byUID, $deleted);
+        } else {
+            foreach ($byUID as $uid => $data) {
+                if ($this->isItemFitToWhere($where, $data)) {
+                    unset($byUID[$uid]);
+                    $deleted++;
+                }
+            }
         }
 
-        return 0;
+        $this->data = array_values($byUID);
+        $this->commit();
+
+        return $deleted;
+    }
+
+    /**
+     * @param array $where
+     * @param array $data
+     * @return bool
+     */
+    protected function isItemFitToWhere(array $where, array $data): bool
+    {
+        $fit = true;
+        foreach ($where as $field => $value) {
+            if (!isset($data[$field]) || ($data[$field] != $value)) {
+                $fit = false;
+                break;
+            }
+        }
+
+        return $fit;
+    }
+
+    /**
+     * @param string $uid
+     * @param array $byUID
+     * @param int $deleted
+     */
+    protected function deleteByUid(string $uid, array &$byUID, int &$deleted): void
+    {
+        if (isset($byUID[$uid])) {
+            unset($byUID[$uid]);
+            $deleted = 1;
+        }
     }
 
     /**
