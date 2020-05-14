@@ -7,7 +7,7 @@ class PluginInstallNothing extends PluginInstallDefault
 {
     protected string $selfSection = 'nothings';
     protected string $selfName = 'nothing';
-    protected string $selfRepositoryClass = NothingRepository::class;
+    protected string $selfRepositoryClass = INothingRepository::class;
     protected string $selfUID = 'name';
     protected string $selfItemClass = Nothing::class;
 }

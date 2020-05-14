@@ -4,11 +4,13 @@ namespace tests\packages;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\extensions\TSnuffExtensions;
+use extas\components\packages\entities\EntityRepository;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\packages\PackageEntityRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\extensions\IExtension;
+use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\packages\IPackageEntityRepository;
 use \PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
@@ -19,6 +21,7 @@ use extas\interfaces\repositories\IRepository;
 use extas\components\packages\Installer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use tests\INothingRepository;
 use tests\InstallerOptionTest;
 use tests\NothingRepository;
 use tests\PluginInstallNothing;
@@ -56,8 +59,9 @@ class InstallerTest extends TestCase
         };
 
         $this->addReposForExt([
-            NothingRepository::class => NothingRepository::class,
-            IPackageEntityRepository::class => PackageEntityRepository::class
+            INothingRepository::class => NothingRepository::class,
+            IPackageEntityRepository::class => PackageEntityRepository::class,
+            IEntityRepository::class => EntityRepository::class
         ]);
     }
 

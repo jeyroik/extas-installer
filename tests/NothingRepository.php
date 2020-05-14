@@ -3,7 +3,7 @@ namespace tests;
 
 use extas\components\repositories\Repository;
 
-class NothingRepository extends Repository
+class NothingRepository extends Repository implements INothingRepository
 {
     protected string $name = 'nothing';
     protected string $scope = 'nothing';
