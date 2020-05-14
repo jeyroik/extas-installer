@@ -111,21 +111,21 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
      * @return bool
      * @throws
      */
-    protected function operateItemByOptions($installer, $output, $item)
+    protected function operateItemByOptions($installer, $output, $item): bool
     {
         $operated = false;
         foreach(InstallerOptions::byStage(static::STAGE__ITEM, $installer->getInput()) as $option) {
             /**
              * @var $option IHasClass
              */
-            $option->buildClassWithParameters([
+            $dispatcher = $option->buildClassWithParameters([
                 IInstallerStageItem::FIELD__INSTALLER => $installer,
                 IInstallerStageItem::FIELD__PLUGIN => $this,
                 IInstallerStageItem::FIELD__OUTPUT => $output,
                 IInstallerStageItem::FIELD__ITEM => $item
             ]);
 
-            $operated = $option();
+            $operated = $dispatcher();
         }
 
         return $operated;
