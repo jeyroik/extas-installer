@@ -77,6 +77,7 @@ class InstallerTest extends TestCase
         ]]);
         $this->extRepo->delete([Extension::FIELD__CLASS => 'NotExistingClass']);
         $this->optRepository->delete([InstallerOption::FIELD__NAME => 'test']);
+        $this->nothingRepo->delete(['title' => 'test']);
 
         $this->pluginRepo->reload();
     }
@@ -130,7 +131,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput(),
             Installer::FIELD__INPUT => new ArrayInput([
-                'test' => true
+                '--test' => true
             ], new InputDefinition([
                 new InputOption('test')
             ]))
@@ -148,12 +149,14 @@ class InstallerTest extends TestCase
             'name' => 'test',
             'nothings' => [
                 [
-                    "name" => "test",
-                    "value" => "is ok"
+                    'name' => 'test',
+                    'value' => 'is ok',
+                    'title' => 'test'
                 ],
                 [
-                    "name" => "test1",
-                    "value" => "is failed"
+                    'name' => 'test1',
+                    'value' => 'is failed',
+                    'title' => 'test'
                 ]
             ]
         ]);
