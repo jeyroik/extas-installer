@@ -24,7 +24,9 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use tests\INothingRepository;
+use tests\InstallerOptionItemsTest;
 use tests\InstallerOptionTest;
+use tests\Nothing;
 use tests\NothingRepository;
 use tests\PluginInstallNothing;
 
@@ -123,6 +125,52 @@ class InstallerTest extends TestCase
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         foreach(Plugins::byStage('test.install.stage') as $plugin) {
             $plugin();
+        }
+    }
+
+    public function testItemsByOptions()
+    {
+        $this->nothingRepo->create(new Nothing([
+            'name' => 'test',
+            'title' => 'test'
+        ]));
+        $this->nothingRepo->create(new Nothing([
+            'name' => 'test0',
+            'value' => 'is ok 0',
+            'title' => 'test'
+        ]));
+        $this->nothingRepo->create(new Nothing([
+            'name' => 'test1',
+            'value' => 'is ok 1',
+            'title' => 'test'
+        ]));
+        $installer = new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => new ArrayInput([
+                '--test' => true
+            ], new InputDefinition([
+                new InputOption('test')
+            ]))
+        ]);
+        $this->optRepository->create(new InstallerOption([
+            InstallerOption::FIELD__NAME => 'test',
+            InstallerOption::FIELD__CLASS => InstallerOptionItemsTest::class,
+            InstallerOption::FIELD__STAGE => 'items'
+        ]));
+        $this->pluginRepo->create(new Plugin([
+            Plugin::FIELD__STAGE => 'extas.install',
+            Plugin::FIELD__CLASS => PluginInstallNothing::class
+        ]));
+
+        $installer->install(['name' => 'test']);
+        $nothings = $this->nothingRepo->all([]);
+        $this->assertCount(4, $nothings);
+
+        foreach ($nothings as $nothing) {
+            $nothing['name'] == 'test' && $this->assertEquals('is ok', $nothing['value']);
+            $nothing['name'] == 'test0' && $this->assertEquals('is ok again', $nothing['value']);
+            $nothing['name'] == 'test1' && $this->assertEquals('is ok 1', $nothing['value']);
+            $nothing['name'] == 'test2' && $this->assertEquals('is ok again', $nothing['value']);
         }
     }
 
