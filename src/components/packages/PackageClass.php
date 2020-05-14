@@ -15,7 +15,7 @@ class PackageClass extends Item implements IPackageClass
     /**
      * @return string
      */
-    public function getInterfaceName(): string
+    public function getInterface(): string
     {
         return $this->config[static::FIELD__INTERFACE_NAME] ?? '';
     }
@@ -23,7 +23,7 @@ class PackageClass extends Item implements IPackageClass
     /**
      * @return string
      */
-    public function getClassName(): string
+    public function getClass(): string
     {
         return $this->config[static::FIELD__CLASS_NAME] ?? '';
     }
