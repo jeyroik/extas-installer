@@ -5,6 +5,7 @@ use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
+use extas\components\SystemContainer;
 use extas\interfaces\extensions\IExtension;
 use \PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
@@ -16,6 +17,8 @@ use extas\components\packages\Installer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use tests\InstallerOptionTest;
+use tests\NothingRepository;
+use tests\PluginInstallNothing;
 
 /**
  * Class InstallerTest
@@ -30,12 +33,14 @@ class InstallerTest extends TestCase
     protected IRepository $pluginRepo;
     protected IRepository $extRepo;
     protected IRepository $optRepository;
+    protected IRepository $nothingRepo;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
+        $this->nothingRepo = new NothingRepository();
         $this->optRepository = new InstallerOptionRepository();
         $this->extRepo = new ExtensionRepository();
         $this->pluginRepo = new class extends PluginRepository {
@@ -44,6 +49,8 @@ class InstallerTest extends TestCase
                 parent::$stagesWithPlugins = [];
             }
         };
+
+        SystemContainer::addItem(NothingRepository::class, NothingRepository::class);
     }
 
     /**
@@ -51,7 +58,9 @@ class InstallerTest extends TestCase
      */
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
+        $this->pluginRepo->delete([Plugin::FIELD__CLASS => [
+            'NotExistingClass', PluginInstallNothing::class
+        ]]);
         $this->extRepo->delete([Extension::FIELD__CLASS => 'NotExistingClass']);
         $this->optRepository->delete([InstallerOption::FIELD__NAME => 'test']);
     }
@@ -113,21 +122,29 @@ class InstallerTest extends TestCase
             InstallerOption::FIELD__CLASS => InstallerOptionTest::class,
             InstallerOption::FIELD__STAGE => 'item'
         ]));
+        $this->pluginRepo->create(new Plugin([
+            Plugin::FIELD__STAGE => 'extas.install',
+            Plugin::FIELD__CLASS => PluginInstallNothing::class
+        ]));
         $installer->install([
             'name' => 'test',
-            'plugins' => [
+            'nothings' => [
                 [
-                    Plugin::FIELD__STAGE => 'test.install.stage',
-                    Plugin::FIELD__CLASS => 'NotExistingClass'
+                    "name" => "test",
+                    "value" => "is ok"
+                ],
+                [
+                    "name" => "test1",
+                    "value" => "is failed"
                 ]
             ]
         ]);
-        $this->pluginRepo->reload();
-        $test = 'is ok';
-        foreach(Plugins::byStage('test.install.stage') as $plugin) {
-            $plugin($test);
-        }
-        $this->assertEquals('is ok', $test);
+        $nothings = $this->nothingRepo->all([]);
+        $this->assertCount(1, $nothings);
+
+        $nothing = array_shift($nothings);
+
+        $this->assertEquals('is ok', $nothing['value']);
     }
 
     public function testInstallOnePluginForMultipleStages()

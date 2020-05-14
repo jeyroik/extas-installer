@@ -1,12 +1,14 @@
 <?php
 namespace tests;
 
-use extas\components\plugins\Plugin;
+use extas\components\packages\installers\InstallerStageItem;
 
-class InstallerOptionTest extends Plugin
+class InstallerOptionTest extends InstallerStageItem
 {
     public function __invoke(): bool
     {
-        return true;
+        $item = $this->getItem();
+
+        return $item['value'] == 'is failed';
     }
 }
