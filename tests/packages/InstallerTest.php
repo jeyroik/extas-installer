@@ -3,10 +3,13 @@ namespace tests\packages;
 
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
+use extas\components\extensions\TSnuffExtensions;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
+use extas\components\packages\PackageEntityRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\extensions\IExtension;
+use extas\interfaces\packages\IPackageEntityRepository;
 use \PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 use extas\components\plugins\PluginRepository;
@@ -27,6 +30,8 @@ use tests\PluginInstallNothing;
  */
 class InstallerTest extends TestCase
 {
+    use TSnuffExtensions;
+
     /**
      * @var IRepository|null
      */
@@ -50,7 +55,10 @@ class InstallerTest extends TestCase
             }
         };
 
-        SystemContainer::addItem(NothingRepository::class, NothingRepository::class);
+        $this->addReposForExt([
+            NothingRepository::class => NothingRepository::class,
+            IPackageEntityRepository::class => PackageEntityRepository::class
+        ]);
     }
 
     /**
