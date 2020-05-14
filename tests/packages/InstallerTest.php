@@ -13,6 +13,7 @@ use extas\components\plugins\Plugin;
 use extas\components\Plugins;
 use extas\interfaces\repositories\IRepository;
 use extas\components\packages\Installer;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use tests\InstallerOptionTest;
 
@@ -102,7 +103,10 @@ class InstallerTest extends TestCase
     public function testInstallerOptionsApplying()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => new ArrayInput([
+                'test' => true
+            ])
         ]);
         $this->optRepository->create(new InstallerOption([
             InstallerOption::FIELD__NAME => 'test',
