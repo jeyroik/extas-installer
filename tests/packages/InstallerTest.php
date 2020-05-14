@@ -75,6 +75,8 @@ class InstallerTest extends TestCase
         ]]);
         $this->extRepo->delete([Extension::FIELD__CLASS => 'NotExistingClass']);
         $this->optRepository->delete([InstallerOption::FIELD__NAME => 'test']);
+
+        $this->pluginRepo->reload();
     }
 
     public function testInstall()
