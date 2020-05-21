@@ -8,6 +8,10 @@
     {
       "class": "extas\\components\\packages\\entities\\EntityRepository",
       "interface": "extas\\interfaces\\packages\\entities\\IEntityRepository"
+    },
+    {
+      "class": "extas\\components\\packages\\installers\\InstallerOptionRepository",
+      "interface": "extas\\interfaces\\packages\\installers\\IInstallerOptionRepository"
     }
   ],
   "plugins": [
