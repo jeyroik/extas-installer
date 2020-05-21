@@ -20,7 +20,10 @@
       "stage": "extas.export"
     },
     {
-      "class": "extas\\components\\plugins\\PluginInstallStages",
+      "class": [
+        "extas\\components\\plugins\\PluginInstallStages",
+        "extas\\components\\plugins\\PluginInstallOptionsForInstaller"
+      ],
       "stage": "extas.install"
     },
     {

@@ -72,7 +72,7 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             if ($existed = $this->findItem($item, $repo)) {
                 $theSame = true;
                 foreach ($item as $field => $value) {
-                    if (isset($existed[$field]) && ($existed[$field] != $value)) {
+                    if (!isset($existed[$field]) || ($existed[$field] != $value)) {
                         $theSame = false;
                         $existed[$field] = $value;
                     }
@@ -111,21 +111,21 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
      * @return bool
      * @throws
      */
-    protected function operateItemByOptions($installer, $output, $item)
+    protected function operateItemByOptions($installer, $output, $item): bool
     {
         $operated = false;
         foreach(InstallerOptions::byStage(static::STAGE__ITEM, $installer->getInput()) as $option) {
             /**
              * @var $option IHasClass
              */
-            $option->buildClassWithParameters([
+            $dispatcher = $option->buildClassWithParameters([
                 IInstallerStageItem::FIELD__INSTALLER => $installer,
                 IInstallerStageItem::FIELD__PLUGIN => $this,
                 IInstallerStageItem::FIELD__OUTPUT => $output,
                 IInstallerStageItem::FIELD__ITEM => $item
             ]);
 
-            $operated = $option();
+            $operated = $dispatcher();
         }
 
         return $operated;
@@ -145,13 +145,13 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             /**
              * @var $option IHasClass
              */
-            $option->buildClassWithParameters([
+            $dispatcher = $option->buildClassWithParameters([
                 IInstallerStageItems::FIELD__INSTALLER => $installer,
                 IInstallerStageItems::FIELD__PLUGIN => $this,
                 IInstallerStageItems::FIELD__OUTPUT => $output
             ]);
 
-            $items = $option();
+            $items = $dispatcher();
         }
 
         return $items;
