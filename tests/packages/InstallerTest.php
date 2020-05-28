@@ -89,7 +89,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->install([
+        $installer->installPackage([
             'name' => 'test',
             'plugins' => [
                 [
@@ -110,7 +110,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->installMany([
+        $installer->installPackages([
             [
                 'name' => 'test',
                 'plugins' => [
@@ -162,7 +162,7 @@ class InstallerTest extends TestCase
             Plugin::FIELD__CLASS => PluginInstallNothing::class
         ]));
 
-        $installer->install(['name' => 'test']);
+        $installer->installPackage(['name' => 'test']);
         $nothings = $this->nothingRepo->all([]);
         $this->assertCount(4, $nothings);
 
@@ -193,7 +193,7 @@ class InstallerTest extends TestCase
             Plugin::FIELD__STAGE => 'extas.install',
             Plugin::FIELD__CLASS => PluginInstallNothing::class
         ]));
-        $installer->install([
+        $installer->installPackage([
             'name' => 'test',
             'nothings' => [
                 [
@@ -221,7 +221,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->installMany([
+        $installer->installPackages([
             [
                 'name' => 'test',
                 'plugins' => [
@@ -250,7 +250,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->installMany([
+        $installer->installPackages([
             [
                 'name' => 'test',
                 'plugins' => [
@@ -275,7 +275,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->installMany([
+        $installer->installPackages([
             [
                 'name' => 'test',
                 'plugins' => [
@@ -304,7 +304,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->install([
+        $installer->installPackage([
             'name' => 'test',
             'extensions' => [
                 [

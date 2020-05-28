@@ -29,7 +29,7 @@ class InitCommand extends DefaultCommand
             ->setName('init')
             ->setAliases([])
             ->setDescription('Initialize environment for Extas. Run this command before extas install.')
-            ->setHelp('This command allows you prepare all necessary files and other data.')
+            ->setHelp('This command allows you prepare all necessary files and other data. Uses extas.json .')
             ->addOption(
                 static::OPTION__CONTAINER_REWRITE,
                 'r',

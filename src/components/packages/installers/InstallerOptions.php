@@ -13,6 +13,9 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class InstallerOptions
 {
+    public const STAGE__PACKAGE = 'package';
+    public const STAGE__ITEM = 'item';
+
     /**
      * @param string $stage
      * @param null|InputInterface $input
@@ -27,13 +30,12 @@ class InstallerOptions
          */
         $repo = new InstallerOptionRepository();
         $options = $repo->all([
+            IInstallerOption::FIELD__NAME => array_column($input->getOptions(), 'name'),
             IInstallerOption::FIELD__STAGE => $stage
         ]);
 
         foreach ($options as $option) {
-            if ($input->hasOption($option->getName())) {
-                yield $option;
-            }
+            yield $option;
         }
     }
 }

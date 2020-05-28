@@ -33,7 +33,7 @@ interface IPluginInstallDefault extends IPlugin
      * @param IRepository $repo
      * @param string $method
      */
-    public function install($uid, $output, $item, $repo, $method = 'create');
+    public function install($uid, $item, $repo, $method = 'create');
 
     /**
      * @param $items array
@@ -74,4 +74,9 @@ interface IPluginInstallDefault extends IPlugin
      * @return string
      */
     public function getPluginUidField(): string;
+
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput(): OutputInterface;
 }
