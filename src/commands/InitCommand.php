@@ -1,6 +1,8 @@
 <?php
 namespace extas\commands;
 
+use extas\components\packages\Crawler;
+use extas\components\packages\Initializer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,13 +46,22 @@ class InitCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
+        $this->prepareContainer($input, $output);
+        $serviceCrawler = new Crawler();
+        $configs = $serviceCrawler->crawlPackages(getcwd());
+        $initializer = new Initializer();
+        $initializer->run($configs, $output);
+    }
+
+    protected function prepareContainer(InputInterface $input, OutputInterface &$output)
+    {
         $containerRewrite = $input->getOption(static::OPTION__CONTAINER_REWRITE);
 
         $lockContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE_LOCK')
-            ?: getcwd() . '/configs/container.php';
+            ?: getcwd() . '/src/configs/container.php';
 
         $storageContainerPath = getenv('EXTAS__CONTAINER_PATH_STORAGE')
-            ?: getcwd() . '/configs/container.json';
+            ?: getcwd() . '/src/configs/container.json';
 
         if (!is_file($lockContainerPath) || $containerRewrite) {
             copy(
