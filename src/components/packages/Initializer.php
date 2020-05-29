@@ -118,9 +118,9 @@ class Initializer implements IInitializer
         $interfaceInstaller = new PluginInstallPackageClasses();
 
         foreach ($packages as $package) {
-            $interfaceInstaller($package, $this->output);
+            $interfaceInstaller($package, $this->getOutput());
         }
-        $interfaceInstaller->updateLockFile($this->output);
+        $interfaceInstaller->updateLockFile($this->getOutput());
 
         return $this;
     }
@@ -146,13 +146,5 @@ class Initializer implements IInitializer
         $installOn = $plugin[static::FIELD__INSTALL_ON] ?? static::ON__INITIALIZATION;
 
         return ($pluginStage == static::STAGE__INITIALIZATION) || ($installOn == static::ON__INITIALIZATION);
-    }
-
-    /**
-     * @param $messages
-     */
-    protected function output($messages)
-    {
-        $this->output->writeln($messages);
     }
 }
