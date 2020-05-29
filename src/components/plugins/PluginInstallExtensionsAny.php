@@ -2,7 +2,7 @@
 namespace extas\components\plugins;
 
 use extas\components\extensions\Extension;
-use extas\components\plugins\install\PluginInstallSection;
+use extas\components\plugins\install\PluginInstallSectionAny;
 
 /**
  * Class PluginInstallExtensions
@@ -10,7 +10,7 @@ use extas\components\plugins\install\PluginInstallSection;
  * @package extas\components\plugins
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInstallExtensions extends PluginInstallSection
+class PluginInstallExtensionsAny extends PluginInstallSectionAny
 {
     protected string $selfSection = 'extensions';
     protected string $selfName = 'extension';

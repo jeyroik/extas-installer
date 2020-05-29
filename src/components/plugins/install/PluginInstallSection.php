@@ -8,15 +8,12 @@ use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stagegs\IStageAfterInstallSection;
 use extas\interfaces\stages\IStageInstallItem;
-use extas\interfaces\stages\IStageInstallSection;
 
 /**
  * Class PluginInstallSection
- *
  * @package extas\components\plugins\install
- * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInstallSection extends Plugin implements IStageInstallSection
+abstract class PluginInstallSection extends Plugin
 {
     use THasInput;
     use THasOutput;
@@ -26,21 +23,6 @@ class PluginInstallSection extends Plugin implements IStageInstallSection
     protected string $selfRepositoryClass = '';
     protected string $selfUID = '';
     protected string $selfItemClass = '';
-
-    /**
-     * @param array $sectionData
-     * @param IInstaller $installer
-     * @throws \Exception
-     */
-    public function __invoke(array $sectionData, IInstaller &$installer): void
-    {
-        foreach ($sectionData as $item) {
-            $existed = $this->findExisted($item);
-            $this->installItem($item, $existed, $installer);
-        }
-
-        $this->runAfter($sectionData, $installer);
-    }
 
     /**
      * @param array $sectionData

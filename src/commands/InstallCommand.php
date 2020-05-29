@@ -4,6 +4,7 @@ namespace extas\commands;
 use extas\components\packages\Crawler;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\Plugins;
+use extas\interfaces\crawlers\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerOption;
 use extas\interfaces\stages\IStageInstall;
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class InstallCommand
+ *
+ * @method crawlerRepository()
  *
  * @package extas\commands
  * @author jeyroik@gmail.com
@@ -25,7 +28,6 @@ class InstallCommand extends DefaultCommand
     protected const OPTION__APPLICATION_NAME = 'application';
     protected const OPTION__PACKAGE_NAME = 'package';
     protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
-    protected const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
 
     protected string $commandTitle = 'Extas installer';
     protected string $commandVersion = '3.0.0';
@@ -59,12 +61,6 @@ class InstallCommand extends DefaultCommand
                 InputOption::VALUE_OPTIONAL,
                 'Rewrite generated data file',
                 false
-            )->addOption(
-                static::OPTION__REWRITE_ENTITY_ALLOW,
-                'e',
-                InputOption::VALUE_OPTIONAL,
-                'Allow rewrite entity if it exists',
-                true
             )
         ;
 
@@ -109,17 +105,22 @@ class InstallCommand extends DefaultCommand
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
         $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
-        $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
         $appName = $input->getOption(static::OPTION__APPLICATION_NAME);
 
         $output->writeln(['Searching packages...']);
 
-        $serviceCrawler = new Crawler([
-            Crawler::FIELD__SETTINGS => [
-                Crawler::SETTING__REWRITE_ALLOW => $rewriteAllow
-            ],
-        ]);
-        $packages = $serviceCrawler->crawlPackages(getcwd(), $packageName);
+        /**
+         * @var ICrawler[] $crawlers
+         */
+        $crawlers = $this->crawlerRepository()->all([]);
+
+        $packages = [];
+        foreach ($crawlers as $crawler) {
+            $crawler->setParametersValues([
+                'package_name' => $packageName
+            ]);
+            $packages = array_merge($packages, $crawler->dispatch(getcwd(), $input, $output));
+        }
 
         $output->writeln([
             'Found ' . count($packages) . ' packages.',
