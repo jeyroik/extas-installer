@@ -73,8 +73,13 @@ class Initializer implements IInitializer
         $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
         $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
+        $this->writeLn(['Installing extensions...']);
         $this->installExtensions();
+
+        $this->writeLn(['Installing plugins...']);
         $this->installPlugins();
+
+        $this->writeLn(['Installing other entities...']);
         $this->runInitStages($packageName, $package);
 
         $this->writeLn(['', 'Package "' . $packageName. '" initialized.']);
