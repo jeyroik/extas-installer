@@ -27,11 +27,11 @@ class PluginInit extends Plugin implements IStageInitialize
      */
     public function __invoke(string $packageName, array $package): void
     {
-        if (isset($package[IHasName::FIELD__NAME])) {
-            unset($package[IHasName::FIELD__NAME]);
-        }
-        
         foreach ($package as $sectionName => $sectionData) {
+            if (!is_array($sectionData)) {
+                $this->writeLn(['Skip section "' . $sectionName . '": content is not an array.']);
+                continue;
+            }
             $this->initSection($sectionName, $sectionData);
         }
     }
