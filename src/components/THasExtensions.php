@@ -30,7 +30,7 @@ trait THasExtensions
         $this->extensionRepo = new ExtensionRepository();
         $extensions = $this->config[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
-        $this->writeLn(['Found ' . count($extensions) . ' extensions.']);
+        $this->writeLn(['Found ' . count($extensions) . ' extension[s].']);
 
         foreach ($extensions as $extension) {
             $this->installExtension($extension);

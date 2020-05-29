@@ -107,7 +107,7 @@ class Initializer implements IInitializer
         $this->writeLn(['Installing extensions...']);
         $this->installExtensions();
 
-        $this->writeLn(['Installing plugins...']);
+        $this->writeLn(['', 'Installing plugins...']);
         $this->installPlugins();
     }
 
