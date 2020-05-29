@@ -20,7 +20,7 @@ class CrawlerTest extends TestCase
 
     public function testCrawlPackages()
     {
-        $key = __DIR__ . '/test.extas.json';
+        $key = 'test.crawler.test';
 
         $must = [
             $key => json_decode(file_get_contents(__DIR__ . '/test.extas.json'),true)
