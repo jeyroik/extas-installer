@@ -17,7 +17,6 @@ use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageInitialize;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Initializer
@@ -33,7 +32,6 @@ class Initializer implements IInitializer
     use THasOutput;
 
     protected array $packageConfig;
-    protected OutputInterface $output;
     protected IRepository $pluginRepo;
     protected IRepository $extRepo;
     protected array $config = [];
