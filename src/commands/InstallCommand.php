@@ -1,7 +1,6 @@
 <?php
 namespace extas\commands;
 
-use extas\components\packages\CrawlerExtas;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\Plugins;
 use extas\interfaces\crawlers\ICrawler;
@@ -75,8 +74,7 @@ class InstallCommand extends DefaultCommand
     {
         $reservedOptions = [
             static::OPTION__PACKAGE_NAME => true,
-            static::OPTION__REWRITE_GENERATED_DATA => true,
-            static::OPTION__REWRITE_ENTITY_ALLOW => true,
+            static::OPTION__REWRITE_GENERATED_DATA => true
         ];
 
         /**
