@@ -58,7 +58,15 @@ class Initializer implements IInitializer
         $this->installInterfaces($packages);
 
         foreach ($packages as $packageName => $package) {
-            $this->initPackage($packageName, $package);
+            $this->writeLn(['', 'Initializing package "' . $packageName. '" core entities...', '']);
+            $this->initCoreEntities($packageName, $package);
+            $this->writeLn(['', 'Package "' . $packageName. '" core entities initialized.', '']);
+        }
+
+        foreach ($packages as $packageName => $package) {
+            $this->writeLn(['', 'Initializing package "' . $packageName. '" secondary entities...', '']);
+            $this->initSecondaryEntities($packageName, $package);
+            $this->writeLn(['', 'Package "' . $packageName. '" secondary entities initialized.', '']);
         }
     }
 
@@ -66,10 +74,17 @@ class Initializer implements IInitializer
      * @param string $packageName
      * @param array $package
      */
-    protected function initPackage(string $packageName, array $package): void
+    protected function initSecondaryEntities(string $packageName, array $package): void
     {
-        $this->writeLn(['', 'Initializing package "' . $packageName. '"...', '']);
+        $this->runInitStages($packageName, $package);
+    }
 
+    /**
+     * @param string $packageName
+     * @param array $package
+     */
+    protected function initCoreEntities(string $packageName, array $package): void
+    {
         $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
         $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
@@ -78,11 +93,6 @@ class Initializer implements IInitializer
 
         $this->writeLn(['Installing plugins...']);
         $this->installPlugins();
-
-        $this->writeLn(['Installing other entities...']);
-        $this->runInitStages($packageName, $package);
-
-        $this->writeLn(['', 'Package "' . $packageName. '" initialized.']);
     }
 
     /**
