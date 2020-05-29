@@ -28,7 +28,7 @@ trait THasExtensions
     public function installExtensions()
     {
         $this->extensionRepo = new ExtensionRepository();
-        $extensions = $this->package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
+        $extensions = $this->config[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
         $this->writeLn(['Found ' . count($extensions) . ' extensions.']);
 
