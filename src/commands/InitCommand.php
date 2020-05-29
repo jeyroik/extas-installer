@@ -94,7 +94,7 @@ class InitCommand extends DefaultCommand
                 $lockContainerPath
             );
             $output->writeln([
-                '<info>Copied container lock file.</info>'
+                '<info>Copied container lock file to ' . $lockContainerPath . '.</info>'
             ]);
         } else {
             $output->writeln([
@@ -109,7 +109,7 @@ class InitCommand extends DefaultCommand
                 $storageContainerPath
             );
             $output->writeln([
-                '<info>Copied container storage file.</info>'
+                '<info>Copied container storage file to ' . $storageContainerPath . '.</info>'
             ]);
         } else {
             $output->writeln([
