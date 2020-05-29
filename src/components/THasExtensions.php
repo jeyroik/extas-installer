@@ -13,6 +13,7 @@ use extas\interfaces\repositories\IRepository;
  *
  * @property array $config
  * @method isAllowInstallExtension(array $extension): bool
+ * @method writeLn(array $messages)
  *
  * @package extas\components
  * @author jeyroik <jeyroik@gmail.com>
@@ -20,7 +21,6 @@ use extas\interfaces\repositories\IRepository;
 trait THasExtensions
 {
     protected IRepository $extensionRepo;
-    protected array $installExtensionMessages = [];
 
     /**
      * @return $this
@@ -70,7 +70,7 @@ trait THasExtensions
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
         if (!$existed) {
-            $this->outputInstallExtension([
+            $this->writeLn([
                 '<info>INFO: Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
             ]);
             if (isset($extension[IInitializer::FIELD__INSTALL_ON])) {
@@ -78,7 +78,7 @@ trait THasExtensions
             }
             $extensionObj = new Extension($extension);
             $this->extensionRepo->create($extensionObj);
-            $this->outputInstallExtension(['<info>CREATE: Extension installed.</info>']);
+            $this->writeLn(['<info>CREATE: Extension installed.</info>']);
         }
     }
 
@@ -94,7 +94,7 @@ trait THasExtensions
             IExtension::FIELD__CLASS => $class,
             IExtension::FIELD__SUBJECT => $subject
         ])) {
-            $this->outputInstallExtension([
+            $this->writeLn([
                 '<info>NOTICE: Extension "' . $class . '" [ ' . $subject . ' ]</info> is already installed.'
             ]);
             $this->updateExtensionMethods($existed, $extension);
@@ -139,20 +139,9 @@ trait THasExtensions
             $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
             $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
-            $this->outputInstallExtension([
+            $this->writeLn([
                 '<info>UPDATE: Extension "' . $extClass . '" [ ' . $extSubject . ' ]</info> methods have been updated.'
             ]);
         }
-    }
-
-    /**
-     * @param array $messages
-     * @return $this
-     */
-    protected function outputInstallExtension(array $messages)
-    {
-        $this->installExtensionMessages = array_merge($this->installExtensionMessages, $messages);
-
-        return $this;
     }
 }

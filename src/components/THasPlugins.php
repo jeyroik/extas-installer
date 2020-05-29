@@ -13,6 +13,7 @@ use extas\interfaces\repositories\IRepository;
  *
  * @property array $config
  * @method isAllowInstallPlugin(array $plugin): bool
+ * @method writeLn(array $messages)
  *
  * @package extas\components
  * @author jeyroik <jeyroik@gmail.com>
@@ -20,7 +21,6 @@ use extas\interfaces\repositories\IRepository;
 trait THasPlugins
 {
     protected IRepository $pluginRepo;
-    protected array $installPluginMessages = [];
 
     /**
      * @return $this
@@ -90,7 +90,7 @@ trait THasPlugins
             IPlugin::FIELD__CLASS => $pluginClass,
             IPlugin::FIELD__STAGE => $pluginStage
         ])) {
-            $this->outputInstallPlugin([
+            $this->writeLn([
                 '<info>NOTICE: Plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
             ]);
         } else {
@@ -106,7 +106,7 @@ trait THasPlugins
     protected function createPlugin(string $pluginStage, string $pluginClass, array $plugin): void
     {
         try {
-            $this->outputInstallPlugin([
+            $this->writeLn([
                 '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
             ]);
 
@@ -117,9 +117,9 @@ trait THasPlugins
             $pluginObj = new Plugin($plugin);
             $this->pluginRepo->create($pluginObj);
 
-            $this->outputInstallPlugin(['<info>[ CREATE ] Plugin installed.</info>']);
+            $this->writeLn(['<info>[ CREATE ] Plugin installed.</info>']);
         } catch (\Exception $e) {
-            $this->outputInstallPlugin([
+            $this->writeLn([
                 '<error>ERROR:</error> Can not install Plugin',
                 '<error>Plugin class "' . $pluginClass . '"</error>',
                 '<error>Plugin Stage "' . $pluginStage . '"</error>',
@@ -146,16 +146,5 @@ trait THasPlugins
         }
 
         return false;
-    }
-
-    /**
-     * @param array $messages
-     * @return $this
-     */
-    protected function outputInstallPlugin(array $messages)
-    {
-        $this->installPluginMessages = array_merge($this->installPluginMessages, $messages);
-
-        return $this;
     }
 }
