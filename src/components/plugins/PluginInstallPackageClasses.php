@@ -42,7 +42,7 @@ class PluginInstallPackageClasses
          */
         $this->repo = new PackageClassRepository();
         $this->output = $output;
-        $interfaces = $package[$this->selfSection];
+        $interfaces = $package[$this->selfSection] ?? [];
 
         foreach ($interfaces as $interface) {
             $name = $interface[IPackageClass::FIELD__INTERFACE_NAME];
