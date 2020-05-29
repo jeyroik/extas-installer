@@ -30,6 +30,8 @@ trait THasPlugins
         $this->pluginRepo = new PluginRepository();
         $plugins = $this->config[IHasPlugins::FIELD__PLUGINS] ?? [];
 
+        $this->writeLn(['Found ' . count($plugins) . ' plugins.']);
+
         foreach ($plugins as $plugin) {
             $this->installPlugin($plugin);
         }

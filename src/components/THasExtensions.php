@@ -86,8 +86,6 @@ trait THasExtensions
             $extensionObj = new Extension($extension);
             $this->extensionRepo->create($extensionObj);
             $this->writeLn(['<info>CREATE: Extension installed.</info>']);
-        } else {
-            $this->writeLn(['<info>Extension "'.$extension[IExtension::FIELD__CLASS].'" is already installed.</info>']);
         }
     }
 

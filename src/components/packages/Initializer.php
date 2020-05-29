@@ -58,16 +58,32 @@ class Initializer implements IInitializer
         $this->installInterfaces($packages);
 
         foreach ($packages as $packageName => $package) {
-            $this->writeLn(['', 'Initializing package "' . $packageName. '" core entities...', '']);
+            $this->msgInit($packageName, 'core.init');
             $this->initCoreEntities($packageName, $package);
-            $this->writeLn(['', 'Package "' . $packageName. '" core entities initialized.', '']);
+            $this->msgInit($packageName, 'core.initialized');
         }
 
         foreach ($packages as $packageName => $package) {
-            $this->writeLn(['', 'Initializing package "' . $packageName. '" secondary entities...', '']);
+            $this->msgInit($packageName, 'secondary.init');
             $this->initSecondaryEntities($packageName, $package);
-            $this->writeLn(['', 'Package "' . $packageName. '" secondary entities initialized.', '']);
+            $this->msgInit($packageName, 'secondary.initialized');
         }
+    }
+
+    /**
+     * @param string $packageName
+     * @param string $msg
+     */
+    protected function msgInit(string $packageName, string $msg): void
+    {
+        $messages = [
+            'core.init' => 'Initializing package "' . $packageName. '" core entities...',
+            'core.initialized' => 'Package "' . $packageName. '" core entities initialized.',
+            'secondary.init' => 'Initializing package "' . $packageName. '" secondary entities...',
+            'secondary.initialized' => 'Package "' . $packageName. '" secondary entities initialized.'
+        ];
+
+        $this->writeLn(['', '<comment>' . $messages[$msg] . '</comment>', '']);
     }
 
     /**
