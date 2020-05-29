@@ -1,7 +1,7 @@
 <?php
 namespace extas\commands;
 
-use extas\components\packages\Crawler;
+use extas\components\packages\CrawlerExtas;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\Plugins;
 use extas\interfaces\crawlers\ICrawler;
@@ -116,9 +116,7 @@ class InstallCommand extends DefaultCommand
 
         $packages = [];
         foreach ($crawlers as $crawler) {
-            $crawler->setParametersValues([
-                'package_name' => $packageName
-            ]);
+            $crawler->setParametersValues(['package_name' => $packageName]);
             $packages = array_merge($packages, $crawler->dispatch(getcwd(), $input, $output));
         }
 

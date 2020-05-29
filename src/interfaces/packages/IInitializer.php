@@ -2,6 +2,8 @@
 namespace extas\interfaces\packages;
 
 use extas\interfaces\IHasExtensions;
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
 use extas\interfaces\IHasPlugins;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -11,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\interfaces\packages
  * @author jeyroik@gmail.com
  */
-interface IInitializer extends IHasPlugins, IHasExtensions
+interface IInitializer extends IHasPlugins, IHasExtensions, IHasInput, IHasOutput
 {
     public const FIELD__PACKAGE_NAME = 'name';
     public const FIELD__INSTALL_ON = 'install_on';
@@ -22,8 +24,13 @@ interface IInitializer extends IHasPlugins, IHasExtensions
     public const STAGE__INITIALIZATION = 'extas.init';
 
     /**
-     * @param array $packages
-     * @param OutputInterface $output
+     * IInitializer constructor.
+     * @param array $config
      */
-    public function run(array $packages, OutputInterface $output): void;
+    public function __construct(array $config);
+
+    /**
+     * @param array $packages
+     */
+    public function run(array $packages): void;
 }

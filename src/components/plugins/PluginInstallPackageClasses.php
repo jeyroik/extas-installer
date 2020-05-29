@@ -6,7 +6,7 @@ use extas\components\packages\PackageClass;
 use extas\components\packages\PackageClassRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\IHasClass;
-use extas\interfaces\packages\ICrawler;
+use extas\interfaces\packages\ICrawlerExtas;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\packages\installers\IInstallerStageItems;

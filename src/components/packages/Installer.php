@@ -35,22 +35,21 @@ class Installer extends Item implements IInstaller
      */
     public function installPackages(array $packages): bool
     {
-        foreach ($packages as $package) {
-            $this->installPackage($package);
+        foreach ($packages as $packageName => $package) {
+            $this->installPackage($packageName, $package);
         }
 
         return true;
     }
 
     /**
-     * @param $package array
-     * @return bool|string
+     * @param string $packageName
+     * @param array $package
+     * @return bool
      */
-    public function installPackage(array $package)
+    public function installPackage(string $packageName, array $package): bool
     {
         $this->package = $package;
-
-        $packageName = $package['name'] ?? ' Missed "name" section';
         $this->output(['', 'Installing package "' . $packageName. '"...']);
 
         $operated = $this->operatePackageByOptions($package);

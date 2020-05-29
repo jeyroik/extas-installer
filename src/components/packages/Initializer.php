@@ -2,15 +2,21 @@
 namespace extas\components\packages;
 
 use extas\components\extensions\ExtensionRepository;
+use extas\components\Plugins;
 use extas\components\plugins\PluginInstallPackageClasses;
 use extas\components\plugins\PluginRepository;
 use extas\components\THasExtensions;
+use extas\components\THasInput;
+use extas\components\THasOutput;
 use extas\components\THasPlugins;
 use extas\interfaces\IHasExtensions;
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
 use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\repositories\IRepository;
+use extas\interfaces\stages\IStageInitialize;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -23,6 +29,8 @@ class Initializer implements IInitializer
 {
     use THasPlugins;
     use THasExtensions;
+    use THasInput;
+    use THasOutput;
 
     protected array $packageConfig;
     protected OutputInterface $output;
@@ -31,38 +39,72 @@ class Initializer implements IInitializer
     protected array $config = [];
 
     /**
-     * @param array $packages
-     * @param OutputInterface $output
+     * Initializer constructor.
+     * @param array $config
      */
-    public function run(array $packages, OutputInterface $output): void
+    public function __construct(array $config)
     {
-        $this->output = $output;
+        $this->config = $config;
+    }
+
+    /**
+     * @param array $packages
+     */
+    public function run(array $packages): void
+    {
         $this->pluginRepo = new PluginRepository();
         $this->extRepo = new ExtensionRepository();
 
         $this->installInterfaces($packages);
 
-        foreach ($packages as $package) {
-            $this->initPackage($package);
+        foreach ($packages as $packageName => $package) {
+            $this->initPackage($packageName, $package);
         }
     }
 
     /**
+     * @param string $packageName
      * @param array $package
      */
-    protected function initPackage(array $package): void
+    protected function initPackage(string $packageName, array $package): void
     {
-        $packageName = $package[static::FIELD__PACKAGE_NAME] ?? 'Missed name';
-        $this->output([
-            '',
-            'Package "' . $packageName. '" is initializing...',
-        ]);
+        $this->writeLn(['', 'Initializing package "' . $packageName. '"...']);
 
         $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
         $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
-        $this->installPlugins();
         $this->installExtensions();
+        $this->installPlugins();
+        $this->runInitStages($packageName, $package);
+
+        $this->writeLn(['', 'Package "' . $packageName. '" initialized.']);
+    }
+
+    /**
+     * @param string $packageName
+     * @param array $package
+     */
+    protected function runInitStages(string $packageName, array $package): void
+    {
+        $pluginConfig = [
+            IHasInput::FIELD__INPUT => $this->getInput(),
+            IHasOutput::FIELD__OUTPUT => $this->getOutput()
+        ];
+
+        $stage = IStageInitialize::NAME . '.' . $packageName;
+        foreach (Plugins::byStage($stage, $this, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageInitialize $plugin
+             */
+            $plugin($packageName, $package);
+        }
+
+        foreach (Plugins::byStage(IStageInitialize::NAME, $this, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageInitialize $plugin
+             */
+            $plugin($packageName, $package);
+        }
     }
 
     /**

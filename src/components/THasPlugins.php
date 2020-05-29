@@ -4,6 +4,7 @@ namespace extas\components;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\PluginRepository;
 use extas\interfaces\IHasPlugins;
+use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\repositories\IRepository;
 
@@ -108,6 +109,11 @@ trait THasPlugins
             $this->outputInstallPlugin([
                 '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
             ]);
+
+            if (isset($plugin[IInitializer::FIELD__INSTALL_ON])) {
+                unset($plugin[IInitializer::FIELD__INSTALL_ON]);
+            }
+
             $pluginObj = new Plugin($plugin);
             $this->pluginRepo->create($pluginObj);
 

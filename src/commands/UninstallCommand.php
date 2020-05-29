@@ -2,7 +2,7 @@
 namespace extas\commands;
 
 use extas\components\packages\Installer;
-use extas\components\packages\Crawler;
+use extas\components\packages\CrawlerExtas;
 use extas\components\packages\UnInstaller;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

@@ -29,11 +29,11 @@ interface IInstaller extends IItem, IHasPlugins, IHasExtensions, IHasInput, IHas
     public function installPackages(array $packages): bool;
 
     /**
-     * @param $package array
-     *
-     * @return bool|string
+     * @param string $packageName
+     * @param array $package
+     * @return bool
      */
-    public function installPackage(array $package);
+    public function installPackage(string $packageName, array $package): bool;
 
     /**
      * @return array

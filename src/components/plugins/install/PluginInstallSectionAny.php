@@ -26,4 +26,9 @@ class PluginInstallSectionAny extends PluginInstallSection implements IStageInst
 
         $this->runAfter($sectionData, $installer);
     }
+
+    protected function isAllowInstallItem(): bool
+    {
+
+    }
 }

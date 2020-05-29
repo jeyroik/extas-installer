@@ -5,6 +5,7 @@ use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\IHasExtensions;
+use extas\interfaces\packages\IInitializer;
 use extas\interfaces\repositories\IRepository;
 
 /**
@@ -54,17 +55,31 @@ trait THasExtensions
         }
 
         $existed = $this->updateExisted($extClass, $extSubject, $extension);
+        $this->createExtension($extension, $existed);
+
+        return true;
+    }
+
+    /**
+     * @param array $extension
+     * @param IExtension|null $existed
+     */
+    protected function createExtension(array $extension, ?IExtension $existed): void
+    {
+        $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
+        $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
         if (!$existed) {
             $this->outputInstallExtension([
                 '<info>INFO: Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
             ]);
+            if (isset($extension[IInitializer::FIELD__INSTALL_ON])) {
+                unset($extension[IInitializer::FIELD__INSTALL_ON]);
+            }
             $extensionObj = new Extension($extension);
             $this->extensionRepo->create($extensionObj);
             $this->outputInstallExtension(['<info>CREATE: Extension installed.</info>']);
         }
-
-        return true;
     }
 
     /**

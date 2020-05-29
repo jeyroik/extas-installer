@@ -5,6 +5,7 @@ use extas\components\packages\installers\InstallerOptions;
 use extas\components\plugins\Plugin;
 use extas\components\THasClass;
 use extas\components\THasInput;
+use extas\components\THasItemData;
 use extas\components\THasName;
 use extas\components\THasOutput;
 use extas\interfaces\IHasClass;
@@ -31,6 +32,7 @@ class PluginInstallItem extends Plugin implements IStageInstallItem
     use THasOutput;
     use THasClass;
     use THasName;
+    use THasItemData;
 
     /**
      * @param array $item
@@ -52,37 +54,6 @@ class PluginInstallItem extends Plugin implements IStageInstallItem
                 ? $this->createOrUpdateItem($item, 'update', $repo, $installer)
                 : $this->createOrUpdateItem($item, 'create', $repo, $installer);
         }
-    }
-
-    /**
-     * @return IRepository
-     * @throws \Exception
-     */
-    public function getRepository(): IRepository
-    {
-        $repoName = $this->config[static::FIELD__REPOSITORY] ?? '';
-
-        try {
-            return $this->$repoName();
-        } catch (\Exception $e) {
-            throw new \Exception('Missed item repo ' . $repoName);
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function getUid(): string
-    {
-        return $this->config[static::FIELD__UID] ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getSection(): string
-    {
-        return $this->config[static::FIELD__SECTION] ?? '';
     }
 
     /**

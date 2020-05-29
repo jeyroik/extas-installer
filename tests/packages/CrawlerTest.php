@@ -1,8 +1,12 @@
 <?php
+namespace tests\packages;
 
+use extas\components\crawlers\Crawler;
+use extas\interfaces\samples\parameters\ISampleParameter;
 use \PHPUnit\Framework\TestCase;
-use extas\components\packages\Crawler;
+use extas\components\packages\CrawlerExtas;
 use Dotenv\Dotenv;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * Class CrawlerTest
@@ -21,16 +25,25 @@ class CrawlerTest extends TestCase
     public function testCrawlPackages()
     {
         $key = __DIR__ . '/test.extas.json';
+        $params = [
+            'package_name' => [
+                ISampleParameter::FIELD__NAME => 'package_name',
+                ISampleParameter::FIELD__VALUE => 'test.extas.json'
+            ]
+        ];
 
         $must = [
             $key => json_decode(file_get_contents(__DIR__ . '/test.extas.json'),true)
         ];
-        $must[$key][Crawler::FIELD__SETTINGS] = 'test.settings';
-        $must[$key][Crawler::FIELD__WORKING_DIRECTORY] = __DIR__;
+        $must[$key][CrawlerExtas::FIELD__SETTINGS] = $params;
+        $must[$key][CrawlerExtas::FIELD__WORKING_DIRECTORY] = __DIR__;
 
-        $crawler = new Crawler([
-            Crawler::FIELD__SETTINGS => 'test.settings'
+        $crawler = new CrawlerExtas([
+            CrawlerExtas::FIELD__CRAWLER => new Crawler([Crawler::FIELD__PARAMETERS => $params]),
+            CrawlerExtas::FIELD__INPUT => null,
+            CrawlerExtas::FIELD__OUTPUT => new NullOutput(),
+            CrawlerExtas::FIELD__PATH => getcwd() . '/tests'
         ]);
-        $this->assertEquals($must, $crawler->crawlPackages(__DIR__, 'test.extas.json'));
+        $this->assertEquals($must, $crawler());
     }
 }
