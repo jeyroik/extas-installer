@@ -38,7 +38,8 @@ class Crawler extends Item implements ICrawler
             } catch (\Exception $e) {
                 continue;
             }
-            $extasPackages[$file->getRealPath()] = $config;
+            $packageName = $config['name'] ?? $file->getRealPath();
+            $extasPackages[$packageName] = $config;
         }
 
         foreach ($this->getPluginsByStage(static::STAGE__CRAWL) as $plugin) {
