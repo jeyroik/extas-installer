@@ -30,6 +30,8 @@ trait THasExtensions
         $this->extensionRepo = new ExtensionRepository();
         $extensions = $this->package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
+        $this->writeLn(['Found ' . count($extensions) . ' extensions.']);
+
         foreach ($extensions as $extension) {
             $this->installExtension($extension);
         }
@@ -49,6 +51,8 @@ trait THasExtensions
             ]);
             return false;
         }
+
+        $this->writeLn(['Installing extension "' . $extension[IExtension::FIELD__CLASS] . '"...']);
 
         $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
