@@ -5,6 +5,7 @@ use extas\components\plugins\Plugin;
 use extas\components\THasInput;
 use extas\components\THasOutput;
 use extas\interfaces\IHasInput;
+use extas\interfaces\IHasName;
 use extas\interfaces\IHasOutput;
 use extas\interfaces\stages\IStageInitialize;
 use extas\interfaces\stages\IStageInitializeSection;
@@ -26,6 +27,10 @@ class PluginInit extends Plugin implements IStageInitialize
      */
     public function __invoke(string $packageName, array $package): void
     {
+        if (isset($package[IHasName::FIELD__NAME])) {
+            unset($package[IHasName::FIELD__NAME]);
+        }
+        
         foreach ($package as $sectionName => $sectionData) {
             $this->initSection($sectionName, $sectionData);
         }
