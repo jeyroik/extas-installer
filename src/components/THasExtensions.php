@@ -44,6 +44,9 @@ trait THasExtensions
     protected function installExtension(array $extension): bool
     {
         if (!$this->isAllowInstallExtension($extension)) {
+            $this->writeLn([
+                '<comment>Skipp extension "' . $extension[IExtension::FIELD__CLASS] . '" due to stage mismatch</comment>'
+            ]);
             return false;
         }
 
@@ -79,6 +82,8 @@ trait THasExtensions
             $extensionObj = new Extension($extension);
             $this->extensionRepo->create($extensionObj);
             $this->writeLn(['<info>CREATE: Extension installed.</info>']);
+        } else {
+            $this->writeLn(['<info>Extension "'.$extension[IExtension::FIELD__CLASS].'" is already installed.</info>']);
         }
     }
 
