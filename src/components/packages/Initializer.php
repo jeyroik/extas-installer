@@ -68,7 +68,7 @@ class Initializer implements IInitializer
      */
     protected function initPackage(string $packageName, array $package): void
     {
-        $this->writeLn(['', 'Initializing package "' . $packageName. '"...']);
+        $this->writeLn(['', 'Initializing package "' . $packageName. '"...', '']);
 
         $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
         $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
