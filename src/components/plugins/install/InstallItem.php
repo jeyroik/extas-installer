@@ -1,19 +1,16 @@
 <?php
 namespace extas\components\plugins\install;
 
-use extas\components\packages\installers\InstallerOptions;
 use extas\components\plugins\Plugin;
 use extas\components\THasClass;
 use extas\components\THasInput;
 use extas\components\THasItemData;
 use extas\components\THasName;
 use extas\components\THasOutput;
-use extas\interfaces\IHasClass;
 use extas\interfaces\IHasInput;
 use extas\interfaces\IHasOutput;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
-use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageAfterInstallItem;
 use extas\interfaces\stages\IStageCreateItem;
@@ -21,12 +18,12 @@ use extas\interfaces\stages\IStageInstallItem;
 use extas\interfaces\stages\IStageItemSame;
 
 /**
- * Class PluginInstallItem
+ * Class InstallItem
  *
  * @package extas\components\plugins\install
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInstallItem extends Plugin implements IStageInstallItem
+class InstallItem extends Plugin implements IStageInstallItem
 {
     use THasInput;
     use THasOutput;
@@ -54,33 +51,6 @@ class PluginInstallItem extends Plugin implements IStageInstallItem
                 ? $this->createOrUpdateItem($item, 'update', $repo, $installer)
                 : $this->createOrUpdateItem($item, 'create', $repo, $installer);
         }
-    }
-
-    /**
-     * @param IInstaller $installer
-     * @param array $item
-     *
-     * @return bool
-     * @throws
-     */
-    protected function operateItemByOptions($installer, $item): bool
-    {
-        $operated = false;
-        foreach(InstallerOptions::byStage(InstallerOptions::STAGE__ITEM, $installer->getInput()) as $option) {
-            /**
-             * @var $option IHasClass
-             */
-            $dispatcher = $option->buildClassWithParameters([
-                IInstallerStageItem::FIELD__INSTALLER => $installer,
-                IInstallerStageItem::FIELD__PLUGIN => $this,
-                IInstallerStageItem::FIELD__OUTPUT => $this->getOutput(),
-                IInstallerStageItem::FIELD__ITEM => $item
-            ]);
-
-            $operated = $dispatcher();
-        }
-
-        return $operated;
     }
 
     /**

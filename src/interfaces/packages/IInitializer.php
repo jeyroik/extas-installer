@@ -4,6 +4,7 @@ namespace extas\interfaces\packages;
 use extas\interfaces\IHasExtensions;
 use extas\interfaces\IHasInput;
 use extas\interfaces\IHasOutput;
+use extas\interfaces\IHasPackageClasses;
 use extas\interfaces\IHasPlugins;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\interfaces\packages
  * @author jeyroik@gmail.com
  */
-interface IInitializer extends IHasPlugins, IHasExtensions, IHasInput, IHasOutput
+interface IInitializer extends IHasPlugins, IHasExtensions, IHasInput, IHasOutput, IHasPackageClasses
 {
     public const FIELD__PACKAGE_NAME = 'name';
     public const FIELD__INSTALL_ON = 'install_on';

@@ -1,10 +1,11 @@
 <?php
-namespace tests\packages;
+namespace tests;
 
-use extas\components\crawlers\Crawler;
 use extas\interfaces\samples\parameters\ISampleParameter;
-use \PHPUnit\Framework\TestCase;
+use extas\components\crawlers\Crawler;
 use extas\components\packages\CrawlerExtas;
+
+use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 use Symfony\Component\Console\Output\NullOutput;
 

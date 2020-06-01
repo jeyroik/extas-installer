@@ -3,15 +3,16 @@ namespace extas\components\packages;
 
 use extas\components\extensions\ExtensionRepository;
 use extas\components\Plugins;
-use extas\components\plugins\PluginInstallPackageClasses;
 use extas\components\plugins\PluginRepository;
 use extas\components\THasExtensions;
 use extas\components\THasInput;
 use extas\components\THasOutput;
+use extas\components\THasPackageClasses;
 use extas\components\THasPlugins;
 use extas\interfaces\IHasExtensions;
 use extas\interfaces\IHasInput;
 use extas\interfaces\IHasOutput;
+use extas\interfaces\IHasPackageClasses as IHasClasses;
 use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
@@ -30,6 +31,7 @@ class Initializer implements IInitializer
     use THasExtensions;
     use THasInput;
     use THasOutput;
+    use THasPackageClasses;
 
     protected array $packageConfig;
     protected IRepository $pluginRepo;
@@ -81,7 +83,7 @@ class Initializer implements IInitializer
             'secondary.initialized' => 'Package "' . $packageName. '" secondary entities initialized.'
         ];
 
-        $this->writeLn(['', '<comment>' . $messages[$msg] . '</comment>', '']);
+        $this->commentLn(['', $messages[$msg], '']);
     }
 
     /**
@@ -102,10 +104,10 @@ class Initializer implements IInitializer
         $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
         $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
 
-        $this->writeLn(['Installing extensions...']);
+        $this->commentLn(['Installing extensions...']);
         $this->installExtensions();
 
-        $this->writeLn(['', 'Installing plugins...']);
+        $this->commentLn(['', 'Installing plugins...']);
         $this->installPlugins();
     }
 
@@ -144,12 +146,11 @@ class Initializer implements IInitializer
      */
     protected function installInterfaces(array $packages)
     {
-        $interfaceInstaller = new PluginInstallPackageClasses();
-
         foreach ($packages as $package) {
-            $interfaceInstaller($package, $this->getOutput());
+            $this->config[IHasClasses::FIELD__PACKAGE_CLASSES] = $package[IHasClasses::FIELD__PACKAGE_CLASSES] ?? [];
+            $this->installPackageClasses();
         }
-        $interfaceInstaller->updateLockFile($this->getOutput());
+        $this->updateLockFile();
 
         return $this;
     }

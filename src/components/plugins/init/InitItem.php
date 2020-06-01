@@ -10,12 +10,12 @@ use extas\components\THasOutput;
 use extas\interfaces\stages\IStageInitializeItem;
 
 /**
- * Class PluginInitItem
+ * Class InitItem
  *
  * @package extas\components\plugins\init
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInitItem extends Plugin implements IStageInitializeItem
+class InitItem extends Plugin implements IStageInitializeItem
 {
     use THasItemData;
     use THasInput;

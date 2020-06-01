@@ -25,38 +25,34 @@
   ],
   "plugins": [
     {
-      "class": "extas\\components\\plugins\\init\\PluginInit",
+      "class": "extas\\components\\plugins\\init\\Init",
       "stage": "extas.init",
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\init\\PluginInitItem",
+      "class": "extas\\components\\plugins\\init\\InitItem",
       "stage": "extas.init.item",
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\PluginInstallOptionsForInstaller",
+      "class": "extas\\components\\plugins\\install\\InstallApplication",
       "stage": "extas.install",
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\install\\PluginInstallApplicationAny",
-      "stage": "extas.install",
-      "install_on": "initialization"
-    },
-    {
-      "class": "extas\\components\\plugins\\install\\PluginInstallPackageAny",
+      "class": "extas\\components\\plugins\\install\\InstallPackage",
       "stage": "extas.install.package",
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\install\\PluginInstallItem",
-      "stage": "extas.install.item"
+      "class": "extas\\components\\plugins\\install\\InstallItem",
+      "stage": "extas.install.item",
+      "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\PluginInstallStages",
-      "stage": "extas.install",
-      "install_on": "install"
+      "class": "extas\\components\\plugins\\install\\InstallStages",
+      "stage": "extas.install.section.stages",
+      "install_on": "initialization"
     },
     {
       "class": "extas\\components\\plugins\\repositories\\PluginFieldUuid",
@@ -66,6 +62,11 @@
     {
       "class": "extas\\components\\plugins\\PluginExportPackageClasses",
       "stage": "extas.export",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\install\\InstallInstallerOptions",
+      "stage": "extas.install.section.installer_options",
       "install_on": "initialization"
     }
   ]

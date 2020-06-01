@@ -1,17 +1,16 @@
 <?php
 namespace tests\packages;
 
-use Dotenv\Dotenv;
+use extas\interfaces\packages\IInitializer;
+use extas\interfaces\repositories\IRepository;
+use extas\components\plugins\TSnuffPlugins;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\console\TSnuffConsole;
 use extas\components\extensions\ExtensionRepository;
-use extas\components\extensions\ExtensionRepositoryGet;
 use extas\components\packages\Initializer;
-use extas\components\plugins\PluginEmpty;
 use extas\components\plugins\PluginRepository;
-use extas\interfaces\extensions\IExtension;
-use extas\interfaces\packages\IInitializer;
-use extas\interfaces\plugins\IPlugin;
-use extas\interfaces\repositories\IRepository;
+
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,6 +22,8 @@ use PHPUnit\Framework\TestCase;
 class InitializerTest extends TestCase
 {
     use TSnuffConsole;
+    use TSnuffPlugins;
+    use TSnuffRepository;
 
     protected IRepository $pluginRepo;
     protected IRepository $extRepo;
@@ -32,18 +33,15 @@ class InitializerTest extends TestCase
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->pluginRepo = new PluginRepository();
-        $this->pluginRepo->drop();
-
-        $this->extRepo = new ExtensionRepository();
-        $this->extRepo->drop();
+        $this->registerSnuffRepos([
+            'pluginRepo' => PluginRepository::class,
+            'extRepo' => ExtensionRepository::class
+        ]);
     }
 
     protected function tearDown(): void
     {
-        $this->pluginRepo->drop();
-        $this->extRepo->drop();
+        $this->unregisterSnuffRepos();
     }
 
     public function test()
@@ -64,10 +62,10 @@ class InitializerTest extends TestCase
             ]
         );
 
-        $pluginsInstalled = $this->pluginRepo->all([]);
+        $pluginsInstalled = $this->allSnuffRepos('pluginRepo');
         $this->assertCount(6, $pluginsInstalled);
 
-        $extensions = $this->extRepo->all([]);
+        $extensions = $this->allSnuffRepos('extRepo');
         $this->assertCount(2, $extensions);
     }
 }

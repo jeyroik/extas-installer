@@ -1,8 +1,8 @@
 <?php
 namespace tests;
 
-use extas\components\plugins\init\PluginInit;
-use extas\components\plugins\init\PluginInitItem;
+use extas\components\plugins\init\Init;
+use extas\components\plugins\init\InitItem;
 use extas\components\plugins\PluginEmpty;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
@@ -39,21 +39,21 @@ return [
     ],
     [
         // should be installed
-        IPlugin::FIELD__CLASS => PluginInit::class,
+        IPlugin::FIELD__CLASS => Init::class,
         IPlugin::FIELD__STAGE => IStageInitialize::NAME,
         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INITIALIZATION,
         IPlugin::FIELD__PRIORITY => -1
     ],
     [
         // should be installed
-        IPlugin::FIELD__CLASS => PluginInstallSnuffItemsOnInit::class,
+        IPlugin::FIELD__CLASS => InstallSnuffItemsOnInit::class,
         IPlugin::FIELD__STAGE => IStageInitializeSection::NAME . '.snuffs',
         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INITIALIZATION,
         IPlugin::FIELD__PRIORITY => -1
     ],
     [
         // should be installed
-        IPlugin::FIELD__CLASS => PluginInitItem::class,
+        IPlugin::FIELD__CLASS => InitItem::class,
         IPlugin::FIELD__STAGE => IStageInitializeItem::NAME,
         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INITIALIZATION,
         IPlugin::FIELD__PRIORITY => -1

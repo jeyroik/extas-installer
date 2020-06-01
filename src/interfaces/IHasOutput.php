@@ -19,13 +19,28 @@ interface IHasOutput
     public function getOutput(): OutputInterface;
 
     /**
-     * @param OutputInterface $output
-     * @return $this
+     * @param array $lines
      */
-    public function setOutput(OutputInterface $output);
+    public function writeLn(array $lines): void;
 
     /**
      * @param array $lines
      */
-    public function writeLn(array $lines): void;
+    public function commentLn(array $lines): void;
+
+    /**
+     * @param array $lines
+     */
+    public function errorLn(array $lines): void;
+
+    /**
+     * @param array $lines
+     */
+    public function infoLn(array $lines): void;
+
+    /**
+     * @param array $lines
+     * @param string $tag
+     */
+    public function decorateLines(array $lines, string $tag): void;
 }

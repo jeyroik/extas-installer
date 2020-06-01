@@ -7,7 +7,7 @@ use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\IPackageEntityRepository;
 
 /**
- * Class InstallPackageEntities
+ * Class PackageEntities
  *
  * @package extas\components\plugins\install
  * @author jeyroik <jeyroik@gmail.com>

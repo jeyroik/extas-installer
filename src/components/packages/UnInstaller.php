@@ -2,15 +2,15 @@
 namespace extas\components\packages;
 
 use extas\components\Item;
-use extas\components\SystemContainer;
+use extas\components\packages\entities\EntityRepository;
+use extas\components\THasInput;
+use extas\components\THasOutput;
 use extas\interfaces\packages\entities\IEntity;
 use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\packages\IPackageEntity;
 use extas\interfaces\packages\IPackageEntityRepository;
 use extas\interfaces\packages\IUnInstaller;
 use extas\interfaces\repositories\IRepository;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class UnInstaller
@@ -20,8 +20,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UnInstaller extends Item implements IUnInstaller
 {
-    protected ?IPackageEntityRepository $packageEntityRepo = null;
-    protected ?IEntityRepository $entityRepo = null;
+    use THasInput;
+    use THasOutput;
+
+    protected IPackageEntityRepository $packageEntityRepo;
+    protected IEntityRepository $entityRepo;
 
     /**
      * UnInstaller constructor.
@@ -31,8 +34,8 @@ class UnInstaller extends Item implements IUnInstaller
     {
         parent::__construct($config);
 
-        $this->packageEntityRepo = SystemContainer::getItem(IPackageEntityRepository::class);
-        $this->entityRepo = SystemContainer::getItem(IEntityRepository::class);
+        $this->packageEntityRepo = new PackageEntityRepository();
+        $this->entityRepo = new EntityRepository();
     }
 
     /**
@@ -50,7 +53,7 @@ class UnInstaller extends Item implements IUnInstaller
         foreach ($packageEntities as $packageEntity) {
             $entityName = $packageEntity->getEntity();
             if (!isset($entitiesByNames[$entityName])) {
-                $this->output(['<error>Unknown entity "' . $entityName . '"</error>']);
+                $this->errorLn(['Unknown entity "' . $entityName . '"']);
                 continue;
             }
 
@@ -82,31 +85,15 @@ class UnInstaller extends Item implements IUnInstaller
     }
 
     /**
-     * @return InputInterface|null
-     */
-    public function getInput(): ?InputInterface
-    {
-        return $this->config[static::FIELD__INPUT] ?? null;
-    }
-
-    /**
-     * @return OutputInterface|null
-     */
-    public function getOutput(): ?OutputInterface
-    {
-        return $this->config[static::FIELD__OUTPUT] ?? null;
-    }
-
-    /**
      * @param array $query
      * @param string $entityName
      * @param IPackageEntity $packageEntity
      */
     protected function commitUninstall(array $query, string $entityName, IPackageEntity $packageEntity)
     {
-        $this->output(['<info>Uninstalled "' . $entityName . '" described as:</info>']);
+        $this->infoLn(['Uninstalled "' . $entityName . '" described as:']);
         foreach ($query as $field => $value) {
-            $this->output([$field . ' = ' . $value]);
+            $this->writeLn([$field . ' = ' . $value]);
         }
 
         $this->packageEntityRepo->delete('', $packageEntity);
@@ -211,14 +198,6 @@ class UnInstaller extends Item implements IUnInstaller
         } else {
             return [];
         }
-    }
-
-    /**
-     * @param $messages
-     */
-    protected function output($messages)
-    {
-        $this->config[static::FIELD__OUTPUT]->writeln($messages);
     }
 
     /**

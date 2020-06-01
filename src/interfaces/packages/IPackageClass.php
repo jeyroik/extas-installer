@@ -1,6 +1,7 @@
 <?php
 namespace extas\interfaces\packages;
 
+use extas\interfaces\IHasClass;
 use extas\interfaces\IItem;
 
 /**
@@ -9,12 +10,11 @@ use extas\interfaces\IItem;
  * @package extas\interfaces\packages
  * @author jeyroik@gmail.com
  */
-interface IPackageClass extends IItem
+interface IPackageClass extends IItem, IHasClass
 {
     public const SUBJECT = 'extas.package.class';
 
     public const FIELD__INTERFACE_NAME = 'interface';
-    public const FIELD__CLASS_NAME = 'class';
 
     /**
      * @return string
@@ -22,21 +22,9 @@ interface IPackageClass extends IItem
     public function getInterface(): string;
 
     /**
-     * @return string
-     */
-    public function getClass(): string;
-
-    /**
      * @param string $interface
      *
      * @return $this
      */
     public function setInterfaceName($interface);
-
-    /**
-     * @param string $class
-     *
-     * @return $this
-     */
-    public function setClassName($class);
 }

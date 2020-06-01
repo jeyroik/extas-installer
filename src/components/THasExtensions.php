@@ -12,8 +12,8 @@ use extas\interfaces\repositories\IRepository;
  * Trait THasExtensions
  *
  * @property array $config
- * @method isAllowInstallExtension(array $extension): bool
- * @method writeLn(array $messages)
+ * @method bool isAllowInstallExtension(array $extension)
+ * @method void writeLn(array $messages)
  *
  * @package extas\components
  * @author jeyroik <jeyroik@gmail.com>
@@ -46,9 +46,7 @@ trait THasExtensions
     protected function installExtension(array $extension): bool
     {
         if (!$this->isAllowInstallExtension($extension)) {
-            $this->writeLn([
-                '<comment>Skipp extension "' . $extension[IExtension::FIELD__CLASS] . '" due to stage mismatch</comment>'
-            ]);
+            $this->commentLn(['Skipp extension "' . $extension[IExtension::FIELD__CLASS] . '" due to stage mismatch']);
             return false;
         }
 
@@ -77,15 +75,13 @@ trait THasExtensions
         $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
         if (!$existed) {
-            $this->writeLn([
-                '<info>INFO: Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...</info>'
-            ]);
+            $this->infoLn(['INFO: Installing extension "' . $extClass . '" [ ' . $extSubject . ' ]...']);
             if (isset($extension[IInitializer::FIELD__INSTALL_ON])) {
                 unset($extension[IInitializer::FIELD__INSTALL_ON]);
             }
             $extensionObj = new Extension($extension);
             $this->extensionRepo->create($extensionObj);
-            $this->writeLn(['<info>CREATE: Extension installed.</info>']);
+            $this->infoLn(['CREATE: Extension installed.']);
         }
     }
 
@@ -101,9 +97,7 @@ trait THasExtensions
             IExtension::FIELD__CLASS => $class,
             IExtension::FIELD__SUBJECT => $subject
         ])) {
-            $this->writeLn([
-                '<info>NOTICE: Extension "' . $class . '" [ ' . $subject . ' ]</info> is already installed.'
-            ]);
+            $this->infoLn(['NOTICE: Extension "' . $class . '" [ ' . $subject . ' ] is already installed.']);
             $this->updateExtensionMethods($existed, $extension);
 
             return $existed;
@@ -146,9 +140,7 @@ trait THasExtensions
             $extClass = $extension[IExtension::FIELD__CLASS] ?? '';
             $extSubject = $extension[IExtension::FIELD__SUBJECT] ?? '';
 
-            $this->writeLn([
-                '<info>UPDATE: Extension "' . $extClass . '" [ ' . $extSubject . ' ]</info> methods have been updated.'
-            ]);
+            $this->infoLn(['UPDATE: Extension "' . $extClass . '" [ ' . $extSubject . ' ] methods have been updated.']);
         }
     }
 }

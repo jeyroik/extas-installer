@@ -35,15 +35,9 @@ class UninstallCommand extends DefaultCommand
     protected function configure()
     {
         $this
-            // the name of the command (the part after "bin/console")
             ->setName('uninstall')
             ->setAliases(['u'])
-
-            // the short description shown while running "php bin/console list"
             ->setDescription('Uninstall extas packages and/or entities')
-
-            // the full command description shown when running the command with
-            // the "--help" option
             ->setHelp('This command allows you to uninstall entities by extas-compatible package file.')
             ->addOption(
                 static::OPTION__PACKAGE,

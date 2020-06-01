@@ -1,7 +1,6 @@
 <?php
 namespace extas\interfaces\packages\installers;
 
-use extas\interfaces\IHasClass;
 use extas\interfaces\IHasDescription;
 use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
@@ -12,7 +11,7 @@ use extas\interfaces\IItem;
  * @package extas\interfaces\packages\installers
  * @author jeyroik@gmail.com
  */
-interface IInstallerOption extends IItem, IHasName, IHasDescription, IHasClass
+interface IInstallerOption extends IItem, IHasName, IHasDescription
 {
     public const SUBJECT = 'extas.installer.option';
 

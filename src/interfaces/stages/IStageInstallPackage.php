@@ -19,5 +19,5 @@ interface IStageInstallPackage extends IHasInput, IHasOutput
      * @param array $package
      * @param IInstaller $installer can be used to pass generated data
      */
-    public function __invoke(array $package, IInstaller &$installer): void;
+    public function __invoke(array &$package, IInstaller &$installer): void;
 }

@@ -1,11 +1,12 @@
 <?php
+namespace tests;
 
-use PHPUnit\Framework\TestCase;
-use extas\components\plugins\Plugin;
-use extas\components\plugins\PluginRepository;
-use extas\interfaces\repositories\IRepository;
+use extas\components\console\TSnuffConsole;
+use extas\components\plugins\TSnuffPlugins;
 use extas\components\packages\Exporter;
+
 use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ExporterTest
@@ -14,22 +15,14 @@ use Dotenv\Dotenv;
  */
 class ExporterTest extends TestCase
 {
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $pluginRepo = null;
+    use TSnuffPlugins;
+    use TSnuffConsole;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->pluginRepo = new class extends PluginRepository {
-            public function reload()
-            {
-                parent::$stagesWithPlugins = [];
-            }
-        };
     }
 
     /**
@@ -37,14 +30,17 @@ class ExporterTest extends TestCase
      */
     public function tearDown(): void
     {
-        $this->pluginRepo->drop();
+        $this->deleteSnuffPlugins();
     }
 
     public function testExportEntities()
     {
         $this->createPlugin('.test');
 
-        $exporter = new Exporter();
+        $exporter = new Exporter([
+            Exporter::FIELD__INPUT => $this->getInput(),
+            Exporter::FIELD__OUTPUT => $this->getOutput()
+        ]);
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         $exporter->export(['test']);
     }
@@ -53,7 +49,10 @@ class ExporterTest extends TestCase
     {
         $this->createPlugin('');
 
-        $exporter = new Exporter();
+        $exporter = new Exporter([
+            Exporter::FIELD__INPUT => $this->getInput(),
+            Exporter::FIELD__OUTPUT => $this->getOutput()
+        ]);
         $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
         $exporter->export();
     }
@@ -65,11 +64,7 @@ class ExporterTest extends TestCase
      */
     protected function createPlugin(string $stageSuffix)
     {
-        $this->pluginRepo->reload();
-        $plugin = new Plugin([
-            Plugin::FIELD__CLASS => 'NotExistingClass',
-            Plugin::FIELD__STAGE => 'extas.export' . $stageSuffix
-        ]);
-        $this->pluginRepo->create($plugin);
+        $this->createSnuffPlugin('NotExistingClass', ['extas.export' . $stageSuffix]);
+        $this->reloadSnuffPlugins();
     }
 }

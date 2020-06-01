@@ -18,7 +18,6 @@ class InstallerOption extends Item implements IInstallerOption
 {
     use THasName;
     use THasDescription;
-    use THasClass;
 
     /**
      * @return array

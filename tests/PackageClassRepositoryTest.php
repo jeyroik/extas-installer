@@ -1,10 +1,11 @@
 <?php
 namespace tests\packages;
 
-use Dotenv\Dotenv;
+use extas\interfaces\packages\IPackageClass;
 use extas\components\packages\PackageClass;
 use extas\components\packages\PackageClassRepository;
-use extas\interfaces\packages\IPackageClass;
+
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,26 +28,26 @@ class PackageClassRepositoryTest extends TestCase
         $repo = new PackageClassRepository();
         $repo->create(new PackageClass([
             PackageClass::FIELD__INTERFACE_NAME => 'test',
-            PackageClass::FIELD__CLASS_NAME => 'test'
+            PackageClass::FIELD__CLASS => 'test'
         ]));
         /**
          * @var IPackageClass $class
          */
-        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'test']);
+        $class = $repo->one([PackageClass::FIELD__CLASS => 'test']);
         $this->assertNotEmpty($class);
 
-        $classes = $repo->all([PackageClass::FIELD__CLASS_NAME => 'test']);
-        $byClass = array_column($classes, null, PackageClass::FIELD__CLASS_NAME);
+        $classes = $repo->all([PackageClass::FIELD__CLASS => 'test']);
+        $byClass = array_column($classes, null, PackageClass::FIELD__CLASS);
         $this->assertArrayHasKey('test', $byClass);
 
-        $class->setClassName('is ok');
+        $class->setClass('is ok');
         $repo->update($class);
-        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'is ok']);
+        $class = $repo->one([PackageClass::FIELD__CLASS => 'is ok']);
         $this->assertNotEmpty($class);
 
-        $repo->delete([IPackageClass::FIELD__CLASS_NAME => 'is ok']);
+        $repo->delete([IPackageClass::FIELD__CLASS => 'is ok']);
 
-        $class = $repo->one([PackageClass::FIELD__CLASS_NAME => 'is ok']);
+        $class = $repo->one([PackageClass::FIELD__CLASS => 'is ok']);
         $this->assertEmpty($class);
     }
 }

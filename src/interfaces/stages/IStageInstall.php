@@ -18,5 +18,5 @@ interface IStageInstall extends IHasInput, IHasOutput
      * @param array $packages
      * @param array $generatedData
      */
-    public function __invoke(array $packages, array &$generatedData): void;
+    public function __invoke(array &$packages, array &$generatedData): void;
 }

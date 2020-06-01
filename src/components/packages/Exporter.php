@@ -2,8 +2,11 @@
 namespace extas\components\packages;
 
 use extas\components\Item;
+use extas\components\THasInput;
+use extas\components\THasOutput;
+use extas\components\THasPath;
+use extas\interfaces\IStageExport;
 use extas\interfaces\packages\IExporter;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Exporter
@@ -13,18 +16,21 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Exporter extends Item implements IExporter
 {
+    use THasPath;
+    use THasInput;
+    use THasOutput;
+
     /**
      * @param string $fileName
      * @param array $entitiesNames
-     * @param OutputInterface $output
      *
      * @return bool
      */
-    public function exportTo(string $fileName, array $entitiesNames = [], OutputInterface $output = null): bool
+    public function exportTo(string $fileName, array $entitiesNames = []): bool
     {
         $result = file_put_contents(
             $this->getPath() . '/' . $fileName,
-            $this->export($entitiesNames, true, $output)
+            $this->export($entitiesNames, true)
         );
 
         return (bool) $result;
@@ -33,47 +39,46 @@ class Exporter extends Item implements IExporter
     /**
      * @param array $entitiesNames
      * @param bool $asJson
-     * @param OutputInterface $output
      *
      * @return array|string
      */
-    public function export(array $entitiesNames = [], bool $asJson = false, OutputInterface $output = null)
+    public function export(array $entitiesNames = [], bool $asJson = false)
     {
         $result = [];
-
-        if (!empty($entitiesNames)) {
-            foreach ($entitiesNames as $name) {
-                foreach ($this->getPluginsByStage('extas.export.' . $name) as $plugin) {
-                    $plugin($result, $output);
-                }
-            }
-        } else {
-            foreach ($this->getPluginsByStage('extas.export') as $plugin) {
-                $plugin($result, $output);
-            }
-        }
+        $this->exportByNames($entitiesNames, $result);
+        $this->run($result);
 
         return $asJson ? json_encode($result) : $result;
     }
 
     /**
-     * @return string
+     * @param array $entitiesNames
+     * @param array $result
      */
-    public function getPath(): string
+    protected function exportByNames(array $entitiesNames, array &$result): void
     {
-        return $this->config[static::FIELD__PATH] ?? '';
+        foreach ($entitiesNames as $name) {
+            $this->run($result, IStageExport::NAME . '.' . $name);
+        }
     }
 
     /**
-     * @param string $path
-     *
-     * @return IExporter
+     * @param array $result
+     * @param string $stage
      */
-    public function setPath(string $path): IExporter
+    protected function run(array &$result, string $stage = IStageExport::NAME): void
     {
-        $this->config[static::FIELD__PATH] = $path;
+        $pluginConfig = [
+            IStageExport::FIELD__INPUT => $this->getInput(),
+            IStageExport::FIELD__OUTPUT => $this->getOutput()
+        ];
 
-        return $this;
+        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageExport $plugin
+             */
+            $plugin($result);
+        }
     }
 
     /**

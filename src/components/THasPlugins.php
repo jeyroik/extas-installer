@@ -12,8 +12,8 @@ use extas\interfaces\repositories\IRepository;
  * Trait THasPlugins
  *
  * @property array $config
- * @method isAllowInstallPlugin(array $plugin): bool
- * @method writeLn(array $messages)
+ * @method bool isAllowInstallPlugin(array $plugin)
+ * @method void writeLn(array $messages)
  *
  * @package extas\components
  * @author jeyroik <jeyroik@gmail.com>

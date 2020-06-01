@@ -8,12 +8,12 @@ use extas\interfaces\stages\IStageInitializeItem;
 use extas\interfaces\stages\IStageInitializeSection;
 
 /**
- * Class PluginInitSection
+ * Class InitSection
  *
  * @package extas\components\plugins\init
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInitSection extends Plugin implements IStageInitializeSection
+class InitSection extends Plugin implements IStageInitializeSection
 {
     use THasInput;
     use THasOutput;

@@ -11,12 +11,12 @@ use extas\interfaces\stages\IStageInitialize;
 use extas\interfaces\stages\IStageInitializeSection;
 
 /**
- * Class PluginInit
+ * Class Init
  *
  * @package extas\components\plugins\init
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginInit extends Plugin implements IStageInitialize
+class Init extends Plugin implements IStageInitialize
 {
     use THasInput;
     use THasOutput;

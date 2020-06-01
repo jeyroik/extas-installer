@@ -11,5 +11,4 @@ use extas\interfaces\repositories\IRepository;
  */
 interface IInstallerOptionRepository extends IRepository
 {
-
 }

@@ -123,11 +123,11 @@ class InstallCommand extends DefaultCommand
             'Installing application ' . $appName . ' with found packages...'
         ]);
 
-        list($operated, $generatedData) = $this->runInstallAppStage($input, $output, $appName, $packages);
-
-        if (!$operated) {
-            $generatedData = $this->runInstallStage($input, $output, $generatedData, $packages);
-        }
+        $generatedData = $this->runInstallStage($input, $output, $packages, IStageInstall::NAME . '.' . $appName);
+        $generatedData = array_merge(
+            $generatedData,
+            $this->runInstallStage($input, $output, $generatedData, $packages)
+        );
 
         $this->storeGeneratedData($generatedData, $input, $output);
     }
@@ -135,48 +135,27 @@ class InstallCommand extends DefaultCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @param string $appName
      * @param array $packages
-     * @return array
-     */
-    protected function runInstallAppStage(
-        InputInterface $input,
-        OutputInterface $output,
-        string $appName,
-        array &$packages
-    ): array
-    {
-        $generatedData = [];
-        $operated = false;
-
-        foreach (Plugins::byStage(IStageInstall::NAME . '.' . $appName, $this, [
-            IInstaller::FIELD__INPUT => $input,
-            IInstaller::FIELD__OUTPUT => $output
-        ]) as $plugin) {
-            $operated = $plugin($packages, $generatedData);
-        }
-
-        return [$operated, $generatedData];
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param array $generatedData
-     * @param array $packages
+     * @param string $stage
      * @return array
      */
     protected function runInstallStage(
         InputInterface $input,
         OutputInterface $output,
-        array $generatedData,
-        array $packages
+        array $packages,
+        string $stage = IStageInstall::NAME
     ): array
     {
-        foreach (Plugins::byStage(IStageInstall::NAME, $this, [
+        $generatedData = [];
+        $pluginConfig = [
             IInstaller::FIELD__INPUT => $input,
             IInstaller::FIELD__OUTPUT => $output
-        ]) as $plugin) {
+        ];
+
+        foreach (Plugins::byStage($stage, $this, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageInstall $plugin
+             */
             $plugin($packages, $generatedData);
         }
 
