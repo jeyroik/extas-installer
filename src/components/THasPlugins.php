@@ -41,10 +41,10 @@ trait THasPlugins
 
     /**
      * @param $pluginStage
-     * @param string $pluginClass
+     * @param string|array $pluginClass
      * @return bool
      */
-    protected function installArrayPluginStage($pluginStage, string $pluginClass): bool
+    protected function installArrayPluginStage($pluginStage, $pluginClass): bool
     {
         if (is_array($pluginStage)) {
             foreach ($pluginStage as $stage) {
@@ -61,11 +61,11 @@ trait THasPlugins
     }
 
     /**
-     * @param string $pluginStage
+     * @param string|array $pluginStage
      * @param $pluginClass
      * @return bool
      */
-    protected function installArrayPluginClass(string $pluginStage, $pluginClass): bool
+    protected function installArrayPluginClass($pluginStage, $pluginClass): bool
     {
         if (is_array($pluginClass)) {
             foreach ($pluginClass as $class) {
