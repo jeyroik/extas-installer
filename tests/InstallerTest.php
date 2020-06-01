@@ -97,7 +97,7 @@ class InstallerTest extends TestCase
         ]);
 
         $this->reloadSnuffPlugins();
-        $this->assertEquals(0, $this->allSnuffRepos('pluginRepo'));
+        $this->assertEmpty($this->allSnuffRepos('pluginRepo'));
     }
 
     public function testInstallOnePluginForMultipleStages()
