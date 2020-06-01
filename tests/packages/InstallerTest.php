@@ -169,7 +169,8 @@ class InstallerTest extends TestCase
     public function testInstallOnePluginForMultipleStages()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installPackages([
             [
@@ -197,7 +198,8 @@ class InstallerTest extends TestCase
     public function testInstallMultiplePluginForOneStage()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installPackages([
             [
@@ -221,7 +223,8 @@ class InstallerTest extends TestCase
     public function testInstallMultiplePluginForMultipleStages()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installPackages([
             [
@@ -249,7 +252,8 @@ class InstallerTest extends TestCase
     public function testExtensionMethodsUpdate()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installPackages([[
             'name' => 'test',
