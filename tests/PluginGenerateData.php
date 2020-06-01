@@ -23,5 +23,11 @@ class PluginGenerateData extends InstallPackage
     {
         parent::__invoke($package, $installer);
         $installer->addGeneratedData('test', 'is ok');
+
+        $package = $installer->getPackage();
+
+        if (empty($package)) {
+            throw new \Exception('Missed package in the Installer');
+        }
     }
 }

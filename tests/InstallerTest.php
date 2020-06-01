@@ -1,8 +1,10 @@
 <?php
 namespace tests\packages;
 
+use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\IInitializer;
+use extas\components\plugins\PluginException;
 use extas\components\console\TSnuffConsole;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
@@ -53,10 +55,7 @@ class InstallerTest extends TestCase
 
     public function testInstall()
     {
-        $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => $this->getInput()
-        ]);
+        $installer = $this->getInstaller();
         $installer->installPackages([
             [
                 'name' => 'test',
@@ -79,12 +78,34 @@ class InstallerTest extends TestCase
         $this->assertEquals(1, PluginEmpty::$worked);
     }
 
+    public function testExceptionNotBreakPluginsInstall()
+    {
+        $installer = $this->getInstaller();
+        $installer->installPackages([
+            [
+                'name' => 'test',
+                'plugins' => [
+                    [
+                        Plugin::FIELD__STAGE => 'test.install.stage',
+                        Plugin::FIELD__CLASS => PluginException::class,
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->reloadSnuffPlugins();
+
+        foreach(Plugins::byStage('test.install.stage') as $plugin) {
+            $plugin();
+        }
+
+        $this->assertEquals(0, PluginEmpty::$worked);
+    }
+
     public function testInstallOnePluginForMultipleStages()
     {
-        $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => $this->getInput()
-        ]);
+        $installer = $this->getInstaller();
         $installer->installPackages([
             [
                 'name' => 'test',
@@ -110,10 +131,7 @@ class InstallerTest extends TestCase
 
     public function testInstallMultiplePluginForOneStage()
     {
-        $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => $this->getInput()
-        ]);
+        $installer = $this->getInstaller();
         $installer->installPackages([
             [
                 'name' => 'test',
@@ -135,10 +153,7 @@ class InstallerTest extends TestCase
 
     public function testInstallMultiplePluginForMultipleStages()
     {
-        $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => $this->getInput()
-        ]);
+        $installer = $this->getInstaller();
         $installer->installPackages([
             [
                 'name' => 'test',
@@ -164,10 +179,7 @@ class InstallerTest extends TestCase
 
     public function testExtensionMethodsUpdate()
     {
-        $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => $this->getInput()
-        ]);
+        $installer = $this->getInstaller();
         $installer->installPackages([[
             'name' => 'test',
             'extensions' => [
@@ -196,5 +208,16 @@ class InstallerTest extends TestCase
 
         $ext = array_shift($extensions);
         $this->assertEquals(['test', 'test1'], $ext->getMethods());
+    }
+
+    /**
+     * @return IInstaller
+     */
+    protected function getInstaller(): IInstaller
+    {
+        return new Installer([
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
+        ]);
     }
 }

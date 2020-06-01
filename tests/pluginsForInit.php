@@ -25,13 +25,20 @@ return [
         IPlugin::FIELD__PRIORITY => -1
     ],
     [
+        // duplicating, should not be installed
+        IPlugin::FIELD__CLASS => PluginEmpty::class,
+        IPlugin::FIELD__STAGE => 'some.other',
+        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INITIALIZATION,
+        IPlugin::FIELD__PRIORITY => -1
+    ],
+    [
         // should be installed
         IPlugin::FIELD__CLASS => PluginEmpty::class,
         IPlugin::FIELD__STAGE => 'default.init',
         IPlugin::FIELD__PRIORITY => -1
     ],
     [
-        // should NOT be installed
+        // should NOT be installed, cause install_on = install
         IPlugin::FIELD__CLASS => PluginEmpty::class,
         IPlugin::FIELD__STAGE => 'install.on',
         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL,
