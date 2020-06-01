@@ -97,12 +97,7 @@ class InstallerTest extends TestCase
         ]);
 
         $this->reloadSnuffPlugins();
-
-        foreach(Plugins::byStage('test.install.stage') as $plugin) {
-            $plugin();
-        }
-
-        $this->assertEquals(0, PluginEmpty::$worked);
+        $this->assertEquals(0, $this->allSnuffRepos('pluginRepo'));
     }
 
     public function testInstallOnePluginForMultipleStages()
