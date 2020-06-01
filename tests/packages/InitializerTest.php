@@ -34,13 +34,16 @@ class InitializerTest extends TestCase
         $env->load();
 
         $this->pluginRepo = new PluginRepository();
+        $this->pluginRepo->drop();
+
         $this->extRepo = new ExtensionRepository();
+        $this->extRepo->drop();
     }
 
     protected function tearDown(): void
     {
-        $this->pluginRepo->delete([IPlugin::FIELD__PRIORITY => -1]);
-        $this->extRepo->delete([IExtension::FIELD__CLASS => ExtensionRepositoryGet::class]);
+        $this->pluginRepo->drop();
+        $this->extRepo->drop();
     }
 
     public function test()
@@ -65,6 +68,6 @@ class InitializerTest extends TestCase
         $this->assertCount(6, $pluginsInstalled);
 
         $extensions = $this->extRepo->all([]);
-        $this->assertCount(1, $extensions);
+        $this->assertCount(2, $extensions);
     }
 }

@@ -3,7 +3,7 @@ namespace tests;
 
 use extas\components\packages\installers\InstallerStageItem;
 
-class InstallerOptionTest extends InstallerStageItem
+class InstallerOptionSnuff extends InstallerStageItem
 {
     public function __invoke(): bool
     {

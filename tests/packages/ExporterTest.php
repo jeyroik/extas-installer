@@ -37,7 +37,7 @@ class ExporterTest extends TestCase
      */
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => 'NotExistingClass']);
+        $this->pluginRepo->drop();
     }
 
     public function testExportEntities()

@@ -9,7 +9,7 @@ use extas\components\packages\installers\InstallerStageItems;
  * @package tests
  * @author jeyroik@gmail.com
  */
-class InstallerOptionItemsTest extends InstallerStageItems
+class InstallerOptionItemsSnuff extends InstallerStageItems
 {
     /**
      * @return array

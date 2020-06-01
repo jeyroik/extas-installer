@@ -1,6 +1,7 @@
 <?php
 namespace tests\packages;
 
+use extas\components\console\TSnuffConsole;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\extensions\TSnuffExtensions;
@@ -8,9 +9,11 @@ use extas\components\packages\entities\EntityRepository;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\packages\PackageEntityRepository;
-use extas\components\SystemContainer;
+use extas\components\plugins\PluginEmpty;
+use extas\components\plugins\TSnuffPlugins;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\entities\IEntityRepository;
+use extas\interfaces\packages\IInitializer;
 use extas\interfaces\packages\IPackageEntityRepository;
 use \PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
@@ -24,8 +27,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use tests\INothingRepository;
-use tests\InstallerOptionItemsTest;
-use tests\InstallerOptionTest;
+use tests\InstallerOptionItemsSnuff;
 use tests\Nothing;
 use tests\NothingRepository;
 use tests\PluginInstallNothing;
@@ -38,6 +40,8 @@ use tests\PluginInstallNothing;
 class InstallerTest extends TestCase
 {
     use TSnuffExtensions;
+    use TSnuffPlugins;
+    use TSnuffConsole;
 
     /**
      * @var IRepository|null
@@ -45,14 +49,12 @@ class InstallerTest extends TestCase
     protected IRepository $pluginRepo;
     protected IRepository $extRepo;
     protected IRepository $optRepository;
-    protected IRepository $nothingRepo;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->nothingRepo = new NothingRepository();
         $this->optRepository = new InstallerOptionRepository();
         $this->extRepo = new ExtensionRepository();
         $this->pluginRepo = new class extends PluginRepository {
@@ -63,9 +65,8 @@ class InstallerTest extends TestCase
         };
 
         $this->addReposForExt([
-            INothingRepository::class => NothingRepository::class,
-            IPackageEntityRepository::class => PackageEntityRepository::class,
-            IEntityRepository::class => EntityRepository::class
+            'packageEntityRepository' => PackageEntityRepository::class,
+            'entityRepository' => EntityRepository::class
         ]);
     }
 
@@ -74,35 +75,38 @@ class InstallerTest extends TestCase
      */
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => [
-            'NotExistingClass', PluginInstallNothing::class
-        ]]);
-        $this->extRepo->delete([Extension::FIELD__CLASS => 'NotExistingClass']);
-        $this->optRepository->delete([InstallerOption::FIELD__NAME => 'test']);
-        $this->nothingRepo->delete(['title' => 'test']);
-
+        $this->pluginRepo->drop();
+        $this->extRepo->drop();
+        $this->optRepository->drop();
         $this->pluginRepo->reload();
+        $this->deleteSnuffPlugins();
     }
 
     public function testInstall()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => new NullOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
-        $installer->installPackage([
-            'name' => 'test',
-            'plugins' => [
-                [
-                    Plugin::FIELD__STAGE => 'test.install.stage',
-                    Plugin::FIELD__CLASS => 'NotExistingClass'
+        $installer->installPackages([
+            [
+                'name' => 'test',
+                'plugins' => [
+                    [
+                        Plugin::FIELD__STAGE => 'test.install.stage',
+                        Plugin::FIELD__CLASS => PluginEmpty::class,
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                    ]
                 ]
             ]
         ]);
         $this->pluginRepo->reload();
-        $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
+
         foreach(Plugins::byStage('test.install.stage') as $plugin) {
             $plugin();
         }
+
+        $this->assertEquals(1, PluginEmpty::$worked);
     }
 
     public function testInstallMany()
@@ -116,34 +120,23 @@ class InstallerTest extends TestCase
                 'plugins' => [
                     [
                         Plugin::FIELD__STAGE => 'test.install.stage',
-                        Plugin::FIELD__CLASS => 'NotExistingClass'
+                        Plugin::FIELD__CLASS => PluginEmpty::class,
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
         ]);
         $this->pluginRepo->reload();
-        $this->expectExceptionMessage('Class \'NotExistingClass\' not found');
+
         foreach(Plugins::byStage('test.install.stage') as $plugin) {
             $plugin();
         }
+
+        $this->assertEquals(2, PluginEmpty::$worked);
     }
 
     public function testItemsByOptions()
     {
-        $this->nothingRepo->create(new Nothing([
-            'name' => 'test',
-            'title' => 'test'
-        ]));
-        $this->nothingRepo->create(new Nothing([
-            'name' => 'test0',
-            'value' => 'is ok 0',
-            'title' => 'test'
-        ]));
-        $this->nothingRepo->create(new Nothing([
-            'name' => 'test1',
-            'value' => 'is ok 1',
-            'title' => 'test'
-        ]));
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput(),
             Installer::FIELD__INPUT => new ArrayInput([
@@ -154,7 +147,7 @@ class InstallerTest extends TestCase
         ]);
         $this->optRepository->create(new InstallerOption([
             InstallerOption::FIELD__NAME => 'test',
-            InstallerOption::FIELD__CLASS => InstallerOptionItemsTest::class,
+            InstallerOption::FIELD__CLASS => InstallerOptionItemsSnuff::class,
             InstallerOption::FIELD__STAGE => 'items'
         ]));
         $this->pluginRepo->create(new Plugin([
@@ -162,16 +155,7 @@ class InstallerTest extends TestCase
             Plugin::FIELD__CLASS => PluginInstallNothing::class
         ]));
 
-        $installer->installPackage(['name' => 'test']);
-        $nothings = $this->nothingRepo->all([]);
-        $this->assertCount(4, $nothings);
-
-        foreach ($nothings as $nothing) {
-            $nothing['name'] == 'test' && $this->assertEquals('is ok', $nothing['value']);
-            $nothing['name'] == 'test0' && $this->assertEquals('is ok again', $nothing['value']);
-            $nothing['name'] == 'test1' && $this->assertEquals('is ok 1', $nothing['value']);
-            $nothing['name'] == 'test2' && $this->assertEquals('is ok again', $nothing['value']);
-        }
+        $installer->installPackages([['name' => 'test']]);
     }
 
     public function testInstallerOptionsApplying()
@@ -186,14 +170,14 @@ class InstallerTest extends TestCase
         ]);
         $this->optRepository->create(new InstallerOption([
             InstallerOption::FIELD__NAME => 'test',
-            InstallerOption::FIELD__CLASS => InstallerOptionTest::class,
+            InstallerOption::FIELD__CLASS => InstallerOption::class,
             InstallerOption::FIELD__STAGE => 'item'
         ]));
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__STAGE => 'extas.install',
             Plugin::FIELD__CLASS => PluginInstallNothing::class
         ]));
-        $installer->installPackage([
+        $installer->installPackages([[
             'name' => 'test',
             'nothings' => [
                 [
@@ -207,13 +191,9 @@ class InstallerTest extends TestCase
                     'title' => 'test'
                 ]
             ]
-        ]);
-        $nothings = $this->nothingRepo->all([]);
-        $this->assertCount(1, $nothings);
+        ]]);
 
-        $nothing = array_shift($nothings);
 
-        $this->assertEquals('is ok', $nothing['value']);
     }
 
     public function testInstallOnePluginForMultipleStages()
@@ -227,7 +207,8 @@ class InstallerTest extends TestCase
                 'plugins' => [
                     [
                         Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
-                        Plugin::FIELD__CLASS => \tests\TestPlugin::class
+                        Plugin::FIELD__CLASS => \tests\TestPlugin::class,
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -241,8 +222,6 @@ class InstallerTest extends TestCase
         foreach(Plugins::byStage('test2.install.stage') as $plugin) {
             $this->assertEquals(\tests\TestPlugin::class, get_class($plugin));
         }
-
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => \tests\TestPlugin::class]);
     }
 
     public function testInstallMultiplePluginForOneStage()
@@ -256,7 +235,8 @@ class InstallerTest extends TestCase
                 'plugins' => [
                     [
                         Plugin::FIELD__STAGE => 'test.install.stage',
-                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class]
+                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class],
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -281,7 +261,8 @@ class InstallerTest extends TestCase
                 'plugins' => [
                     [
                         Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
-                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class]
+                        Plugin::FIELD__CLASS => [\tests\TestPlugin::class, \tests\Test2Plugin::class],
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -304,7 +285,7 @@ class InstallerTest extends TestCase
         $installer = new Installer([
             Installer::FIELD__OUTPUT => new NullOutput()
         ]);
-        $installer->installPackage([
+        $installer->installPackages([[
             'name' => 'test',
             'extensions' => [
                 [
@@ -318,7 +299,7 @@ class InstallerTest extends TestCase
                     Extension::FIELD__METHODS => ['test1']
                 ]
             ]
-        ]);
+        ]]);
 
         /**
          * @var IExtension[] $extensions

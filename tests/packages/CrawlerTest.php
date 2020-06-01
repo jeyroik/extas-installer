@@ -24,7 +24,7 @@ class CrawlerTest extends TestCase
 
     public function testCrawlPackages()
     {
-        $key = __DIR__ . '/test.extas.json';
+        $key = 'test.crawler.test';
         $params = [
             'package_name' => [
                 ISampleParameter::FIELD__NAME => 'package_name',
