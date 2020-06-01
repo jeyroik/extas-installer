@@ -16,7 +16,7 @@ class PluginGenerateData extends InstallPackage
     protected string $selfSection = 'plugins';
     protected string $selfName = 'plugin';
     protected string $selfRepositoryClass = 'pluginRepo';
-    protected string $selfUID = Plugin::FIELD__ID;
+    protected string $selfUID = Plugin::FIELD__CLASS;
     protected string $selfItemClass = Plugin::class;
 
     public function __invoke(array &$package, IInstaller &$installer): void
