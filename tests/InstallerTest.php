@@ -1,6 +1,7 @@
 <?php
 namespace tests\packages;
 
+use extas\components\plugins\PluginRepository;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\IInitializer;
@@ -38,6 +39,7 @@ class InstallerTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->registerSnuffRepos([
+            'pluginRepo' => PluginRepository::class,
             'packageEntityRepository' => PackageEntityRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class
