@@ -5,7 +5,7 @@ use extas\components\Item;
 use extas\components\THasInput;
 use extas\components\THasOutput;
 use extas\components\THasPath;
-use extas\interfaces\IStageExport;
+use extas\interfaces\stages\IStageExport;
 use extas\interfaces\packages\IExporter;
 
 /**

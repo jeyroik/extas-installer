@@ -1,5 +1,8 @@
 <?php
-namespace extas\interfaces;
+namespace extas\interfaces\stages;
+
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
 
 /**
  * Interface IStageExport
