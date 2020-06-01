@@ -68,7 +68,12 @@ class Installer extends Item implements IInstaller
      */
     protected function run(array $package, string $stage = IStageInstallPackage::NAME): void
     {
-        foreach ($this->getPluginsByStage($stage) as $plugin) {
+        $pluginConfig = [
+            IStageInstallPackage::FIELD__INPUT => $this->getInput(),
+            IStageInstallPackage::FIELD__OUTPUT => $this->getOutput()
+        ];
+        
+        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
             /**
              * @var IStageInstallPackage $plugin
              */
