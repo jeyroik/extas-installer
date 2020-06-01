@@ -5,7 +5,6 @@ use extas\components\plugins\PluginRepository;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\IInitializer;
-use extas\components\plugins\PluginException;
 use extas\components\console\TSnuffConsole;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
@@ -21,6 +20,7 @@ use extas\components\packages\Installer;
 use Symfony\Component\Console\Output\NullOutput;
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
+use tests\CanNotCreate;
 
 /**
  * Class InstallerTest
@@ -52,7 +52,6 @@ class InstallerTest extends TestCase
     public function tearDown(): void
     {
         $this->unregisterSnuffRepos();
-        $this->deleteSnuffPlugins();
     }
 
     public function testInstall()
@@ -89,7 +88,7 @@ class InstallerTest extends TestCase
                 'plugins' => [
                     [
                         Plugin::FIELD__STAGE => 'test.install.stage',
-                        Plugin::FIELD__CLASS => PluginException::class,
+                        Plugin::FIELD__CLASS => CanNotCreate::class,
                         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
