@@ -1,7 +1,7 @@
 <?php
 namespace tests;
 
-use extas\components\plugins\install\InstallSection;
+use extas\components\plugins\install\InstallPackage;
 use extas\components\plugins\Plugin;
 use extas\interfaces\packages\IInstaller;
 
@@ -11,7 +11,7 @@ use extas\interfaces\packages\IInstaller;
  * @package tests
  * @author jeyroik <jeyroik@gmail.com>
  */
-class PluginGenerateData extends InstallSection
+class PluginGenerateData extends InstallPackage
 {
     protected string $selfSection = 'plugins';
     protected string $selfName = 'plugin';
@@ -19,15 +19,9 @@ class PluginGenerateData extends InstallSection
     protected string $selfUID = Plugin::FIELD__ID;
     protected string $selfItemClass = Plugin::class;
 
-    /**
-     * @param string $sectionName
-     * @param array $sectionData
-     * @param IInstaller $installer
-     * @throws \Exception
-     */
-    public function __invoke(string $sectionName, array &$sectionData, IInstaller &$installer): void
+    public function __invoke(array &$package, IInstaller &$installer): void
     {
-        parent::__invoke($sectionName, $sectionData, $installer);
+        parent::__invoke($package, $installer);
         $installer->addGeneratedData('test', 'is ok');
     }
 }

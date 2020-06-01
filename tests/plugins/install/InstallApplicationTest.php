@@ -1,6 +1,7 @@
 <?php
 namespace tests\plugins\install;
 
+use extas\components\plugins\TSnuffPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\components\console\TSnuffConsole;
@@ -22,6 +23,7 @@ class InstallApplicationTest extends TestCase
 {
     use TSnuffConsole;
     use TSnuffRepository;
+    use TSnuffPlugins;
 
     protected function setUp(): void
     {
@@ -50,13 +52,15 @@ class InstallApplicationTest extends TestCase
                 'plugins' => [
                     [
                         IPlugin::FIELD__CLASS => PluginGenerateData::class,
-                        IPlugin::FIELD__STAGE => 'extas.install.section.plugins',
+                        IPlugin::FIELD__STAGE => 'extas.install.package',
                         IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
         ];
         $generatedData = [] ;
+
+        $this->reloadSnuffPlugins();
 
         $app($packages, $generatedData);
 
