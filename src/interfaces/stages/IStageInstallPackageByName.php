@@ -14,7 +14,6 @@ interface IStageInstallPackageByName
     /**
      * @param array $package
      * @param IInstaller $installer can be used to pass generated data
-     * @return bool
      */
-    public function __invoke(array $package, IInstaller &$installer): bool;
+    public function __invoke(array &$package, IInstaller &$installer): void;
 }

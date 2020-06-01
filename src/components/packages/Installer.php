@@ -7,6 +7,8 @@ use extas\components\THasInput;
 use extas\components\THasOutput;
 use extas\components\THasPlugins;
 use extas\interfaces\IHasClass;
+use extas\interfaces\IHasExtensions;
+use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStagePackage;
@@ -24,6 +26,8 @@ class Installer extends Item implements IInstaller
 {
     use THasInput;
     use THasOutput;
+    use THasPlugins;
+    use THasExtensions;
 
     protected array $package = [];
     protected array $generatedData = [];
@@ -74,6 +78,12 @@ class Installer extends Item implements IInstaller
      */
     protected function run(array $package): void
     {
+        $this->config[IHasPlugins::FIELD__PLUGINS] = $package[IHasPlugins::FIELD__PLUGINS] ?? [];
+        $this->config[IHasExtensions::FIELD__EXTENSIONS] = $package[IHasExtensions::FIELD__EXTENSIONS] ?? [];
+
+        $this->installExtensions();
+        $this->installPlugins();
+
         foreach ($this->getPluginsByStage(IStageInstallPackage::NAME) as $plugin) {
             /**
              * @var IStageInstallPackage $plugin
@@ -94,10 +104,7 @@ class Installer extends Item implements IInstaller
             /**
              * @var IStageInstallPackageByName $plugin
              */
-            $operated = $plugin($package, $this);
-            if ($operated) {
-                break;
-            }
+            $plugin($package, $this);
         }
 
         return $operated;

@@ -8,6 +8,8 @@ use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stagegs\IStageAfterInstallSection;
 use extas\interfaces\stages\IStageInstallItem;
+use extas\interfaces\stages\IStageInstallItemBySection;
+use extas\interfaces\stages\IStageInstallSection;
 
 /**
  * Class PluginInstallSection
@@ -54,8 +56,22 @@ abstract class PluginInstallSection extends Plugin
         }
     }
 
-    protected function installItem(array $item, IItem $existed, IInstaller &$installer)
+    /**
+     * @param string $sectionName
+     * @param array $item
+     * @param IItem $existed
+     * @param IInstaller $installer
+     */
+    protected function installItem(string $sectionName, array $item, IItem $existed, IInstaller &$installer): void
     {
+        $stage = IStageInstallSection::NAME . '.' . $sectionName . '.item';
+        foreach ($this->getPluginsByStage($stage, $this->getPluginConfig()) as $plugin) {
+            /**
+             * @var IStageInstallItemBySection $plugin
+             */
+            $plugin($item, $existed, $installer);
+        }
+
         foreach ($this->getPluginsByStage(IStageInstallItem::NAME, $this->getPluginConfig()) as $plugin) {
             /**
              * @var IStageInstallItem $plugin

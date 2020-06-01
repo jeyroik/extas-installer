@@ -12,9 +12,8 @@ use extas\interfaces\packages\IInstaller;
 interface IStageInstallSectionByName
 {
     /**
-     * @param array $sectionNData
+     * @param array $sectionData
      * @param IInstaller $installer can be used to pass generated data
-     * @return bool
      */
-    public function __invoke(array $sectionNData, IInstaller &$installer): bool;
+    public function __invoke(array &$sectionData, IInstaller &$installer): void;
 }

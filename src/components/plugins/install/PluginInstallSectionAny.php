@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\install;
 
+use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stages\IStageInstallSection;
 
@@ -13,22 +14,18 @@ use extas\interfaces\stages\IStageInstallSection;
 class PluginInstallSectionAny extends PluginInstallSection implements IStageInstallSection
 {
     /**
+     * @param string $sectionName
      * @param array $sectionData
      * @param IInstaller $installer
      * @throws \Exception
      */
-    public function __invoke(array $sectionData, IInstaller &$installer): void
+    public function __invoke(string $sectionName, array $sectionData, IInstaller &$installer): void
     {
         foreach ($sectionData as $item) {
             $existed = $this->findExisted($item);
-            $this->installItem($item, $existed, $installer);
+            $this->installItem($sectionName, $item, $existed, $installer);
         }
 
         $this->runAfter($sectionData, $installer);
-    }
-
-    protected function isAllowInstallItem(): bool
-    {
-
     }
 }

@@ -16,8 +16,9 @@ interface IStageInstallSection extends IHasInput, IHasOutput
     public const NAME = 'extas.install.section';
 
     /**
+     * @param string $sectionName
      * @param array $sectionData
      * @param IInstaller $installer can be used to pass generated data
      */
-    public function __invoke(array $sectionData, IInstaller &$installer): void;
+    public function __invoke(string $sectionName, array $sectionData, IInstaller &$installer): void;
 }

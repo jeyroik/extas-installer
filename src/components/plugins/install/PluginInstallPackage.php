@@ -46,21 +46,22 @@ class PluginInstallPackage extends Plugin
         $operated = $this->runByName($sectionName, $sectionData, $installer);
 
         if (!$operated) {
-            $this->run($sectionData, $installer);
+            $this->run($sectionName, $sectionData, $installer);
         }
     }
 
     /**
+     * @param string $sectionName
      * @param array $sectionData
      * @param IInstaller $installer
      */
-    protected function run(array $sectionData, IInstaller &$installer): void
+    protected function run(string $sectionName, array $sectionData, IInstaller &$installer): void
     {
         foreach ($this->getPluginsByStage(IStageInstallSection::NAME) as $plugin) {
             /**
              * @var IStageInstallSection $plugin
              */
-            $plugin($sectionData, $installer);
+            $plugin($sectionName, $sectionData, $installer);
         }
     }
 
@@ -77,11 +78,7 @@ class PluginInstallPackage extends Plugin
             /**
              * @var IStageInstallSectionByName $plugin
              */
-            $operated = $plugin($sectionData, $installer);
-
-            if ($operated) {
-                break;
-            }
+            $plugin($sectionData, $installer);
         }
 
         return $operated;
