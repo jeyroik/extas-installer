@@ -92,7 +92,8 @@ class Initializer implements IInitializer
      */
     protected function initSecondaryEntities(string $packageName, array $package): void
     {
-        $this->runInitStages($packageName, $package);
+        $this->runStage($packageName, $package, IStageInitialize::NAME . '.' . $packageName);
+        $this->runStage($packageName, $package);
     }
 
     /**
@@ -114,23 +115,16 @@ class Initializer implements IInitializer
     /**
      * @param string $packageName
      * @param array $package
+     * @param string $stage
      */
-    protected function runInitStages(string $packageName, array $package): void
+    protected function runStage(string $packageName, array $package, string $stage  = IStageInitialize::NAME): void
     {
         $pluginConfig = [
             IHasInput::FIELD__INPUT => $this->getInput(),
             IHasOutput::FIELD__OUTPUT => $this->getOutput()
         ];
 
-        $stage = IStageInitialize::NAME . '.' . $packageName;
         foreach (Plugins::byStage($stage, $this, $pluginConfig) as $plugin) {
-            /**
-             * @var IStageInitialize $plugin
-             */
-            $plugin($packageName, $package);
-        }
-
-        foreach (Plugins::byStage(IStageInitialize::NAME, $this, $pluginConfig) as $plugin) {
             /**
              * @var IStageInitialize $plugin
              */
