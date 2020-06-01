@@ -173,13 +173,17 @@ class InstallerTest extends TestCase
             'extensions' => [
                 [
                     Extension::FIELD__CLASS => 'NotExistingClass',
+                    Extension::FIELD__INTERFACE => 'NotExistingClass',
                     Extension::FIELD__SUBJECT => '*',
-                    Extension::FIELD__METHODS => ['test']
+                    Extension::FIELD__METHODS => ['test'],
+                    IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                 ],
                 [
                     Extension::FIELD__CLASS => 'NotExistingClass',
+                    Extension::FIELD__INTERFACE => 'NotExistingClass',
                     Extension::FIELD__SUBJECT => '*',
-                    Extension::FIELD__METHODS => ['test1']
+                    Extension::FIELD__METHODS => ['test1'],
+                    IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                 ]
             ]
         ]]);
@@ -189,6 +193,7 @@ class InstallerTest extends TestCase
          */
         $extensions = $this->allSnuffRepos('extRepo', [Extension::FIELD__CLASS => 'NotExistingClass']);
         $this->assertCount(1, $extensions);
+
         $ext = array_shift($extensions);
         $this->assertEquals(['test', 'test1'], $ext->getMethods());
     }
