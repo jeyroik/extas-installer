@@ -21,6 +21,7 @@ use tests\PluginGenerateData;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -62,21 +63,7 @@ class InstallCommandTest extends TestCase
          * @var BufferedOutput $output
          */
         $output = $this->getOutput(true);
-        $option = new InstallerOption();
-        $option->setName('test')->setDefault(true)->setMode(InputOption::VALUE_OPTIONAL)->setShortcut('t');
-
-        $this->createWithSnuffRepo('installerOptionRepository', $option);
-        $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
-            InstallerOption::FIELD__NAME => 'package',
-            InstallerOption::FIELD__DEFAULT => 'reserved.name'
-        ]));
-        $this->createWithSnuffRepo('crawlerRepository', new Crawler([
-            Crawler::FIELD__CLASS => CrawlerExtas::class
-        ]));
-        $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
-        $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
-
-        $command = new InstallCommand();
+        $command = $this->getCommand($output);
         $command->run(
             $this->getInput([
                 'application' => 'test_install_command',
@@ -102,5 +89,54 @@ class InstallCommandTest extends TestCase
         );
 
         unlink(getcwd() . '/.extas.install');
+    }
+
+    public function testRewriteGeneratedData()
+    {
+        /**
+         * @var BufferedOutput $output
+         */
+        $output = $this->getOutput(true);
+        $command = $this->getCommand($output);
+        $command->run(
+            $this->getInput([
+                'application' => 'test_install_command',
+                'rewrite' => true,
+                'package' => 'test.extas.json'
+            ]),
+            $output
+        );
+        $outputText = $output->fetch();
+        $this->assertStringContainsString(
+            'See generated data in the .extas.install',
+            $outputText,
+            'Missed generated data path in the current output: ' . $outputText
+        );
+
+        unlink(getcwd() . '/.extas.install');
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @return InstallCommand
+     * @throws \Exception
+     */
+    protected function getCommand(OutputInterface $output): InstallCommand
+    {
+        $option = new InstallerOption();
+        $option->setName('test')->setDefault(true)->setMode(InputOption::VALUE_OPTIONAL)->setShortcut('t');
+
+        $this->createWithSnuffRepo('installerOptionRepository', $option);
+        $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
+            InstallerOption::FIELD__NAME => 'package',
+            InstallerOption::FIELD__DEFAULT => 'reserved.name'
+        ]));
+        $this->createWithSnuffRepo('crawlerRepository', new Crawler([
+            Crawler::FIELD__CLASS => CrawlerExtas::class
+        ]));
+        $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
+        $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
+
+        $command = new InstallCommand();
     }
 }
