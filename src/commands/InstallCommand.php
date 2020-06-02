@@ -1,9 +1,11 @@
 <?php
 namespace extas\commands;
 
+use extas\components\Item;
 use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\Plugins;
 use extas\interfaces\crawlers\ICrawler;
+use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerOption;
 use extas\interfaces\stages\IStageInstall;
@@ -110,7 +112,7 @@ class InstallCommand extends DefaultCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->crawlerRepository()->all([]);
+        $crawlers = $this->getExtasApplication()->crawlerRepository()->all([]);
 
         $packages = [];
         foreach ($crawlers as $crawler) {
@@ -130,6 +132,19 @@ class InstallCommand extends DefaultCommand
         );
 
         $this->storeGeneratedData($generatedData, $input, $output);
+    }
+
+    /**
+     * @return IItem
+     */
+    protected function getExtasApplication(): IItem
+    {
+        return new class extends Item {
+            protected function getSubjectForExtension(): string
+            {
+                return 'extas.application';
+            }
+        };
     }
 
     /**
