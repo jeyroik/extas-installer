@@ -107,27 +107,18 @@ trait THasPlugins
      */
     protected function createPlugin(string $pluginStage, string $pluginClass, array $plugin): void
     {
-        try {
-            $this->writeLn([
-                '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
-            ]);
+        $this->writeLn([
+            '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
+        ]);
 
-            if (isset($plugin[IInitializer::FIELD__INSTALL_ON])) {
-                unset($plugin[IInitializer::FIELD__INSTALL_ON]);
-            }
-
-            $pluginObj = new Plugin($plugin);
-            $this->pluginRepo->create($pluginObj);
-
-            $this->writeLn(['<info>[ CREATE ] Plugin installed.</info>']);
-        } catch (\Exception $e) {
-            $this->writeLn([
-                '<error>ERROR:</error> Can not install Plugin',
-                '<error>Plugin class "' . $pluginClass . '"</error>',
-                '<error>Plugin Stage "' . $pluginStage . '"</error>',
-                '<error>Error: ' . $e->getMessage() . '</error>'
-            ]);
+        if (isset($plugin[IInitializer::FIELD__INSTALL_ON])) {
+            unset($plugin[IInitializer::FIELD__INSTALL_ON]);
         }
+
+        $pluginObj = new Plugin($plugin);
+        $this->pluginRepo->create($pluginObj);
+
+        $this->writeLn(['<info>[ CREATE ] Plugin installed.</info>']);
     }
 
     /**

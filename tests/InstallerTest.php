@@ -79,26 +79,6 @@ class InstallerTest extends TestCase
         $this->assertEquals(1, PluginEmpty::$worked);
     }
 
-    public function testExceptionNotBreakPluginsInstall()
-    {
-        $installer = $this->getInstaller();
-        $installer->installPackages([
-            [
-                'name' => 'test',
-                'plugins' => [
-                    [
-                        Plugin::FIELD__STAGE => 'test.install.stage',
-                        Plugin::FIELD__CLASS => CanNotCreate::class,
-                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
-                    ]
-                ]
-            ]
-        ]);
-
-        $this->reloadSnuffPlugins();
-        $this->assertEmpty($this->allSnuffRepos('pluginRepo'));
-    }
-
     public function testInstallOnePluginForMultipleStages()
     {
         $installer = $this->getInstaller();
