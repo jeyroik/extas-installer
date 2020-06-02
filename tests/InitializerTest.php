@@ -1,7 +1,9 @@
 <?php
 namespace tests\packages;
 
+use extas\components\extensions\Extension;
 use extas\components\packages\PackageClassRepository;
+use extas\components\plugins\Plugin;
 use extas\interfaces\IHasPackageClasses;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\packages\IPackageClass;
@@ -68,15 +70,15 @@ class InitializerTest extends TestCase
                     IInitializer::FIELD__EXTENSIONS => $extensions,
                     IHasPackageClasses::FIELD__PACKAGE_CLASSES => [
                         [
-                            IPackageClass::FIELD__CLASS => 'is fail',
+                            IPackageClass::FIELD__CLASS => Extension::class,
                             IPackageClass::FIELD__INTERFACE_NAME => 'test'
                         ],
                         [
-                            IPackageClass::FIELD__CLASS => 'is fail',
+                            IPackageClass::FIELD__CLASS => Extension::class,
                             IPackageClass::FIELD__INTERFACE_NAME => 'test'
                         ],
                         [
-                            IPackageClass::FIELD__CLASS => 'is ok',
+                            IPackageClass::FIELD__CLASS => Plugin::class,
                             IPackageClass::FIELD__INTERFACE_NAME => 'test'
                         ]
                     ]
@@ -94,7 +96,7 @@ class InitializerTest extends TestCase
         $this->assertStringContainsString('Interface "test" installed', $outputText);
         $this->assertStringContainsString('Interface "test" is already installed', $outputText);
         $this->assertStringContainsString('Classes lock-file updated', $outputText);
-        
+
         $repo = new PackageClassRepository();
         $repo->delete([IPackageClass::FIELD__INTERFACE_NAME => 'test']);
     }
