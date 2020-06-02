@@ -116,7 +116,7 @@ class InstallCommand extends DefaultCommand
 
         $packages = [];
         foreach ($crawlers as $crawler) {
-            $crawler->setParametersValues(['package_name' => $packageName]);
+            $crawler->addParametersByValues(['package_name' => $packageName]);
             $packages = array_merge($packages, $crawler->dispatch(getcwd(), $input, $output));
         }
 
