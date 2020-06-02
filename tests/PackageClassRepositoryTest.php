@@ -49,5 +49,12 @@ class PackageClassRepositoryTest extends TestCase
 
         $class = $repo->one([PackageClass::FIELD__CLASS => 'is ok']);
         $this->assertEmpty($class);
+
+        $this->assertEmpty($repo->update(null, ['class' => 'unknown']));
+        $repo->create(new PackageClass([
+            PackageClass::FIELD__INTERFACE_NAME => 'test',
+            PackageClass::FIELD__CLASS => 'test'
+        ]));
+        $this->assertEquals(1, $repo->delete([], $class));
     }
 }

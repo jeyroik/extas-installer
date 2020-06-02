@@ -24,18 +24,6 @@ class PackageClass extends Item implements IPackageClass
     }
 
     /**
-     * @param string $interface
-     *
-     * @return $this
-     */
-    public function setInterfaceName($interface)
-    {
-        $this->config[static::FIELD__INTERFACE_NAME] = (string) $interface;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     protected function getSubjectForExtension(): string

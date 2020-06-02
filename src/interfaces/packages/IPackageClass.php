@@ -20,11 +20,4 @@ interface IPackageClass extends IItem, IHasClass
      * @return string
      */
     public function getInterface(): string;
-
-    /**
-     * @param string $interface
-     *
-     * @return $this
-     */
-    public function setInterfaceName($interface);
 }

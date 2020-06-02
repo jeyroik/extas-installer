@@ -44,7 +44,7 @@ class InitializerTest extends TestCase
         $this->unregisterSnuffRepos();
     }
 
-    public function test()
+    public function testInitCoreEntities()
     {
         $init = new Initializer([
             Initializer::FIELD__INPUT => $this->getInput(),
