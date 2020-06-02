@@ -1,13 +1,16 @@
 <?php
 namespace tests;
 
+use extas\components\plugins\TSnuffPlugins;
 use extas\interfaces\samples\parameters\ISampleParameter;
 use extas\components\crawlers\Crawler;
 use extas\components\packages\CrawlerExtas;
 
+use extas\interfaces\stages\IStageCrawlPackages;
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 use Symfony\Component\Console\Output\NullOutput;
+use extas\components\plugins\PluginEmpty;
 
 /**
  * Class CrawlerTest
@@ -16,11 +19,18 @@ use Symfony\Component\Console\Output\NullOutput;
  */
 class CrawlerTest extends TestCase
 {
+    use TSnuffPlugins;
+
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->deleteSnuffPlugins();
     }
 
     public function testCrawlPackages()
@@ -45,6 +55,9 @@ class CrawlerTest extends TestCase
             CrawlerExtas::FIELD__OUTPUT => new NullOutput(),
             CrawlerExtas::FIELD__PATH => getcwd() . '/tests'
         ]);
+        $this->createSnuffPlugin(PluginEmpty::class, [IStageCrawlPackages::NAME]);
+        $this->reloadSnuffPlugins();
         $this->assertEquals($must, $crawler());
+        $this->assertEquals(1, PluginEmpty::$worked);
     }
 }
