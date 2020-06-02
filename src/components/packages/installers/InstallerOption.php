@@ -2,7 +2,6 @@
 namespace extas\components\packages\installers;
 
 use extas\components\Item;
-use extas\components\THasClass;
 use extas\components\THasDescription;
 use extas\components\THasName;
 use extas\interfaces\packages\installers\IInstallerOption;
@@ -52,14 +51,6 @@ class InstallerOption extends Item implements IInstallerOption
     /**
      * @return string
      */
-    public function getStage(): string
-    {
-        return $this->config[static::FIELD__STAGE] ?? '';
-    }
-
-    /**
-     * @return string
-     */
     public function getDefault(): string
     {
         return $this->config[static::FIELD__DEFAULT] ?? '';
@@ -97,18 +88,6 @@ class InstallerOption extends Item implements IInstallerOption
     public function setDefault(string $default): IInstallerOption
     {
         $this->config[static::FIELD__DEFAULT] = $default;
-
-        return $this;
-    }
-
-    /**
-     * @param string $stage
-     *
-     * @return IInstallerOption
-     */
-    public function setStage(string $stage): IInstallerOption
-    {
-        $this->config[static::FIELD__STAGE] = $stage;
 
         return $this;
     }

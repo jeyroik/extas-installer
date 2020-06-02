@@ -18,7 +18,6 @@ interface IInstallerOption extends IItem, IHasName, IHasDescription
     public const FIELD__SHORTCUT = 'shortcut';
     public const FIELD__DEFAULT = 'default';
     public const FIELD__MODE = 'mode';
-    public const FIELD__STAGE = 'stage';
 
     /**
      * @return array
@@ -41,11 +40,6 @@ interface IInstallerOption extends IItem, IHasName, IHasDescription
     public function getMode(): int;
 
     /**
-     * @return string
-     */
-    public function getStage(): string;
-
-    /**
      * @param string $shortcut
      *
      * @return IInstallerOption
@@ -65,11 +59,4 @@ interface IInstallerOption extends IItem, IHasName, IHasDescription
      * @return IInstallerOption
      */
     public function setMode(int $mode): IInstallerOption;
-
-    /**
-     * @param string $stage
-     *
-     * @return IInstallerOption
-     */
-    public function setStage(string $stage): IInstallerOption;
 }
