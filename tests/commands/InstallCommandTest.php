@@ -137,6 +137,6 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
         $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
 
-        $command = new InstallCommand();
+        return new InstallCommand();
     }
 }
