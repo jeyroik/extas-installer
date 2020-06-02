@@ -128,7 +128,7 @@ class InstallCommand extends DefaultCommand
         $generatedData = $this->runInstallStage($input, $output, $packages, IStageInstall::NAME . '.' . $appName);
         $generatedData = array_merge(
             $generatedData,
-            $this->runInstallStage($input, $output, $generatedData, $packages)
+            $this->runInstallStage($input, $output, $packages)
         );
 
         $this->storeGeneratedData($generatedData, $input, $output);
