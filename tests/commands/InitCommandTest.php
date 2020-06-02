@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * Class InitCommandTest
- * 
+ *
  * @package tests\commands
  * @author jeyroik <jeyroik@gmail.com>
  */
