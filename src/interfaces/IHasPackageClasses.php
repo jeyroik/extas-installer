@@ -9,7 +9,7 @@ namespace extas\interfaces;
  */
 interface IHasPackageClasses
 {
-    public const FIELD__PACKAGE_CLASSES = 'package_class';
+    public const FIELD__PACKAGE_CLASSES = 'package_classes';
 
     /**
      * @return $this
