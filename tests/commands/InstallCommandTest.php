@@ -58,7 +58,6 @@ class InstallCommandTest extends TestCase
 
     public function testDispatch()
     {
-        $command = new InstallCommand();
         /**
          * @var BufferedOutput $output
          */
@@ -77,6 +76,7 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
         $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
 
+        $command = new InstallCommand();
         $command->run(
             $this->getInput([
                 'application' => 'test_install_command',
