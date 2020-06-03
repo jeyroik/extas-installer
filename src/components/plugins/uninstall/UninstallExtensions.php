@@ -2,6 +2,7 @@
 namespace extas\components\plugins\uninstall;
 
 use extas\components\extensions\Extension;
+use extas\components\extensions\ExtensionRepository;
 
 /**
  * Class UninstallExtensions
@@ -16,4 +17,14 @@ class UninstallExtensions extends UninstallSection
     protected string $selfRepositoryClass = 'extensionRepository';
     protected string $selfUID = Extension::FIELD__CLASS;
     protected string $selfItemClass = Extension::class;
+
+    /**
+     * @param array $item
+     */
+    protected function runStage(array &$item): void
+    {
+        $repo = new ExtensionRepository();
+        $repo->delete([], $item);
+        $this->infoLn(['Uninstalled item from extensions.']);
+    }
 }
