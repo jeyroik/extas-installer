@@ -74,12 +74,6 @@
 - `# vendor/bin/extas uninstall -e <entity.name>` удалить во всех пакетах сущность `<entity.name>`. В качестве имени сущности используется имя секции в `extas.json`.
 - `# vendor/bin/extas uninstall -p <package.name> -e <entity.name>` удалить сущность `<entity.anem>` из пакета `<package.name>`
 
-## Экспорт сущностей
-
-`# vendor/bin/extas export`
-
-# Использование
-
 ## Создание и установка пользовательской сущности
 
 1. Создаём класс сущности.
