@@ -27,7 +27,7 @@ class InstallCommand extends DefaultCommand
     const DEFAULT__PACKAGE_NAME = 'extas.json';
 
     protected const OPTION__APPLICATION_NAME = 'application';
-    protected const OPTION__PACKAGE_NAME = 'package';
+    protected const OPTION__PACKAGE_FILENAME = 'package_filename';
     protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
 
     protected string $commandTitle = 'Extas installer';
@@ -45,7 +45,7 @@ class InstallCommand extends DefaultCommand
             ->setDescription('Install entities using extas-compatible package file.')
             ->setHelp('This command allows you to install entities using extas-compatible package file.')
             ->addOption(
-                static::OPTION__PACKAGE_NAME,
+                static::OPTION__PACKAGE_FILENAME,
                 'p',
                 InputOption::VALUE_OPTIONAL,
                 'Extas-compatible package name',
@@ -66,7 +66,7 @@ class InstallCommand extends DefaultCommand
         ;
 
         $this->configureWithOptions('extas-install', [
-            static::OPTION__PACKAGE_NAME => true,
+            static::OPTION__PACKAGE_FILENAME => true,
             static::OPTION__REWRITE_GENERATED_DATA => true,
             static::OPTION__APPLICATION_NAME => true
         ]);

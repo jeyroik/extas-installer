@@ -20,6 +20,7 @@ class UninstallCommand extends DefaultCommand
     use TConfigure;
     use TPrepareCommand;
 
+    protected const OPTION__PACKAGE_FILENAME = 'package_filename';
     protected const OPTION__PACKAGE = 'package';
     protected const OPTION__SECTION = 'section';
     protected const OPTION__APPLICATION_NAME = 'application';
@@ -44,6 +45,12 @@ class UninstallCommand extends DefaultCommand
                 'Application name for uninstall.',
                 'extas'
             )->addOption(
+                static::OPTION__PACKAGE_FILENAME,
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Package filename for uninstall. Example: "extas.json"',
+                'extas.json'
+            )->addOption(
                 static::OPTION__PACKAGE,
                 'p',
                 InputOption::VALUE_OPTIONAL,
@@ -61,6 +68,7 @@ class UninstallCommand extends DefaultCommand
         ;
 
         $this->configureWithOptions('extas-uninstall', [
+            static::OPTION__PACKAGE_FILENAME => true,
             static::OPTION__PACKAGE => true,
             static::OPTION__SECTION => true,
             static::OPTION__APPLICATION_NAME => true

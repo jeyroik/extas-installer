@@ -23,7 +23,7 @@ trait TPrepareCommand
      */
     protected function prepareCommand(InputInterface $input, OutputInterface $output, string $operation): array
     {
-        $packageName = $input->getOption('package');
+        $packageName = $input->getOption('package_filename');
         $appName = $input->getOption('application');
 
         $output->writeln(['Searching packages...']);
