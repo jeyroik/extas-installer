@@ -32,8 +32,6 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
             $this->uninstallSections($package);
         }
 
-        $this->infoLn(['Uninstalled package ' . $packageName]);
-
         $this->runAfter($packageName, $package);
     }
 
@@ -43,9 +41,11 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
      */
     protected function uninstallSectionByName(string $sectionName, array $sections): void
     {
-        if (isset($sections[$sectionName])) {
+        if (isset($sections[$sectionName]) && is_array($sections[$sectionName])) {
             $sectionData = $sections[$sectionName];
+            $this->infoLn(['Uninstalling section ' . $sectionName . '...']);
             $this->runStage($sectionName, $sectionData, IStageUninstallSection::NAME . '.' . $sectionName);
+            $this->infoLn(['Uninstalled section ' . $sectionName . '.']);
         }
     }
 
@@ -68,8 +68,10 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
         if (!is_array($sectionData)) {
             $this->errorLn(['Skip section ' . $sectionName . ' - it is not an array.']);
         } else {
+            $this->infoLn(['Uninstalling section ' . $sectionName . '...']);
             $this->runStage($sectionName, $sectionData, IStageUninstallSection::NAME . '.' . $sectionName);
             $this->runStage($sectionName, $sectionData);
+            $this->infoLn(['Uninstalled section ' . $sectionName . '.']);
         }
     }
 

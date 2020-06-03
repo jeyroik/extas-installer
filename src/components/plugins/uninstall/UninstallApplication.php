@@ -51,6 +51,7 @@ class UninstallApplication extends Plugin implements IStageUninstall
             $package = $packages[$packageName];
             $this->infoLn(['Uninstalling package ' . $packageName . '...']);
             $this->runStage($packageName, $package, IStageUninstallPackage::NAME . '.' . $packageName);
+            $this->infoLn(['Uninstalled package ' . $packageName . '.']);
         } else {
             throw new \Exception('Unknown package ' . $packageName);
         }
@@ -75,6 +76,7 @@ class UninstallApplication extends Plugin implements IStageUninstall
         $this->infoLn(['Uninstalling package ' . $packageName . '...']);
         $this->runStage($packageName, $package, IStageUninstallPackage::NAME . '.' . $packageName);
         $this->runStage($packageName, $package);
+        $this->infoLn(['Uninstalled package ' . $packageName . '.']);
     }
 
     /**

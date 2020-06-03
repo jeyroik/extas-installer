@@ -35,8 +35,6 @@ class UninstallSection extends Plugin implements IStageUninstallSection
             $this->runStage($item);
         }
 
-        $this->infoLn(['Uninstalled section ' . $sectionName]);
-
         foreach ($this->getPluginsByStage(IStageUninstalledSection::STAGE, $this->__toArray()) as $plugin) {
             /**
              * @var IStageUninstalledSection $plugin
