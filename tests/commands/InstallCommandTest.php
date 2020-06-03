@@ -1,6 +1,7 @@
 <?php
 namespace tests\commands;
 
+use extas\components\options\CommandOptionRepository;
 use extas\interfaces\stages\IStageInstall;
 use extas\interfaces\stages\IStageInstallPackage;
 use extas\commands\InstallCommand;
@@ -46,7 +47,8 @@ class InstallCommandTest extends TestCase
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class,
             'installerOptionRepository' => InstallerOptionRepository::class,
-            'crawlerRepository' => CrawlerRepository::class
+            'crawlerRepository' => CrawlerRepository::class,
+            'commandOptionRepository' => CommandOptionRepository::class
         ]);
     }
 
