@@ -14,7 +14,7 @@
       "interface": "pluginRepository"
     },
     {
-      "class": "extas\\components\\plugins\\ExtensionRepository",
+      "class": "extas\\components\\extensions\\ExtensionRepository",
       "interface": "extensionRepository"
     }
   ],
