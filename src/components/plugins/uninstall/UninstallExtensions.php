@@ -19,6 +19,7 @@ class UninstallExtensions extends UninstallSection
     protected string $selfItemClass = Extension::class;
 
     /**
+     * Rewrite this, cause we can not lean on theory of repo-get extension is existing - we are removing it right now.
      * @param array $item
      */
     protected function runStage(array &$item): void
