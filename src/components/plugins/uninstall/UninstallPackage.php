@@ -65,8 +65,12 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
      */
     protected function uninstallSection(string $sectionName, array $sectionData): void
     {
-        $this->runStage($sectionName, $sectionData, IStageUninstallSection::NAME . '.' . $sectionName);
-        $this->runStage($sectionName, $sectionData);
+        if (!is_array($sectionData)) {
+            $this->errorLn(['Skip section ' . $sectionName . ' - it is not an array.']);
+        } else {
+            $this->runStage($sectionName, $sectionData, IStageUninstallSection::NAME . '.' . $sectionName);
+            $this->runStage($sectionName, $sectionData);
+        }
     }
 
     /**

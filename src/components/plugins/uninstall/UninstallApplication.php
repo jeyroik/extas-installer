@@ -49,6 +49,7 @@ class UninstallApplication extends Plugin implements IStageUninstall
     {
         if (isset($packages[$packageName])) {
             $package = $packages[$packageName];
+            $this->infoLn(['Uninstalling package ' . $packageName . '...']);
             $this->runStage($packageName, $package, IStageUninstallPackage::NAME . '.' . $packageName);
         } else {
             throw new \Exception('Unknown package ' . $packageName);
@@ -71,6 +72,7 @@ class UninstallApplication extends Plugin implements IStageUninstall
      */
     protected function uninstallPackage(string $packageName, array $package): void
     {
+        $this->infoLn(['Uninstalling package ' . $packageName . '...']);
         $this->runStage($packageName, $package, IStageUninstallPackage::NAME . '.' . $packageName);
         $this->runStage($packageName, $package);
     }
