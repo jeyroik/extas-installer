@@ -1,6 +1,7 @@
 <?php
 namespace tests;
 
+use extas\components\options\CommandOptionRepository;
 use extas\interfaces\stages\IStageUninstall;
 use extas\interfaces\stages\IStageUninstallItem;
 use extas\interfaces\stages\IStageUninstallPackage;
@@ -46,7 +47,8 @@ class UninstallCommandTest extends TestCase
             'entityRepository' => EntityRepository::class,
             'extensionRepository' => ExtensionRepository::class,
             'installerOptionRepository' => InstallerOptionRepository::class,
-            'crawlerRepository' => CrawlerRepository::class
+            'crawlerRepository' => CrawlerRepository::class,
+            'commandOptionRepository' => CommandOptionRepository::class
         ]);
     }
 
