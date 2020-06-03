@@ -1,15 +1,14 @@
 <?php
 namespace tests\packages;
 
-use extas\components\plugins\PluginRepository;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\extensions\IExtension;
 use extas\interfaces\packages\IInitializer;
+use extas\components\plugins\PluginRepository;
 use extas\components\console\TSnuffConsole;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\entities\EntityRepository;
-use extas\components\packages\PackageEntityRepository;
 use extas\components\plugins\PluginEmpty;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
@@ -40,7 +39,6 @@ class InstallerTest extends TestCase
         $env->load();
         $this->registerSnuffRepos([
             'pluginRepo' => PluginRepository::class,
-            'packageEntityRepository' => PackageEntityRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class
         ]);

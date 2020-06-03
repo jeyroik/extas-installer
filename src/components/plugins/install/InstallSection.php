@@ -1,12 +1,13 @@
 <?php
 namespace extas\components\plugins\install;
 
+use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
 use extas\components\THasInput;
 use extas\components\THasOutput;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
-use extas\interfaces\stagegs\IStageAfterInstallSection;
+use extas\interfaces\stages\IStageAfterInstallSection;
 use extas\interfaces\stages\IStageInstallItem;
 use extas\interfaces\stages\IStageInstallItemBySection;
 use extas\interfaces\stages\IStageInstallSection;
@@ -21,6 +22,7 @@ class InstallSection extends Plugin implements IStageInstallSection
 {
     use THasInput;
     use THasOutput;
+    use TInstallEntities;
 
     protected string $selfSection = '';
     protected string $selfName = '';
@@ -41,15 +43,18 @@ class InstallSection extends Plugin implements IStageInstallSection
             $this->installItem($sectionName, $item, $existed, $installer);
         }
 
-        $this->runAfter($sectionData, $installer);
+        $this->runAfter($sectionName, $sectionData, $installer);
     }
 
     /**
+     * @param string $sectionName
      * @param array $sectionData
      * @param IInstaller $installer
      */
-    protected function runAfter(array $sectionData, IInstaller &$installer): void
+    protected function runAfter(string $sectionName, array $sectionData, IInstaller &$installer): void
     {
+        $this->installEntities($sectionName, $this->selfRepositoryClass);
+
         foreach ($this->getPluginsByStage(IStageAfterInstallSection::NAME, $this->getPluginConfig()) as $plugin) {
             /**
              * @var IStageAfterInstallSection $plugin

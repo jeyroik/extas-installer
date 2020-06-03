@@ -34,7 +34,7 @@ class UnInstaller extends Item implements IUnInstaller
     {
         parent::__construct($config);
 
-        $this->packageEntityRepo = new PackageEntityRepository();
+
         $this->entityRepo = new EntityRepository();
     }
 
@@ -48,21 +48,17 @@ class UnInstaller extends Item implements IUnInstaller
          */
         $repos = [];
         $entitiesByNames = $this->getEntitiesByNames();
-        $packageEntities = $this->getPackageEntities($this->buildQuery());
 
-        foreach ($packageEntities as $packageEntity) {
-            $entityName = $packageEntity->getEntity();
-            if (!isset($entitiesByNames[$entityName])) {
-                $this->errorLn(['Unknown entity "' . $entityName . '"']);
-                continue;
-            }
+
+
+        foreach ($entitiesByNames as $entityName => $entity) {
 
             if (!isset($repos[$entityName])) {
                 $repos[$entityName] = $entitiesByNames[$entityName]->buildClassWithParameters();
             }
 
-            $query = $packageEntity->getQuery();
-            $repos[$entityName]->delete($query) && $this->commitUninstall($query, $entityName, $packageEntity);
+            $query = $entity->getQuery();
+            $repos[$entityName]->delete($query) && $this->commitUninstall($query, $entityName, $entity);
         }
 
         return true;

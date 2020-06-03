@@ -12,7 +12,6 @@ use extas\components\packages\CrawlerExtas;
 use extas\components\packages\entities\EntityRepository;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
-use extas\components\packages\PackageEntityRepository;
 use extas\components\plugins\install\InstallApplication;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
@@ -44,7 +43,6 @@ class InstallCommandTest extends TestCase
         $env->load();
         $this->registerSnuffRepos([
             'pluginRepo' => PluginRepository::class,
-            'packageEntityRepository' => PackageEntityRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class,
             'installerOptionRepository' => InstallerOptionRepository::class,

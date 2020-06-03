@@ -1,10 +1,10 @@
 <?php
 namespace extas\commands;
 
-use extas\components\packages\Installer;
-use extas\components\packages\CrawlerExtas;
-use extas\components\packages\UnInstaller;
-use Symfony\Component\Console\Input\InputArgument;
+use extas\components\options\TConfigure;
+use extas\components\packages\TPrepareCommand;
+use extas\components\Plugins;
+use extas\interfaces\stages\IStageUninstall;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,14 +17,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UninstallCommand extends DefaultCommand
 {
-    public const OPTION__PACKAGE = 'package-name';
-    public const OPTION__ENTITY = 'entity';
+    use TConfigure;
+    use TPrepareCommand;
 
-
-    const ARGUMENT__PATH = 'path';
-
-    const OPTION__ALL = 'all';
-    const OPTION__MASK = 'mask';
+    protected const OPTION__PACKAGE = 'package';
+    protected const OPTION__SECTION = 'section';
+    protected const OPTION__APPLICATION_NAME = 'application';
 
     protected string $commandVersion = '1.0.0';
     protected string $commandTitle = 'Extas uninstaller';
@@ -38,8 +36,14 @@ class UninstallCommand extends DefaultCommand
             ->setName('uninstall')
             ->setAliases(['u'])
             ->setDescription('Uninstall extas packages and/or entities')
-            ->setHelp('This command allows you to uninstall entities by extas-compatible package file.')
+            ->setHelp('extas u -p "extas/installer"')
             ->addOption(
+                static::OPTION__APPLICATION_NAME,
+                'a',
+                InputOption::VALUE_OPTIONAL,
+                'Application name for uninstall.',
+                'extas'
+            )->addOption(
                 static::OPTION__PACKAGE,
                 'p',
                 InputOption::VALUE_OPTIONAL,
@@ -48,13 +52,19 @@ class UninstallCommand extends DefaultCommand
                 ''
             )
             ->addOption(
-                static::OPTION__ENTITY,
-                'e',
+                static::OPTION__SECTION,
+                's',
                 InputOption::VALUE_OPTIONAL,
-                'Entity name for uninstall. Leave blank to delete all entities. Example: plugins',
+                'Section name for uninstall. Leave blank to delete all entities. Example: plugins',
                 ''
             )
         ;
+
+        $this->configureWithOptions('extas-uninstall', [
+            static::OPTION__PACKAGE => true,
+            static::OPTION__SECTION => true,
+            static::OPTION__APPLICATION_NAME => true
+        ]);
     }
 
     /**
@@ -63,12 +73,39 @@ class UninstallCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $unInstaller = new UnInstaller([
-            UnInstaller::FIELD__PACKAGE => $input->getOption(static::OPTION__PACKAGE),
-            UnInstaller::FIELD__ENTITY => $input->getOption(static::OPTION__ENTITY),
-            UnInstaller::FIELD__INPUT => $input,
-            UnInstaller::FIELD__OUTPUT => $output
-        ]);
-        $unInstaller->uninstall();
+        $appName = $input->getOption(static::OPTION__APPLICATION_NAME);
+        $packages = $this->prepareCommand($input, $output, 'Uninstalling');
+
+        $this->runStage($input, $output, $packages, IStageUninstall::NAME . '.' . $appName);
+        $this->runStage($input, $output, $packages);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param array $packages
+     * @param string $stage
+     * @return $this
+     */
+    protected function runStage(
+        InputInterface $input,
+        OutputInterface $output,
+        array &$packages,
+        string $stage = IStageUninstall::NAME
+    )
+    {
+        $pluginConfig = [
+            IStageUninstall::FIELD__INPUT => $input,
+            IStageUninstall::FIELD__OUTPUT => $output
+        ];
+
+        foreach (Plugins::byStage($stage, $this, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageUninstall $plugin
+             */
+            $plugin($packages);
+        }
+
+        return $this;
     }
 }

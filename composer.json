@@ -8,7 +8,8 @@
     "jeyroik/extas-foundation": "5.*",
     "jeyroik/extas-repositories-fields-uuid": "0.*",
     "jeyroik/extas-crawlers": "0.*",
-    "jeyroik/extas-samples": "3.*"
+    "jeyroik/extas-samples": "3.*",
+    "jeyroik/extas-commands-options": "0.*"
   },
   "minimum-stability": "alpha",
   "require-dev": {

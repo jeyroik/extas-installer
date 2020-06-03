@@ -1,13 +1,10 @@
 <?php
 namespace extas\commands;
 
-use extas\components\Item;
-use extas\components\packages\installers\InstallerOptionRepository;
+use extas\components\options\TConfigure;
+use extas\components\packages\TPrepareCommand;
 use extas\components\Plugins;
-use extas\interfaces\crawlers\ICrawler;
-use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
-use extas\interfaces\packages\installers\IInstallerOption;
 use extas\interfaces\stages\IStageInstall;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,6 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InstallCommand extends DefaultCommand
 {
+    use TConfigure;
+    use TPrepareCommand;
+
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
 
@@ -65,34 +65,11 @@ class InstallCommand extends DefaultCommand
             )
         ;
 
-        $this->configureByPlugins();
-    }
-
-    /**
-     * @return $this
-     * @throws
-     */
-    protected function configureByPlugins()
-    {
-        $reservedOptions = [
+        $this->configureWithOptions('extas-install', [
             static::OPTION__PACKAGE_NAME => true,
-            static::OPTION__REWRITE_GENERATED_DATA => true
-        ];
-
-        /**
-         * @var $options IInstallerOption[]
-         */
-        $repo = new InstallerOptionRepository();
-        $options = $repo->all([]);
-
-        foreach ($options as $option) {
-            if (isset($reservedOptions[$option->getName()])) {
-                continue;
-            }
-            $this->addOption(...$option->__toInputOption());
-        }
-
-        return $this;
+            static::OPTION__REWRITE_GENERATED_DATA => true,
+            static::OPTION__APPLICATION_NAME => true
+        ]);
     }
 
     /**
@@ -104,47 +81,16 @@ class InstallCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
+        $packages = $this->prepareCommand($input, $output, 'Installing');
         $appName = $input->getOption(static::OPTION__APPLICATION_NAME);
-
-        $output->writeln(['Searching packages...']);
-
-        /**
-         * @var ICrawler[] $crawlers
-         */
-        $crawlers = $this->getExtasApplication()->crawlerRepository()->all([]);
-
-        $packages = [];
-        foreach ($crawlers as $crawler) {
-            $crawler->addParametersByValues(['package_name' => $packageName]);
-            $packages = array_merge($packages, $crawler->dispatch(getcwd(), $input, $output));
-        }
-
-        $output->writeln([
-            'Found ' . count($packages) . ' packages.',
-            'Installing application ' . $appName . ' with found packages...'
-        ]);
-
-        $generatedData = $this->runInstallStage($input, $output, $packages, IStageInstall::NAME . '.' . $appName);
+        $stage = IStageInstall::NAME . '.' . $appName;
+        $generatedData = $this->runStage($input, $output, $packages, $stage);
         $generatedData = array_merge(
             $generatedData,
-            $this->runInstallStage($input, $output, $packages)
+            $this->runStage($input, $output, $packages)
         );
 
         $this->storeGeneratedData($generatedData, $input, $output);
-    }
-
-    /**
-     * @return IItem
-     */
-    protected function getExtasApplication(): IItem
-    {
-        return new class extends Item {
-            protected function getSubjectForExtension(): string
-            {
-                return 'extas.application';
-            }
-        };
     }
 
     /**
@@ -154,10 +100,10 @@ class InstallCommand extends DefaultCommand
      * @param string $stage
      * @return array
      */
-    protected function runInstallStage(
+    protected function runStage(
         InputInterface $input,
         OutputInterface $output,
-        array $packages,
+        array &$packages,
         string $stage = IStageInstall::NAME
     ): array
     {

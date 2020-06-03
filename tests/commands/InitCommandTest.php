@@ -1,17 +1,16 @@
 <?php
 namespace tests\commands;
 
-use Dotenv\Dotenv;
 use extas\commands\InitCommand;
 use extas\components\console\TSnuffConsole;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\entities\EntityRepository;
 use extas\components\packages\installers\InstallerOptionRepository;
-use extas\components\packages\PackageEntityRepository;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -34,7 +33,6 @@ class InitCommandTest extends TestCase
         $env->load();
         $this->registerSnuffRepos([
             'pluginRepo' => PluginRepository::class,
-            'packageEntityRepository' => PackageEntityRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class,
             'installerOptionRepository' => InstallerOptionRepository::class,

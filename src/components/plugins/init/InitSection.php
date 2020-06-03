@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\init;
 
+use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
 use extas\components\THasInput;
 use extas\components\THasOutput;
@@ -17,6 +18,7 @@ class InitSection extends Plugin implements IStageInitializeSection
 {
     use THasInput;
     use THasOutput;
+    use TInstallEntities;
 
     protected string $selfSection = '';
     protected string $selfName = '';
@@ -33,6 +35,8 @@ class InitSection extends Plugin implements IStageInitializeSection
         foreach ($sectionData as $item) {
             $this->initItem($item);
         }
+
+        $this->installEntities($sectionName, $this->selfRepositoryClass);
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace extas\interfaces\stagegs;
+namespace extas\interfaces\stages;
 
 use extas\interfaces\IHasClass;
 use extas\interfaces\IHasInput;
@@ -11,7 +11,7 @@ use extas\interfaces\repositories\IRepository;
 /**
  * Interface IStageAfterInstallSection
  *
- * @package extas\interfaces\stagegs
+ * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
 interface IStageAfterInstallSection extends IHasName, IHasClass, IHasInput, IHasOutput

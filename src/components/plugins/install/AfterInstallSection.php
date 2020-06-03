@@ -6,7 +6,7 @@ use extas\components\THasInput;
 use extas\components\THasName;
 use extas\components\THasOutput;
 use extas\interfaces\repositories\IRepository;
-use extas\interfaces\stagegs\IStageAfterInstallSection;
+use extas\interfaces\stages\IStageAfterInstallSection;
 
 /**
  * Class AfterInstallSection

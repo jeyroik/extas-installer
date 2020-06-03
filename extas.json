@@ -2,16 +2,20 @@
   "name": "extas/installer",
   "package_classes": [
     {
-      "class": "extas\\components\\packages\\PackageEntityRepository",
-      "interface": "packageEntityRepository"
-    },
-    {
       "class": "extas\\components\\packages\\entities\\EntityRepository",
       "interface": "entityRepository"
     },
     {
       "class": "extas\\components\\packages\\installers\\InstallerOptionRepository",
       "interface": "installerOptionRepository"
+    },
+    {
+      "class": "extas\\components\\plugins\\PluginRepository",
+      "interface": "pluginRepository"
+    },
+    {
+      "class": "extas\\components\\plugins\\ExtensionRepository",
+      "interface": "extensionRepository"
     }
   ],
   "crawlers": [
@@ -21,6 +25,20 @@
       "description": "Parse extas.json-compatible files",
       "class": "extas\\components\\packages\\CrawlerExtas",
       "parameters": {}
+    }
+  ],
+  "extensions": [
+    {
+      "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
+      "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
+      "subject": "*",
+      "methods": [
+        "pluginRepository",
+        "extensionRepository",
+        "installerOptionRepository",
+        "packageClassRepository",
+        "entityRepository"
+      ]
     }
   ],
   "plugins": [
@@ -60,8 +78,18 @@
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\PluginExportPackageClasses",
-      "stage": "extas.export",
+      "class": "extas\\components\\plugins\\uninstall\\UninstallApplication",
+      "stage": "extas.uninstall",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallPackage",
+      "stage": "extas.uninstall.package",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallItem",
+      "stage": "extas.uninstall.item",
       "install_on": "initialization"
     },
     {
