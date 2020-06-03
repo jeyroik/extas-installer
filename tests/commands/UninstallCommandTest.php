@@ -1,6 +1,7 @@
 <?php
 namespace tests;
 
+use extas\components\plugins\uninstall\UninstallCrawlers;
 use extas\interfaces\stages\IStageUninstall;
 use extas\interfaces\stages\IStageUninstallItem;
 use extas\interfaces\stages\IStageUninstallPackage;
@@ -130,6 +131,7 @@ class UninstallCommandTest extends TestCase
         ]));
         $this->createSnuffPlugin(UninstallApplication::class, [IStageUninstall::NAME]);
         $this->createSnuffPlugin(UninstallPackage::class, [IStageUninstallPackage::NAME . '.extas/installer']);
+        $this->createSnuffPlugin(UninstallCrawlers::class, [IStageUninstallSection::NAME . '.crawlers']);
         $this->createSnuffPlugin(UninstallPlugins::class, [IStageUninstallSection::NAME . '.plugins']);
         $this->createSnuffPlugin(UninstallExtensions::class, [IStageUninstallSection::NAME . '.extensions']);
         $this->createSnuffPlugin(UninstallItem::class, [IStageUninstallItem::NAME]);
