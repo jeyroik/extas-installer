@@ -36,7 +36,17 @@ class UninstallItem extends Plugin implements IStageUninstallItem
         $deleted = $this->getRepository()->delete([], $itemObject);
         $deleted && $this->infoLn(['Deleted item from "' . $this->getSection() . '"']);
 
-        foreach ($this->getPluginsByStage(IStageUninstalledItem::STAGE, $this->__toArray()) as $plugin) {
+        $this->runStage($item, IStageUninstalledItem::STAGE . '.' . $this->getSection());
+        $this->runStage($item);
+    }
+
+    /**
+     * @param array $item
+     * @param string $stage
+     */
+    protected function runStage(array &$item, string $stage = IStageUninstalledItem::STAGE): void
+    {
+        foreach ($this->getPluginsByStage($stage, $this->__toArray()) as $plugin) {
             /**
              * @var IStageUninstalledItem $plugin
              */
