@@ -52,7 +52,7 @@ class UninstallCommand extends DefaultCommand
                 'extas.json'
             )->addOption(
                 static::OPTION__PACKAGE,
-                'p',
+                '',
                 InputOption::VALUE_OPTIONAL,
                 'Package name for uninstall. Leave blank to uninstall all packages. ' .
                 'Example: "extas/installer"',
@@ -60,7 +60,7 @@ class UninstallCommand extends DefaultCommand
             )
             ->addOption(
                 static::OPTION__SECTION,
-                's',
+                '',
                 InputOption::VALUE_OPTIONAL,
                 'Section name for uninstall. Leave blank to delete all entities. Example: plugins',
                 ''

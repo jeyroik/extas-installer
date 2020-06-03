@@ -67,7 +67,7 @@ class InstallCommandTest extends TestCase
         $command->run(
             $this->getInput([
                 'application' => 'test_install_command',
-                'package' => 'test.extas.json'
+                'package_filename' => 'test.extas.json'
             ]),
             $output
         );
@@ -102,7 +102,7 @@ class InstallCommandTest extends TestCase
             $this->getInput([
                 'application' => 'test_install_command',
                 'rewrite' => true,
-                'package' => 'test.extas.json'
+                'package_filename' => 'test.extas.json'
             ]),
             $output
         );
