@@ -2,6 +2,7 @@
 namespace tests;
 
 use extas\components\plugins\Plugin;
+use extas\components\THasIO;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stages\IStageCreateItem;
 
@@ -13,6 +14,8 @@ use extas\interfaces\stages\IStageCreateItem;
  */
 class CreateSnuffItem extends Plugin implements IStageCreateItem
 {
+    use THasIO;
+
     public static bool $worked = false;
 
     /**
