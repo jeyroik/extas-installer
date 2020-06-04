@@ -1,6 +1,6 @@
 {
   "name": "test.crawler.test",
-  "crawlers": [
+  "snuff_items": [
     {
       "name": "test"
     }
