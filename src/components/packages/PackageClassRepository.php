@@ -219,7 +219,7 @@ class PackageClassRepository extends Repository implements IRepository
         foreach (self::$data as $index => $item) {
             $result .= $item[IPackageClass::FIELD__INTERFACE_NAME] . '::class'
                 . ' => '
-                . $item[IPackageClass::FIELD__CLASS_NAME] . '::class';
+                . $item[IPackageClass::FIELD__CLASS] . '::class';
 
             if (isset(self::$data[$index+1])) {
                 $result .= ',' . PHP_EOL;

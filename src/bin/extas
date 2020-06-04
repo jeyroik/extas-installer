@@ -18,7 +18,6 @@ $application->setVersion('2.0');
 $application->add(new \extas\commands\InitCommand());
 $application->add(new \extas\commands\InstallCommand());
 $application->add(new \extas\commands\UninstallCommand());
-$application->add(new \extas\commands\ExportCommand());
 
 if (SystemContainer::hasItem(IPluginRepository::class)) {
     foreach (Plugins::byStage('extas.installer.command') as $plugin) {

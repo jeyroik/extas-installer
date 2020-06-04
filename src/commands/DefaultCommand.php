@@ -3,7 +3,6 @@ namespace extas\commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -33,7 +32,11 @@ abstract class DefaultCommand extends Command
             '=========================='
         ]);
 
-        $this->dispatch($input, $output);
+        try {
+            $this->dispatch($input, $output);
+        } catch (\Exception $e) {
+            $output->writeln(['<error>' . $e->getMessage() . '</error>']);
+        }
 
         $end = microtime(true) - $start;
         $output->writeln(['<info>Finished in ' . $end . ' s.</info>']);

@@ -2,40 +2,90 @@
   "name": "extas/installer",
   "package_classes": [
     {
-      "class": "extas\\components\\packages\\PackageEntityRepository",
-      "interface": "extas\\interfaces\\packages\\IPackageEntityRepository"
-    },
-    {
       "class": "extas\\components\\packages\\entities\\EntityRepository",
-      "interface": "extas\\interfaces\\packages\\entities\\IEntityRepository"
+      "interface": "entityRepository"
     },
     {
-      "class": "extas\\components\\packages\\installers\\InstallerOptionRepository",
-      "interface": "extas\\interfaces\\packages\\installers\\IInstallerOptionRepository"
+      "class": "extas\\components\\plugins\\PluginRepository",
+      "interface": "pluginRepository"
+    },
+    {
+      "class": "extas\\components\\extensions\\ExtensionRepository",
+      "interface": "extensionRepository"
+    }
+  ],
+  "crawlers": [
+    {
+      "name": "extas",
+      "title": "Extas packages",
+      "description": "Parse extas.json-compatible files",
+      "class": "extas\\components\\packages\\CrawlerExtas",
+      "parameters": {}
+    }
+  ],
+  "extensions": [
+    {
+      "class": "extas\\components\\extensions\\ExtensionRepositoryGet",
+      "interface": "extas\\interfaces\\extensions\\IExtensionRepositoryGet",
+      "subject": "*",
+      "methods": [
+        "pluginRepository",
+        "extensionRepository",
+        "packageClassRepository",
+        "entityRepository"
+      ]
     }
   ],
   "plugins": [
     {
-      "class": "extas\\components\\plugins\\PluginExportPackageClasses",
-      "stage": "extas.export",
+      "class": "extas\\components\\plugins\\init\\Init",
+      "stage": "extas.init",
       "install_on": "initialization"
     },
     {
-      "class": [
-        "extas\\components\\plugins\\PluginInstallStages",
-        "extas\\components\\plugins\\PluginInstallOptionsForInstaller"
-      ],
+      "class": "extas\\components\\plugins\\init\\InitItem",
+      "stage": "extas.init.item",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\install\\InstallApplication",
       "stage": "extas.install",
       "install_on": "initialization"
     },
     {
-      "class": "extas\\components\\plugins\\PluginInstallStages",
-      "stage": "extas.install",
-      "install_on": "install"
+      "class": "extas\\components\\plugins\\install\\InstallPackage",
+      "stage": "extas.install.package",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\install\\InstallItem",
+      "stage": "extas.install.item",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\install\\InstallStages",
+      "stage": "extas.install.section.stages",
+      "install_on": "initialization"
     },
     {
       "class": "extas\\components\\plugins\\repositories\\PluginFieldUuid",
-      "stage": "extas.packages_entities.create.before"
+      "stage": "extas.packages_entities.create.before",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallApplication",
+      "stage": "extas.uninstall",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallPackage",
+      "stage": "extas.uninstall.package",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\uninstall\\UninstallItem",
+      "stage": "extas.uninstall.item",
+      "install_on": "initialization"
     }
   ]
 }
