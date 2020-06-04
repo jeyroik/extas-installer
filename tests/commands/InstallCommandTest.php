@@ -4,6 +4,9 @@ namespace tests\commands;
 use extas\components\options\CommandOptionRepository;
 use extas\components\plugins\install\InstallItem;
 use extas\components\plugins\install\InstallPackage;
+use extas\components\plugins\PluginEmpty;
+use extas\interfaces\stages\IStageAfterInstallSection;
+use extas\interfaces\stages\IStageCreateItem;
 use extas\interfaces\stages\IStageInstall;
 use extas\interfaces\stages\IStageInstallItem;
 use extas\interfaces\stages\IStageInstallPackage;
@@ -19,13 +22,13 @@ use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
 use extas\interfaces\stages\IStageInstallSection;
+use tests\CreateSnuffItem;
 use tests\InstallSnuffItems;
 use tests\PluginGenerateData;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
@@ -90,6 +93,8 @@ class InstallCommandTest extends TestCase
             'Missed generated data path in the current output: ' . $outputText
         );
 
+        $this->assertTrue(CreateSnuffItem::$worked);
+
         unlink(getcwd() . '/.extas.install');
     }
 
@@ -132,7 +137,9 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallPackage::class, [IStageInstallPackage::NAME]);
         $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
         $this->createSnuffPlugin(InstallSnuffItems::class, [IStageInstallSection::NAME . '.snuff_items']);
+        $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallSection::NAME . '.snuff_items']);
         $this->createSnuffPlugin(InstallItem::class, [IStageInstallItem::NAME]);
+        $this->createSnuffPlugin(CreateSnuffItem::class, [IStageCreateItem::NAME . '.snuff.items']);
 
         return new InstallCommand();
     }
