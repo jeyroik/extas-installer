@@ -20,5 +20,5 @@ interface IStageItemSame extends IHasIO
      * @param bool $theSame
      * @return bool
      */
-    public function __invoke(IItem $existed, array $current, bool $theSame): bool;
+    public function __invoke(IItem $existed, array $current, bool &$theSame): bool;
 }

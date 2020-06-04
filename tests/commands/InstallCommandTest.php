@@ -1,16 +1,23 @@
 <?php
 namespace tests\commands;
 
-use extas\components\options\CommandOptionRepository;
-use extas\components\plugins\install\InstallItem;
-use extas\components\plugins\install\InstallPackage;
-use extas\components\plugins\PluginEmpty;
+use extas\interfaces\IItem;
+use extas\interfaces\stages\IStageAfterInstallItem;
 use extas\interfaces\stages\IStageAfterInstallPackage;
 use extas\interfaces\stages\IStageAfterInstallSection;
 use extas\interfaces\stages\IStageCreateItem;
 use extas\interfaces\stages\IStageInstall;
 use extas\interfaces\stages\IStageInstallItem;
 use extas\interfaces\stages\IStageInstallPackage;
+use extas\interfaces\stages\IStageInstallSection;
+use extas\interfaces\stages\IStageItemSame;
+
+use extas\components\options\CommandOptionRepository;
+use extas\components\plugins\install\InstallItem;
+use extas\components\plugins\install\InstallPackage;
+use extas\components\plugins\PluginEmpty;
+use extas\components\plugins\PluginExecutable;
+use extas\components\plugins\same\TheSameByHash;
 use extas\commands\InstallCommand;
 use extas\components\console\TSnuffConsole;
 use extas\components\crawlers\Crawler;
@@ -22,7 +29,7 @@ use extas\components\plugins\install\InstallApplication;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
-use extas\interfaces\stages\IStageInstallSection;
+
 use tests\CreateSnuffItem;
 use tests\InstallSnuffItems;
 use tests\PluginGenerateData;
@@ -61,6 +68,7 @@ class InstallCommandTest extends TestCase
     protected function tearDown(): void
     {
         $this->unregisterSnuffRepos();
+        $this->deleteSnuffPlugins();
     }
 
     public function testDispatch()
@@ -140,8 +148,19 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallSnuffItems::class, [IStageInstallSection::NAME . '.snuff_items']);
         $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallSection::NAME]);
         $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallPackage::NAME]);
+        $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallItem::NAME]);
         $this->createSnuffPlugin(InstallItem::class, [IStageInstallItem::NAME]);
         $this->createSnuffPlugin(CreateSnuffItem::class, [IStageCreateItem::NAME . '.snuff.item']);
+        $this->createSnuffPlugin(PluginExecutable::class, [IStageItemSame::NAME . '.snuff.item']);
+        $this->createSnuffPlugin(TheSameByHash::class, [IStageItemSame::NAME]);
+
+        PluginExecutable::addExecute(
+            function (IStageItemSame $plugin, bool &$operated, IItem $existed, array $current, bool &$theSame) {
+                $operated = true;
+                return false;
+            },
+            true
+        );
 
         return new InstallCommand();
     }
