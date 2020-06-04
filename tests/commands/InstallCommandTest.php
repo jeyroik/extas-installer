@@ -2,6 +2,7 @@
 namespace tests\commands;
 
 use extas\interfaces\IItem;
+use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\stages\IStageAfterInstallItem;
 use extas\interfaces\stages\IStageAfterInstallPackage;
 use extas\interfaces\stages\IStageAfterInstallSection;
@@ -155,7 +156,7 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(TheSameByHash::class, [IStageItemSame::NAME]);
 
         PluginExecutable::addExecute(
-            function (IStageItemSame $plugin, bool &$operated, IItem $existed, array $current, bool &$theSame) {
+            function (IPlugin $plugin, bool &$operated, IItem $existed, array $current, bool &$theSame) {
                 $operated = true;
                 return false;
             },
