@@ -14,8 +14,6 @@ use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\CrawlerExtas;
 use extas\components\packages\entities\EntityRepository;
-use extas\components\packages\installers\InstallerOption;
-use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\plugins\install\InstallApplication;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
@@ -51,7 +49,6 @@ class InstallCommandTest extends TestCase
             'pluginRepo' => PluginRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class,
-            'installerOptionRepository' => InstallerOptionRepository::class,
             'crawlerRepository' => CrawlerRepository::class,
             'commandOptionRepository' => CommandOptionRepository::class
         ]);
@@ -128,14 +125,6 @@ class InstallCommandTest extends TestCase
      */
     protected function getCommand(OutputInterface $output): InstallCommand
     {
-        $option = new InstallerOption();
-        $option->setName('test')->setDefault(true)->setMode(InputOption::VALUE_OPTIONAL)->setShortcut('t');
-
-        $this->createWithSnuffRepo('installerOptionRepository', $option);
-        $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
-            InstallerOption::FIELD__NAME => 'package',
-            InstallerOption::FIELD__DEFAULT => 'reserved.name'
-        ]));
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
             Crawler::FIELD__CLASS => CrawlerExtas::class
         ]));

@@ -14,7 +14,6 @@ use extas\components\console\TSnuffConsole;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\entities\EntityRepository;
-use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\plugins\uninstall\UninstallApplication;
@@ -49,7 +48,6 @@ class UninstallCommandTest extends TestCase
             'pluginRepository' => PluginRepository::class,
             'entityRepository' => EntityRepository::class,
             'extensionRepository' => ExtensionRepository::class,
-            'installerOptionRepository' => InstallerOptionRepository::class,
             'crawlerRepository' => CrawlerRepository::class,
             'commandOptionRepository' => CommandOptionRepository::class
         ]);

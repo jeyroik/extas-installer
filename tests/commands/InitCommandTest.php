@@ -6,7 +6,6 @@ use extas\components\console\TSnuffConsole;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\entities\EntityRepository;
-use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
@@ -35,7 +34,6 @@ class InitCommandTest extends TestCase
             'pluginRepo' => PluginRepository::class,
             'entityRepository' => EntityRepository::class,
             'extRepo' => ExtensionRepository::class,
-            'installerOptionRepository' => InstallerOptionRepository::class,
             'crawlerRepository' => CrawlerRepository::class
         ]);
     }
