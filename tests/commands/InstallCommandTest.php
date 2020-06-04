@@ -158,7 +158,7 @@ class InstallCommandTest extends TestCase
         PluginExecutable::addExecute(
             function (IPlugin $plugin, bool &$operated, IItem $existed, array $current, bool &$theSame) {
                 $operated = true;
-                return false;
+                return true;
             },
             true
         );
