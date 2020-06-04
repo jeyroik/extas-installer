@@ -51,12 +51,12 @@
 `# vednor/bin/extas install -a my_app` (короткая форма: `extas i -a my_app`)
 
 Установка состоит из двух шагов:
-- Сбор конфигуарций пакетов.
+- Сбор конфигураций пакетов.
 - Установка найденных пакетов.
 
 Имеется возможность с помощью плагинов подключиться к любому моменту в этих двух шагах (для всех стадий имеются соответствующие интерфейсы), стадии указаны по порядку срабатывания:
 
-- `extas.crawl.packages`: срабатывает после сбора конфигуарций.
+- `extas.crawl.packages`: срабатывает после сбора конфигураций.
 - `extas.install.<application.name>`: `<application.name>` берётся из опции `-a` команды установки.
 - `extas.install`: на данном этапе есть возможность подключить собственный установщик для реализации какой-то особенной логики установки пакетов. 
 - `extas.install.package.<package.name>`: `<package.name>` берётся из конфигурации пакета. На данном этапе можно провести дополнительные операции по установки пакета.
@@ -68,11 +68,17 @@
 
 ## Удаление сущностей
 
-- `# vendor/bin/extas uninstall` удалить все сущности во всех пакетах
-- `# vendor/bin/extas uninstall -p <package.name>` удалить все сущности из пакета `<package.name>`. Имя пакета можно найти в `extas.json` в поле `name`. Например, у текущего пакета имя `extas/installer`.
-- `# vendor/bin/extas uninstall -p <package1.name>,<package2.name>` удалить все сущности из пакетов `<package1.name>`, `<package2.name>`
-- `# vendor/bin/extas uninstall -e <entity.name>` удалить во всех пакетах сущность `<entity.name>`. В качестве имени сущности используется имя секции в `extas.json`.
-- `# vendor/bin/extas uninstall -p <package.name> -e <entity.name>` удалить сущность `<entity.anem>` из пакета `<package.name>`
+- `# vendor/bin/extas uninstall` (короткая форма `extas u`)
+
+Для удаления также доступны стадии:
+
+- `extas.uninstall.<application.name>`
+- `extas.uninstall.package.<package.name>`
+- `extas.uninstall.package`
+- `extas.uninstall.section.<section.name>`
+- `extas.uninstall.section`
+- `extas.uninstall.item.<section.name>`
+- `extas.uninstall.item`
 
 ## Создание и установка пользовательской сущности
 
@@ -121,9 +127,9 @@ class MyRepository extends Repository
 ```php
 namespace my\extas;
 
-use extas\components\plugins\install\PluginInstallSectionAny;
+use extas\components\plugins\install\InstallSection;
 
-class PluginInstallMyNames extends PluginInstallSectionAny
+class PluginInstallMyNames extends InstallSection
 {
     protected string $selfSection = 'my_names';
     protected string $selfName = 'my name';
@@ -136,7 +142,7 @@ class PluginInstallMyNames extends PluginInstallSectionAny
 5. Добавляем плагин и интерфейс репозитория в нашу конфигурацию для extas'a.
 
 По умолчанию, конфигурация находится в корне в файле с именем `extas.json`.
-Однако, вы можете использовать любое имя - в этом случае не забудьте указать его в флаге `-p` при установке (см. ниже).
+Вы можете использовать любое имя - в этом случае не забудьте указать его в флаге `-p` при установке (см. ниже).
 
 example.json
 ```json
@@ -158,24 +164,3 @@ example.json
 6. Устанавливаем плагин.
 
 `# vendor/bin/extas i`
-
-Должны увидеть что-то вроде
-
-```
-Extas installer v3.0
-==========================
-Class lock-file updated
-
-Package "example" is installing...
-Installing plugin "my\extas\PluginInstallMyNames"...
-Plugin installed.
-
-Package "example" is installing...
-Plugin "my\extas\PluginInstallMyNames" is already installed.
-Installing name "Example 1"...
-Name "Example 1" installed.
-Installing name "Example 2"...
-Name "Example 2" installed.
-
-Finished in 1s
-```
