@@ -82,10 +82,10 @@ class InstallSection extends Plugin implements IStageInstallSection
     /**
      * @param string $sectionName
      * @param array $item
-     * @param IItem $existed
+     * @param IItem|null $existed
      * @param IInstaller $installer
      */
-    protected function installItem(string $sectionName, array $item, IItem $existed, IInstaller &$installer): void
+    protected function installItem(string $sectionName, array $item, ?IItem $existed, IInstaller &$installer): void
     {
         $stage = IStageInstallSection::NAME . '.' . $sectionName . '.item';
         foreach ($this->getPluginsByStage($stage, $this->getPluginConfig()) as $plugin) {
