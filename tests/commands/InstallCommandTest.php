@@ -2,7 +2,11 @@
 namespace tests\commands;
 
 use extas\components\options\CommandOptionRepository;
+use extas\components\plugins\install\InstallCrawlers;
+use extas\components\plugins\install\InstallItem;
+use extas\components\plugins\install\InstallPackage;
 use extas\interfaces\stages\IStageInstall;
+use extas\interfaces\stages\IStageInstallItem;
 use extas\interfaces\stages\IStageInstallPackage;
 use extas\commands\InstallCommand;
 use extas\components\console\TSnuffConsole;
@@ -17,6 +21,7 @@ use extas\components\plugins\install\InstallApplication;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
+use extas\interfaces\stages\IStageInstallSection;
 use tests\PluginGenerateData;
 
 use Dotenv\Dotenv;
@@ -135,7 +140,10 @@ class InstallCommandTest extends TestCase
             Crawler::FIELD__CLASS => CrawlerExtas::class
         ]));
         $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
+        $this->createSnuffPlugin(InstallPackage::class, [IStageInstallPackage::NAME]);
         $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
+        $this->createSnuffPlugin(InstallCrawlers::class, [IStageInstallSection::NAME . '.crawlers']);
+        $this->createSnuffPlugin(InstallItem::class, [IStageInstallItem::NAME]);
 
         return new InstallCommand();
     }
