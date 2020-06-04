@@ -1,8 +1,7 @@
 <?php
 namespace extas\interfaces\stages;
 
-use extas\interfaces\IHasInput;
-use extas\interfaces\IHasOutput;
+use extas\interfaces\IHasIO;
 use extas\interfaces\packages\IInstaller;
 
 /**
@@ -11,7 +10,7 @@ use extas\interfaces\packages\IInstaller;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageInstallPackage extends IHasInput, IHasOutput
+interface IStageInstallPackage extends IHasIO
 {
     public const NAME = 'extas.install.package';
 

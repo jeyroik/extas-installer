@@ -1,7 +1,6 @@
 <?php
 namespace extas\interfaces\packages;
 
-use extas\commands\InstallCommand;
 use extas\interfaces\IItem;
 
 /**

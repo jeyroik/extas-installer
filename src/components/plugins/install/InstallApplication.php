@@ -3,8 +3,7 @@ namespace extas\components\plugins\install;
 
 use extas\components\packages\Installer;
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\stages\IStageInstall;
 
 /**
@@ -15,8 +14,7 @@ use extas\interfaces\stages\IStageInstall;
  */
 class InstallApplication extends Plugin implements IStageInstall
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     /**
      * @param array $packages
@@ -25,11 +23,7 @@ class InstallApplication extends Plugin implements IStageInstall
      */
     public function __invoke(array &$packages, array &$generatedData): void
     {
-        $installer = new Installer([
-            Installer::FIELD__INPUT => $this->getInput(),
-            Installer::FIELD__OUTPUT => $this->getOutput()
-        ]);
-
+        $installer = new Installer($this->getIO());
         $installer->installPackages($packages);
 
         $generatedData = $installer->getGeneratedData();

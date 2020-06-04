@@ -1,13 +1,15 @@
 <?php
 namespace extas\interfaces\stages;
 
+use extas\interfaces\IHasIO;
+
 /**
  * Interface IStageCrawlPackages
  *
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageCrawlPackages
+interface IStageCrawlPackages extends IHasIO
 {
     public const NAME = 'extas.crawl.packages';
 

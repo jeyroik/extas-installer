@@ -2,8 +2,7 @@
 namespace extas\components\plugins\install;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\IHasName;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stages\IStageAfterInstallPackage;
@@ -18,8 +17,7 @@ use extas\interfaces\stages\IStageInstallSection;
  */
 class InstallPackage extends Plugin implements IStageInstallPackage
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     /**
      * @param array $package
@@ -45,10 +43,7 @@ class InstallPackage extends Plugin implements IStageInstallPackage
      */
     protected function runAfter(array $package, IInstaller &$installer): void
     {
-        foreach ($this->getPluginsByStage(IStageAfterInstallPackage::class, [
-            IStageAfterInstallPackage::FIELD__INPUT => $this->getInput(),
-            IStageAfterInstallPackage::FIELD__OUTPUT => $this->getOutput()
-        ]) as $plugin) {
+        foreach ($this->getPluginsByStage(IStageAfterInstallPackage::NAME, $this->getIO()) as $plugin) {
             $plugin($package, $installer);
         }
     }
@@ -79,11 +74,7 @@ class InstallPackage extends Plugin implements IStageInstallPackage
         string $stage = IStageInstallSection::NAME
     ): void
     {
-        $pluginConfig = [
-            IStageInstallSection::FIELD__INPUT => $this->getInput(),
-            IStageInstallSection::FIELD__OUTPUT => $this->getOutput()
-        ];
-        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
+        foreach ($this->getPluginsByStage($stage, $this->getIO()) as $plugin) {
             /**
              * @var IStageInstallSection $plugin
              */

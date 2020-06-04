@@ -3,6 +3,8 @@ namespace extas\components\packages;
 
 use extas\components\Item;
 use extas\interfaces\crawlers\ICrawler;
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
 use extas\interfaces\IItem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

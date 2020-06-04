@@ -1,8 +1,7 @@
 <?php
 namespace extas\interfaces\stages;
 
-use extas\interfaces\IHasInput;
-use extas\interfaces\IHasOutput;
+use extas\interfaces\IHasIO;
 
 /**
  * Interface IStageUninstallPackage
@@ -10,7 +9,7 @@ use extas\interfaces\IHasOutput;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageUninstallPackage extends IHasInput, IHasOutput
+interface IStageUninstallPackage extends IHasIO
 {
     public const NAME = 'extas.uninstall.package';
 

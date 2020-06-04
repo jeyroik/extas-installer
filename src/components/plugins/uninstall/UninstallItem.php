@@ -3,8 +3,7 @@ namespace extas\components\plugins\uninstall;
 
 use extas\components\plugins\Plugin;
 use extas\components\THasClass;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\components\THasRepository;
 use extas\components\THasSection;
 use extas\components\THasUid;
@@ -19,8 +18,7 @@ use extas\interfaces\stages\IStageUninstallItem;
  */
 class UninstallItem extends Plugin implements IStageUninstallItem
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use THasClass;
     use THasUid;
     use THasSection;
@@ -46,7 +44,7 @@ class UninstallItem extends Plugin implements IStageUninstallItem
      */
     protected function runStage(array &$item, string $stage = IStageUninstalledItem::STAGE): void
     {
-        foreach ($this->getPluginsByStage($stage, $this->__toArray()) as $plugin) {
+        foreach ($this->getPluginsByStage($stage, $this->getIO($this->__toArray())) as $plugin) {
             /**
              * @var IStageUninstalledItem $plugin
              */

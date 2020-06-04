@@ -2,11 +2,8 @@
 namespace extas\interfaces\stages;
 
 use extas\interfaces\IHasClass;
-use extas\interfaces\IHasInput;
-use extas\interfaces\IHasOutput;
-use extas\interfaces\IHasRepository;
-use extas\interfaces\IHasSection;
-use extas\interfaces\IHasUid;
+use extas\interfaces\IHasIO;
+use extas\interfaces\IHasItemData;
 
 /**
  * Interface IStageUninstallItem
@@ -14,7 +11,7 @@ use extas\interfaces\IHasUid;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageUninstallItem extends IHasInput, IHasOutput, IHasClass, IHasRepository, IHasUid, IHasSection
+interface IStageUninstallItem extends IHasIO, IHasClass, IHasItemData
 {
     public const NAME = 'extas.uninstall.item';
 

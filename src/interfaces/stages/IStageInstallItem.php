@@ -2,10 +2,9 @@
 namespace extas\interfaces\stages;
 
 use extas\interfaces\IHasClass;
-use extas\interfaces\IHasInput;
+use extas\interfaces\IHasIO;
 use extas\interfaces\IHasItemData;
 use extas\interfaces\IHasName;
-use extas\interfaces\IHasOutput;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 
@@ -15,7 +14,7 @@ use extas\interfaces\packages\IInstaller;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageInstallItem extends IHasName, IHasClass, IHasInput, IHasOutput, IHasItemData
+interface IStageInstallItem extends IHasName, IHasClass, IHasIO, IHasItemData
 {
     public const NAME = 'extas.install.item';
 

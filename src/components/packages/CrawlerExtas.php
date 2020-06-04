@@ -3,6 +3,7 @@ namespace extas\components\packages;
 
 use extas\commands\InstallCommand;
 use extas\components\crawlers\CrawlerDispatcher;
+use extas\components\THasIO;
 use extas\interfaces\crawlers\ICrawlerDispatcher;
 use extas\interfaces\IHasName;
 use extas\interfaces\packages\ICrawlerExtas;
@@ -18,6 +19,8 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class CrawlerExtas extends CrawlerDispatcher implements ICrawlerDispatcher, ICrawlerExtas
 {
+    use THasIO;
+
     /**
      * @return array
      * @throws \Exception
@@ -62,7 +65,7 @@ class CrawlerExtas extends CrawlerDispatcher implements ICrawlerDispatcher, ICra
      */
     protected function runCrawlStage(array &$packages): void
     {
-        foreach ($this->getPluginsByStage(IStageCrawlPackages::NAME) as $plugin) {
+        foreach ($this->getPluginsByStage(IStageCrawlPackages::NAME, $this->getIO()) as $plugin) {
             /**
              * @var IStageCrawlPackages $plugin
              */

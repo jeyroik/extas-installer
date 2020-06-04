@@ -1,6 +1,7 @@
 <?php
 namespace extas\interfaces\stages;
 
+use extas\interfaces\IHasIO;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 
@@ -12,7 +13,7 @@ use extas\interfaces\packages\IInstaller;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageInstallItemBySection
+interface IStageInstallItemBySection extends IHasIO
 {
     /**
      * @param array $item

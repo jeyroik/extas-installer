@@ -5,6 +5,7 @@ use extas\components\options\CommandOptionRepository;
 use extas\components\plugins\install\InstallItem;
 use extas\components\plugins\install\InstallPackage;
 use extas\components\plugins\PluginEmpty;
+use extas\interfaces\stages\IStageAfterInstallPackage;
 use extas\interfaces\stages\IStageAfterInstallSection;
 use extas\interfaces\stages\IStageCreateItem;
 use extas\interfaces\stages\IStageInstall;
@@ -137,7 +138,8 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallPackage::class, [IStageInstallPackage::NAME]);
         $this->createSnuffPlugin(PluginGenerateData::class, [IStageInstallPackage::NAME]);
         $this->createSnuffPlugin(InstallSnuffItems::class, [IStageInstallSection::NAME . '.snuff_items']);
-        $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallSection::NAME . '.snuff_items']);
+        $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallSection::NAME]);
+        $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallPackage::NAME]);
         $this->createSnuffPlugin(InstallItem::class, [IStageInstallItem::NAME]);
         $this->createSnuffPlugin(CreateSnuffItem::class, [IStageCreateItem::NAME . '.snuff.item']);
 

@@ -1,6 +1,7 @@
 <?php
 namespace extas\interfaces\stages;
 
+use extas\interfaces\IHasIO;
 use extas\interfaces\IItem;
 
 /**
@@ -9,7 +10,7 @@ use extas\interfaces\IItem;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageItemSame
+interface IStageItemSame extends IHasIO
 {
     public const NAME = 'extas.item.same';
 

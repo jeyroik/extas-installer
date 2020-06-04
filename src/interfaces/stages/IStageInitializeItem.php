@@ -2,10 +2,9 @@
 namespace extas\interfaces\stages;
 
 use extas\interfaces\IHasClass;
-use extas\interfaces\IHasInput;
+use extas\interfaces\IHasIO;
 use extas\interfaces\IHasItemData;
 use extas\interfaces\IHasName;
-use extas\interfaces\IHasOutput;
 
 /**
  * Interface IStageInitializeItem
@@ -13,7 +12,7 @@ use extas\interfaces\IHasOutput;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageInitializeItem extends IHasInput, IHasOutput, IHasName, IHasClass, IHasItemData
+interface IStageInitializeItem extends IHasIO, IHasName, IHasClass, IHasItemData
 {
     public const NAME = 'extas.init.item';
 

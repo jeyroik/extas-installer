@@ -3,8 +3,7 @@ namespace extas\components\plugins\init;
 
 use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\stages\IStageInitializeItem;
 use extas\interfaces\stages\IStageInitializeSection;
 
@@ -16,8 +15,7 @@ use extas\interfaces\stages\IStageInitializeSection;
  */
 class InitSection extends Plugin implements IStageInitializeSection
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use TInstallEntities;
 
     protected string $selfSection = '';
@@ -46,15 +44,13 @@ class InitSection extends Plugin implements IStageInitializeSection
     {
         $this->writeLn(['Initializing item...']);
 
-        $pluginConfig = [
+        $pluginConfig = $this->getIO([
             IStageInitializeItem::FIELD__NAME => $this->selfName,
             IStageInitializeItem::FIELD__SECTION => $this->selfSection,
             IStageInitializeItem::FIELD__UID => $this->selfUID,
             IStageInitializeItem::FIELD__CLASS => $this->selfItemClass,
-            IStageInitializeItem::FIELD__REPOSITORY => $this->selfRepositoryClass,
-            IStageInitializeItem::FIELD__INPUT => $this->getInput(),
-            IStageInitializeItem::FIELD__OUTPUT => $this->getOutput()
-        ];
+            IStageInitializeItem::FIELD__REPOSITORY => $this->selfRepositoryClass
+        ]);
 
         foreach ($this->getPluginsByStage(IStageInitializeItem::NAME, $pluginConfig) as $plugin) {
             /**

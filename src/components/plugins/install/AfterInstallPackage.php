@@ -2,8 +2,7 @@
 namespace extas\components\plugins\install;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\stages\IStageAfterInstallPackage;
 
 /**
@@ -14,6 +13,5 @@ use extas\interfaces\stages\IStageAfterInstallPackage;
  */
 abstract class AfterInstallPackage extends Plugin implements IStageAfterInstallPackage
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 }

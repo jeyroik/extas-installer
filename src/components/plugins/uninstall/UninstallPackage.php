@@ -2,8 +2,7 @@
 namespace extas\components\plugins\uninstall;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\stages\IStageUninstalledPackage;
 use extas\interfaces\stages\IStageUninstallPackage;
 use extas\interfaces\stages\IStageUninstallSection;
@@ -16,8 +15,7 @@ use extas\interfaces\stages\IStageUninstallSection;
  */
 class UninstallPackage extends Plugin implements IStageUninstallPackage
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     /**
      * @param string $packageName
@@ -86,12 +84,7 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
         string $stage = IStageUninstallSection::NAME
     ): void
     {
-        $pluginConfig = [
-            IStageUninstallSection::FIELD__INPUT => $this->getInput(),
-            IStageUninstallSection::FIELD__OUTPUT => $this->getOutput()
-        ];
-
-        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
+        foreach ($this->getPluginsByStage($stage, $this->getIO()) as $plugin) {
             /**
              * @var IStageUninstallSection $plugin
              */
@@ -105,7 +98,8 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
      */
     protected function runAfter(string $packageName, array $package)
     {
-        foreach ($this->getPluginsByStage(IStageUninstalledPackage::STAGE, $this->__toArray()) as $plugin) {
+        $stage = IStageUninstalledPackage::STAGE;
+        foreach ($this->getPluginsByStage($stage, $this->getIO($this->__toArray())) as $plugin) {
             /**
              * @var IStageUninstalledPackage $plugin
              */

@@ -3,8 +3,7 @@ namespace extas\components\plugins\install;
 
 use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stages\IStageAfterInstallSection;
@@ -20,8 +19,7 @@ use extas\interfaces\stages\IStageInstallSection;
  */
 class InstallSection extends Plugin implements IStageInstallSection
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use TInstallEntities;
 
     protected string $selfSection = '';
@@ -108,14 +106,12 @@ class InstallSection extends Plugin implements IStageInstallSection
      */
     protected function getPluginConfig()
     {
-        return [
+        return $this->getIO([
             IStageInstallItem::FIELD__NAME => $this->selfName,
             IStageInstallItem::FIELD__UID => $this->selfUID,
             IStageInstallItem::FIELD__CLASS => $this->selfItemClass,
             IStageInstallItem::FIELD__SECTION => $this->selfSection,
-            IStageInstallItem::FIELD__REPOSITORY => $this->selfRepositoryClass,
-            IStageInstallItem::FIELD__INPUT => $this->getInput(),
-            IStageInstallItem::FIELD__OUTPUT => $this->getOutput()
-        ];
+            IStageInstallItem::FIELD__REPOSITORY => $this->selfRepositoryClass
+        ]);
     }
 }

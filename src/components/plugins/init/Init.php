@@ -2,10 +2,8 @@
 namespace extas\components\plugins\init;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\IHasInput;
-use extas\interfaces\IHasName;
 use extas\interfaces\IHasOutput;
 use extas\interfaces\stages\IStageInitialize;
 use extas\interfaces\stages\IStageInitializeSection;
@@ -18,8 +16,7 @@ use extas\interfaces\stages\IStageInitializeSection;
  */
 class Init extends Plugin implements IStageInitialize
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     /**
      * @param string $packageName
@@ -44,17 +41,12 @@ class Init extends Plugin implements IStageInitialize
     {
         $this->writeLn(['Initializing section "' . $sectionName . '"...']);
 
-        $pluginConfig = [
-            IHasInput::FIELD__INPUT => $this->getInput(),
-            IHasOutput::FIELD__OUTPUT => $this->getOutput()
-        ];
-
         $stage = IStageInitializeSection::NAME . '.' . $sectionName;
-        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
+        foreach ($this->getPluginsByStage($stage, $this->getIO()) as $plugin) {
             $plugin($sectionName, $sectionData);
         }
 
-        foreach ($this->getPluginsByStage(IStageInitializeSection::NAME, $pluginConfig) as $plugin) {
+        foreach ($this->getPluginsByStage(IStageInitializeSection::NAME, $this->getIO()) as $plugin) {
             $plugin($sectionName, $sectionData);
         }
 

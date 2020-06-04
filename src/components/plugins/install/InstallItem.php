@@ -3,10 +3,9 @@ namespace extas\components\plugins\install;
 
 use extas\components\plugins\Plugin;
 use extas\components\THasClass;
-use extas\components\THasInput;
+use extas\components\THasIO;
 use extas\components\THasItemData;
 use extas\components\THasName;
-use extas\components\THasOutput;
 use extas\interfaces\IHasInput;
 use extas\interfaces\IHasOutput;
 use extas\interfaces\IItem;
@@ -25,8 +24,7 @@ use extas\interfaces\stages\IStageItemSame;
  */
 class InstallItem extends Plugin implements IStageInstallItem
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use THasClass;
     use THasName;
     use THasItemData;
@@ -62,9 +60,7 @@ class InstallItem extends Plugin implements IStageInstallItem
     protected function createOrUpdateItem(array $item, string $method, IRepository $repo, IInstaller &$installer): void
     {
         $operated = false;
-        $pluginConfig = $this->__toArray();
-        $pluginConfig[IHasInput::FIELD__INPUT] = $this->getInput();
-        $pluginConfig[IHasOutput::FIELD__OUTPUT] = $this->getOutput();
+        $pluginConfig = $this->getIO($this->__toArray());
 
         $stage = IStageCreateItem::NAME . '.' . $this->getDottedName();
         foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
@@ -106,7 +102,8 @@ class InstallItem extends Plugin implements IStageInstallItem
     {
         $theSame = false;
 
-        foreach ($this->getPluginsByStage(IStageItemSame::NAME . '.' . $this->getDottedName()) as $plugin) {
+        $stage = IStageItemSame::NAME . '.' . $this->getDottedName();
+        foreach ($this->getPluginsByStage($stage, $this->getIO()) as $plugin) {
             if ($plugin($existed, $current, $theSame)) {
                 break;
             }
@@ -116,7 +113,7 @@ class InstallItem extends Plugin implements IStageInstallItem
             return $theSame;
         }
 
-        foreach ($this->getPluginsByStage(IStageItemSame::NAME) as $plugin) {
+        foreach ($this->getPluginsByStage(IStageItemSame::NAME, $this->getIO()) as $plugin) {
             if ($plugin($existed, $current, $theSame)) {
                 break;
             }

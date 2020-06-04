@@ -3,10 +3,9 @@ namespace extas\components\plugins\init;
 
 use extas\components\plugins\Plugin;
 use extas\components\THasClass;
-use extas\components\THasInput;
+use extas\components\THasIO;
 use extas\components\THasItemData;
 use extas\components\THasName;
-use extas\components\THasOutput;
 use extas\interfaces\stages\IStageInitializeItem;
 
 /**
@@ -18,8 +17,7 @@ use extas\interfaces\stages\IStageInitializeItem;
 class InitItem extends Plugin implements IStageInitializeItem
 {
     use THasItemData;
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use THasName;
     use THasClass;
 

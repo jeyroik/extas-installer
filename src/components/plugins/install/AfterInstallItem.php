@@ -2,10 +2,8 @@
 namespace extas\components\plugins\install;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
+use extas\components\THasIO;
 use extas\components\THasItemData;
-use extas\components\THasOutput;
-use extas\interfaces\repositories\IRepository;
 use extas\interfaces\stages\IStageAfterInstallItem;
 
 /**
@@ -16,7 +14,6 @@ use extas\interfaces\stages\IStageAfterInstallItem;
  */
 abstract class AfterInstallItem extends Plugin implements IStageAfterInstallItem
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use THasItemData;
 }

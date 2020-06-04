@@ -1,9 +1,8 @@
 <?php
 namespace extas\interfaces\stages;
 
-use extas\interfaces\IHasInput;
+use extas\interfaces\IHasIO;
 use extas\interfaces\IHasItemData;
-use extas\interfaces\IHasOutput;
 use extas\interfaces\packages\IInstaller;
 
 /**
@@ -12,7 +11,7 @@ use extas\interfaces\packages\IInstaller;
  * @package extas\interfaces\stages
  * @author jeyroik <jeyroik@gmail.com>
  */
-interface IStageAfterInstallItem extends IHasInput, IHasOutput, IHasItemData
+interface IStageAfterInstallItem extends IHasIO, IHasItemData
 {
     public const NAME = 'extas.after.install.item';
 

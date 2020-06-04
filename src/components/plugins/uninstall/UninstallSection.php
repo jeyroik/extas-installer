@@ -2,8 +2,7 @@
 namespace extas\components\plugins\uninstall;
 
 use extas\components\plugins\Plugin;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\interfaces\stages\IStageUninstalledSection;
 use extas\interfaces\stages\IStageUninstallItem;
 use extas\interfaces\stages\IStageUninstallSection;
@@ -16,8 +15,7 @@ use extas\interfaces\stages\IStageUninstallSection;
  */
 class UninstallSection extends Plugin implements IStageUninstallSection
 {
-    use THasInput;
-    use THasOutput;
+    use THasIO;
 
     protected string $selfSection = '';
     protected string $selfName = '';
@@ -35,7 +33,8 @@ class UninstallSection extends Plugin implements IStageUninstallSection
             $this->runStage($item);
         }
 
-        foreach ($this->getPluginsByStage(IStageUninstalledSection::STAGE, $this->__toArray()) as $plugin) {
+        $stage = IStageUninstalledSection::STAGE;
+        foreach ($this->getPluginsByStage($stage, $this->getIO($this->__toArray())) as $plugin) {
             /**
              * @var IStageUninstalledSection $plugin
              */
@@ -48,14 +47,12 @@ class UninstallSection extends Plugin implements IStageUninstallSection
      */
     protected function runStage(array &$item): void
     {
-        $pluginConfig = [
-            IStageUninstallItem::FIELD__INPUT => $this->getInput(),
-            IStageUninstallItem::FIELD__OUTPUT => $this->getOutput(),
+        $pluginConfig = $this->getIO([
             IStageUninstallItem::FIELD__CLASS => $this->selfItemClass,
             IStageUninstallItem::FIELD__UID => $this->selfUID,
             IStageUninstallItem::FIELD__REPOSITORY => $this->selfRepositoryClass,
             IStageUninstallItem::FIELD__SECTION => $this->selfSection
-        ];
+        ]);
 
         foreach ($this->getPluginsByStage(IStageUninstallItem::NAME, $pluginConfig) as $plugin) {
             /**
