@@ -1,9 +1,11 @@
 <?php
 namespace extas\interfaces\packages;
 
+use extas\interfaces\IHasExtensions;
+use extas\interfaces\IHasInput;
+use extas\interfaces\IHasOutput;
+use extas\interfaces\IHasPlugins;
 use extas\interfaces\IItem;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Interface IInstaller
@@ -11,40 +13,32 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package extas\interfaces\packages
  * @author jeyroik@gmail.com
  */
-interface IInstaller extends IItem
+interface IInstaller extends IItem, IHasPlugins, IHasExtensions, IHasInput, IHasOutput
 {
     public const SUBJECT = 'extas.installer';
 
-    public const FIELD__PLUGINS = 'plugins';
-    public const FIELD__EXTENSIONS = 'extensions';
     public const FIELD__NAME = 'name';
     public const FIELD__SCHEMA = 'schema';
-    public const FIELD__REWRITE = 'rewrite';
     public const FIELD__SETTINGS = 'installer_settings';
-    public const FIELD__INPUT = 'input';
-    public const FIELD__OUTPUT = 'output';
-
-    public const STAGE__INSTALL = 'extas.install';
-    public const STAGE__UNINSTALL = 'extas.uninstall';
 
     /**
-     * @param $packageConfigs array
+     * @param $packages array
      *
      * @return bool
      */
-    public function installMany(array $packageConfigs): bool;
+    public function installPackages(array $packages): bool;
 
     /**
-     * @param $packageConfig array
-     *
-     * @return bool|string
+     * @param string $packageName
+     * @param array $package
+     * @return bool
      */
-    public function install(array $packageConfig);
+    public function installPackage(string $packageName, array $package): bool;
 
     /**
      * @return array
      */
-    public function getPackageConfig(): array;
+    public function getPackage(): array;
 
     /**
      * @param $name
@@ -58,14 +52,4 @@ interface IInstaller extends IItem
      * @return array
      */
     public function getGeneratedData(): array;
-
-    /**
-     * @return null|InputInterface
-     */
-    public function getInput(): ?InputInterface;
-
-    /**
-     * @return OutputInterface|null
-     */
-    public function getOutput(): ?OutputInterface;
 }

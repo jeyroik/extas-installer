@@ -1,10 +1,11 @@
 <?php
 namespace extas\commands;
 
-use extas\components\packages\Crawler;
-use extas\components\packages\Installer;
-use extas\components\packages\installers\InstallerOptionRepository;
-use extas\interfaces\packages\installers\IInstallerOption;
+use extas\components\options\TConfigure;
+use extas\components\packages\TPrepareCommand;
+use extas\components\Plugins;
+use extas\interfaces\packages\IInstaller;
+use extas\interfaces\stages\IStageInstall;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,21 +13,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class InstallCommand
  *
+ * @method crawlerRepository()
+ *
  * @package extas\commands
  * @author jeyroik@gmail.com
  */
 class InstallCommand extends DefaultCommand
 {
+    use TConfigure;
+    use TPrepareCommand;
+
     const GENERATED_DATA__STORE = '.extas.install';
     const DEFAULT__PACKAGE_NAME = 'extas.json';
 
-    protected const OPTION__PACKAGE_NAME = 'package';
+    protected const OPTION__APPLICATION_NAME = 'application';
+    protected const OPTION__PACKAGE_FILENAME = 'package_filename';
     protected const OPTION__REWRITE_GENERATED_DATA = 'rewrite';
-    protected const OPTION__REWRITE_CONTAINER = 'rewrite-container';
-    protected const OPTION__REWRITE_ENTITY_ALLOW = 'rewrite-entity-allow';
 
     protected string $commandTitle = 'Extas installer';
-    protected string $commandVersion = '1.0.0';
+    protected string $commandVersion = '3.0.0';
 
     /**
      * Configure the current command.
@@ -40,62 +45,31 @@ class InstallCommand extends DefaultCommand
             ->setDescription('Install entities using extas-compatible package file.')
             ->setHelp('This command allows you to install entities using extas-compatible package file.')
             ->addOption(
-                static::OPTION__PACKAGE_NAME,
+                static::OPTION__PACKAGE_FILENAME,
                 'p',
                 InputOption::VALUE_OPTIONAL,
                 'Extas-compatible package name',
                 static::DEFAULT__PACKAGE_NAME
+            )->addOption(
+                static::OPTION__APPLICATION_NAME,
+                'a',
+                InputOption::VALUE_OPTIONAL,
+                'Current application name',
+                'extas'
             )->addOption(
                 static::OPTION__REWRITE_GENERATED_DATA,
                 'r',
                 InputOption::VALUE_OPTIONAL,
                 'Rewrite generated data file',
                 false
-            )->addOption(
-                static::OPTION__REWRITE_CONTAINER,
-                'c',
-                InputOption::VALUE_OPTIONAL,
-                'Rewrite class-container file',
-                true
-            )->addOption(
-                static::OPTION__REWRITE_ENTITY_ALLOW,
-                'e',
-                InputOption::VALUE_OPTIONAL,
-                'Allow rewrite entity if it exists',
-                true
             )
         ;
 
-        $this->configureByPlugins();
-    }
-
-    /**
-     * @return $this
-     * @throws
-     */
-    protected function configureByPlugins()
-    {
-        $reservedOptions = [
-            static::OPTION__PACKAGE_NAME => true,
+        $this->configureWithOptions('extas-install', [
+            static::OPTION__PACKAGE_FILENAME => true,
             static::OPTION__REWRITE_GENERATED_DATA => true,
-            static::OPTION__REWRITE_CONTAINER => true,
-            static::OPTION__REWRITE_ENTITY_ALLOW => true,
-        ];
-
-        /**
-         * @var $options IInstallerOption[]
-         */
-        $repo = new InstallerOptionRepository();
-        $options = $repo->all([]);
-
-        foreach ($options as $option) {
-            if (isset($reservedOptions[$option->getName()])) {
-                continue;
-            }
-            $this->addOption(...$option->__toInputOption());
-        }
-
-        return $this;
+            static::OPTION__APPLICATION_NAME => true
+        ]);
     }
 
     /**
@@ -107,24 +81,46 @@ class InstallCommand extends DefaultCommand
      */
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
-        $packageName = $input->getOption(static::OPTION__PACKAGE_NAME);
-        $rewriteContainer = $input->getOption(static::OPTION__REWRITE_CONTAINER);
-        $rewriteAllow = $input->getOption(static::OPTION__REWRITE_ENTITY_ALLOW);
+        $packages = $this->prepareCommand($input, $output, 'Installing');
+        $appName = $input->getOption(static::OPTION__APPLICATION_NAME);
+        $stage = IStageInstall::NAME . '.' . $appName;
+        $generatedData = $this->runStage($input, $output, $packages, $stage);
+        $generatedData = array_merge(
+            $generatedData,
+            $this->runStage($input, $output, $packages)
+        );
 
-        $serviceCrawler = new Crawler([
-            Crawler::FIELD__SETTINGS => [
-                Crawler::SETTING__REWRITE_ALLOW => $rewriteAllow
-            ],
-        ]);
-        $configs = $serviceCrawler->crawlPackages(getcwd(), $packageName);
+        $this->storeGeneratedData($generatedData, $input, $output);
+    }
 
-        $serviceInstaller = new Installer([
-            Installer::FIELD__REWRITE => $rewriteContainer,
-            Installer::FIELD__INPUT => $input,
-            Installer::FIELD__OUTPUT => $output
-        ]);
-        $serviceInstaller->installMany($configs);
-        $this->storeGeneratedData($serviceInstaller->getGeneratedData(), $input, $output);
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param array $packages
+     * @param string $stage
+     * @return array
+     */
+    protected function runStage(
+        InputInterface $input,
+        OutputInterface $output,
+        array &$packages,
+        string $stage = IStageInstall::NAME
+    ): array
+    {
+        $generatedData = [];
+        $pluginConfig = [
+            IInstaller::FIELD__INPUT => $input,
+            IInstaller::FIELD__OUTPUT => $output
+        ];
+
+        foreach (Plugins::byStage($stage, $this, $pluginConfig) as $plugin) {
+            /**
+             * @var IStageInstall $plugin
+             */
+            $plugin($packages, $generatedData);
+        }
+
+        return $generatedData;
     }
 
     /**
@@ -143,9 +139,7 @@ class InstallCommand extends DefaultCommand
                 ? file_put_contents(getcwd() . '/' . static::GENERATED_DATA__STORE, $result)
                 : file_put_contents(getcwd() . '/' . static::GENERATED_DATA__STORE, $result, FILE_APPEND);
 
-            $output->writeln([
-                '<info>See generated data in the ' . static::GENERATED_DATA__STORE . '</info>'
-            ]);
+            $output->writeln(['<info>See generated data in the ' . static::GENERATED_DATA__STORE . '</info>']);
         }
     }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "test.crawler.test",
+  "snuff_items": [
+    {
+      "name": "test"
+    },
+    {
+      "name": "test"
+    },
+    {
+      "name": "test",
+      "title": "Update please"
+    }
+  ]
+}

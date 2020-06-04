@@ -1,8 +1,10 @@
 <?php
 namespace extas\commands;
 
-use extas\components\packages\Crawler;
+use extas\components\crawlers\Crawler;
+use extas\components\packages\CrawlerExtas;
 use extas\components\packages\Initializer;
+use extas\interfaces\samples\parameters\ISampleParameter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +31,7 @@ class InitCommand extends DefaultCommand
             ->setName('init')
             ->setAliases([])
             ->setDescription('Initialize environment for Extas. Run this command before extas install.')
-            ->setHelp('This command allows you prepare all necessary files and other data.')
+            ->setHelp('This command allows you prepare all necessary files and other data. Uses extas.json .')
             ->addOption(
                 static::OPTION__CONTAINER_REWRITE,
                 'r',
@@ -47,13 +49,36 @@ class InitCommand extends DefaultCommand
     protected function dispatch(InputInterface $input, OutputInterface &$output): void
     {
         $this->prepareContainer($input, $output);
-        $serviceCrawler = new Crawler();
-        $configs = $serviceCrawler->crawlPackages(getcwd());
-        $initializer = new Initializer();
-        $initializer->run($configs, $output);
+        $serviceCrawler = new CrawlerExtas([
+            CrawlerExtas::FIELD__INPUT => $input,
+            CrawlerExtas::FIELD__OUTPUT => $output,
+            CrawlerExtas::FIELD__CRAWLER => new Crawler([
+                Crawler::FIELD__PARAMETERS => [
+                    'package_name' => [
+                        ISampleParameter::FIELD__NAME => 'package_name',
+                        ISampleParameter::FIELD__VALUE => 'extas.json'
+                    ],
+                    'run_after' => [
+                        ISampleParameter::FIELD__NAME => 'run_after',
+                        ISampleParameter::FIELD__VALUE => false
+                    ]
+                ]
+            ]),
+            CrawlerExtas::FIELD__PATH => getcwd()
+        ]);
+        $packages = $serviceCrawler();
+        $initializer = new Initializer([
+            Initializer::FIELD__INPUT => $input,
+            Initializer::FIELD__OUTPUT => $output
+        ]);
+        $initializer->run($packages);
     }
 
-    protected function prepareContainer(InputInterface $input, OutputInterface &$output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function prepareContainer(InputInterface $input, OutputInterface &$output): void
     {
         $containerRewrite = $input->getOption(static::OPTION__CONTAINER_REWRITE);
 
@@ -69,7 +94,7 @@ class InitCommand extends DefaultCommand
                 $lockContainerPath
             );
             $output->writeln([
-                '<info>Copied container lock file.</info>'
+                '<info>Copied container lock file to ' . $lockContainerPath . '.</info>'
             ]);
         } else {
             $output->writeln([
@@ -84,7 +109,7 @@ class InitCommand extends DefaultCommand
                 $storageContainerPath
             );
             $output->writeln([
-                '<info>Copied container storage file.</info>'
+                '<info>Copied container storage file to ' . $storageContainerPath . '.</info>'
             ]);
         } else {
             $output->writeln([
