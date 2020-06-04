@@ -32,6 +32,7 @@ use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
 
 use tests\CreateSnuffItem;
+use tests\CreateUnknown;
 use tests\InstallSnuffItems;
 use tests\PluginGenerateData;
 
@@ -131,6 +132,25 @@ class InstallCommandTest extends TestCase
         );
 
         unlink(getcwd() . '/.extas.install');
+    }
+
+    public function testUnknownRepository()
+    {
+        /**
+         * @var BufferedOutput $output
+         */
+        $output = $this->getOutput(true);
+        $command = $this->getCommand($output);
+        $this->createSnuffPlugin(CreateUnknown::class, [IStageInstallSection::NAME]);
+        $command->run(
+            $this->getInput([
+                'application' => 'test_install_command',
+                'package_filename' => 'test.extas.json'
+            ]),
+            $output
+        );
+        $outputText = $output->fetch();
+        $this->assertStringContainsString('Missed item repo', $outputText);
     }
 
     /**
