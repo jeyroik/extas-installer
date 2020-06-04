@@ -139,7 +139,7 @@ class InstallCommandTest extends TestCase
         $this->createSnuffPlugin(InstallSnuffItems::class, [IStageInstallSection::NAME . '.snuff_items']);
         $this->createSnuffPlugin(PluginEmpty::class, [IStageAfterInstallSection::NAME . '.snuff_items']);
         $this->createSnuffPlugin(InstallItem::class, [IStageInstallItem::NAME]);
-        $this->createSnuffPlugin(CreateSnuffItem::class, [IStageCreateItem::NAME . '.snuff.items']);
+        $this->createSnuffPlugin(CreateSnuffItem::class, [IStageCreateItem::NAME . '.snuff.item']);
 
         return new InstallCommand();
     }
