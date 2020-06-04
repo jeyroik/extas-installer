@@ -79,7 +79,11 @@ class InstallPackage extends Plugin implements IStageInstallPackage
         string $stage = IStageInstallSection::NAME
     ): void
     {
-        foreach ($this->getPluginsByStage($stage) as $plugin) {
+        $pluginConfig = [
+            IStageInstallSection::FIELD__INPUT => $this->getInput(),
+            IStageInstallSection::FIELD__OUTPUT => $this->getOutput()
+        ];
+        foreach ($this->getPluginsByStage($stage, $pluginConfig) as $plugin) {
             /**
              * @var IStageInstallSection $plugin
              */
