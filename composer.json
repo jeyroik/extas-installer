@@ -4,6 +4,7 @@
   "require": {
     "symfony/finder": "5.*",
     "symfony/console": "5.*",
+    "jeyroik/extas-console": "0.*",
     "jeyroik/extas-base": "2.*",
     "jeyroik/extas-foundation": "5.*",
     "jeyroik/extas-repositories-fields-uuid": "0.*",
