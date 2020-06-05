@@ -161,7 +161,8 @@ class InstallCommandTest extends TestCase
     protected function getCommand(OutputInterface $output): InstallCommand
     {
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
-            Crawler::FIELD__CLASS => CrawlerExtas::class
+            Crawler::FIELD__CLASS => CrawlerExtas::class,
+            Crawler::FIELD__TAGS => ['extas-package']
         ]));
         $this->createSnuffPlugin(InstallApplication::class, [IStageInstall::NAME]);
         $this->createSnuffPlugin(InstallPackage::class, [IStageInstallPackage::NAME]);

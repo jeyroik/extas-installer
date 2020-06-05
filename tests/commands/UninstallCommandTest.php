@@ -125,7 +125,8 @@ class UninstallCommandTest extends TestCase
     protected function installPlugins()
     {
         $this->createWithSnuffRepo('crawlerRepository', new Crawler([
-            Crawler::FIELD__CLASS => CrawlerExtas::class
+            Crawler::FIELD__CLASS => CrawlerExtas::class,
+            Crawler::FIELD__TAGS => ['extas-package']
         ]));
         $this->createSnuffPlugin(UninstallApplication::class, [IStageUninstall::NAME]);
         $this->createSnuffPlugin(UninstallPackage::class, [IStageUninstallPackage::NAME . '.extas/installer']);

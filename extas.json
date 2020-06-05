@@ -20,7 +20,8 @@
       "title": "Extas packages",
       "description": "Parse extas.json-compatible files",
       "class": "extas\\components\\packages\\CrawlerExtas",
-      "parameters": {}
+      "parameters": {},
+      "tags": ["extas-installer", "extas-init", "extas-package"]
     }
   ],
   "extensions": [
