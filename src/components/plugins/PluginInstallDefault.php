@@ -73,11 +73,11 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
 
             if ($existed = $this->findItem($item, $repo)) {
                 $hashExisted = sha1(json_encode($existed->__toArray()));
-                $hasCurrent = sha1(json_encode($item));
-                $theSame = $hashExisted == $hasCurrent;
+                $hashCurrent = sha1(json_encode($item));
+                $theSame = $hashExisted == $hashCurrent;
 
                 if (!$theSame) {
-                    $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
+                    $this->install($uid, $output, $item, $repo, 'update');
                 } else {
                     $this->alreadyInstalled($uid, $this->selfName, $output);
                 }
