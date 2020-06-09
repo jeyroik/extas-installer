@@ -81,7 +81,7 @@ class InstallerOptionTest extends TestCase
                 'name' => 't1',
                 'title' => 't1',
                 'params' => [
-                    'prev_params' => ['name' => 't1'],
+                    'prev_params' => [['name' => 't1']],
                     'new_params' => 'empty'
                 ]
             ],

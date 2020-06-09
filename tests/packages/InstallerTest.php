@@ -175,10 +175,26 @@ class InstallerTest extends TestCase
         $this->assertCount(4, $nothings);
 
         foreach ($nothings as $nothing) {
-            $nothing['name'] == 'test' && $this->assertEquals('is ok', $nothing['value']);
-            $nothing['name'] == 'test0' && $this->assertEquals('is ok again', $nothing['value']);
-            $nothing['name'] == 'test1' && $this->assertEquals('is ok 1', $nothing['value']);
-            $nothing['name'] == 'test2' && $this->assertEquals('is ok again', $nothing['value']);
+            $nothing['name'] == 'test' && $this->assertEquals(
+                'is ok',
+                $nothing['value'],
+                print_r($nothing)
+            );
+            $nothing['name'] == 'test0' && $this->assertEquals(
+                'is ok again',
+                $nothing['value'],
+                print_r($nothing)
+            ;
+            $nothing['name'] == 'test1' && $this->assertEquals(
+                'is ok 1',
+                $nothing['value'],
+                print_r($nothing)
+            );
+            $nothing['name'] == 'test2' && $this->assertEquals(
+                'is ok again',
+                $nothing['value'],
+                print_r($nothing)
+            );
         }
     }
 
