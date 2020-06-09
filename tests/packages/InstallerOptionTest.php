@@ -7,6 +7,7 @@ use extas\components\extensions\ExtensionRepository;
 use extas\components\items\SnuffRepository;
 use extas\components\packages\Installer;
 use extas\components\packages\installers\InstallerOption;
+use extas\components\packages\installers\InstallerOptionRepository;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
@@ -33,7 +34,7 @@ class InstallerOptionTest extends TestCase
             'tests' => SnuffRepository::class,
             'pluginRepository' => PluginRepository::class,
             'extensionRepository' => ExtensionRepository::class,
-            'installerOptionRepository'
+            'installerOptionRepository' => InstallerOptionRepository::class
         ]);
     }
 
@@ -56,7 +57,7 @@ class InstallerOptionTest extends TestCase
             'tests' => SnuffRepository::class,
             'pluginRepository' => PluginRepository::class,
             'extensionRepository' => ExtensionRepository::class,
-            'installerOptionRepository'
+            'installerOptionRepository' => InstallerOptionRepository::class
         ]);
 
         $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
