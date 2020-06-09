@@ -1,20 +1,22 @@
 <?php
 namespace extas\components\plugins;
 
-use extas\components\packages\entities\Entity;
-use extas\components\packages\installers\InstallerOptions;
-use extas\components\packages\PackageEntity;
 use extas\interfaces\IHasClass;
 use extas\interfaces\IItem;
-use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\packages\installers\IInstallerStageItems;
-use extas\interfaces\packages\IPackageEntityRepository;
 use extas\interfaces\plugins\IPluginInstallDefault;
 use extas\interfaces\repositories\IRepository;
+
+use extas\components\packages\entities\Entity;
+use extas\components\packages\entities\EntityRepository;
+use extas\components\packages\installers\InstallerOptions;
+use extas\components\packages\PackageEntity;
+use extas\components\packages\PackageEntityRepository;
 use extas\components\SystemContainer;
+
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -263,16 +265,9 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             PackageEntity::FIELD__ID => '@uuid4'
         ]);
 
-        /**
-         * @var $repo IPackageEntityRepository
-         */
-        $repo = SystemContainer::getItem(IPackageEntityRepository::class);
+        $repo = new PackageEntityRepository();
         $repo->create($packageEntity);
-
-        /**
-         * @var $entityRepo IEntityRepository
-         */
-        $entityRepo = SystemContainer::getItem(IEntityRepository::class);
+        $entityRepo = new EntityRepository();
         $entity = $entityRepo->one([Entity::FIELD__NAME => $this->selfSection]);
         if (!$entity) {
             $entity = new Entity([
