@@ -15,7 +15,7 @@ class InstallTests extends PluginInstallDefault
 {
     protected string $selfSection = 'tests';
     protected string $selfName = 'test';
-    protected string $selfRepositoryClass = SnuffRepository::class;
+    protected string $selfRepositoryClass = 'tests';
     protected string $selfUID = 'name';
     protected string $selfItemClass = SnuffItem::class;
 }

@@ -30,7 +30,6 @@ class InstallerOptionTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         $this->registerSnuffRepos([
-            SnuffRepository::class => SnuffRepository::class,
             'tests' => SnuffRepository::class,
             'pluginRepository' => PluginRepository::class,
             'extensionRepository' => ExtensionRepository::class
