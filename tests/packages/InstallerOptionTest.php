@@ -53,6 +53,12 @@ class InstallerOptionTest extends TestCase
         $installer->installMany([
             [
                 'name' => 'test/test',
+                'package_classes' => [
+                    [
+                        'interface' => 'tests',
+                        'class' => SnuffRepository::class
+                    ]
+                ],
                 'tests' => [
                     [
                         'name' => 't1',
@@ -81,6 +87,12 @@ class InstallerOptionTest extends TestCase
         $installer->installMany([
             [
                 'name' => 'test/test',
+                'package_classes' => [
+                    [
+                        'interface' => 'tests',
+                        'class' => SnuffRepository::class
+                    ]
+                ],
                 'tests' => [
                     [
                         'name' => 't1',
