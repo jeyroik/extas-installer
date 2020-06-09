@@ -32,7 +32,8 @@ class InstallerOptionTest extends TestCase
         $this->registerSnuffRepos([
             'tests' => SnuffRepository::class,
             'pluginRepository' => PluginRepository::class,
-            'extensionRepository' => ExtensionRepository::class
+            'extensionRepository' => ExtensionRepository::class,
+            'installerOptionRepository'
         ]);
     }
 
@@ -49,28 +50,13 @@ class InstallerOptionTest extends TestCase
         ]);
 
         $this->createSnuffPlugin(InstallTests::class, ['extas.install']);
+        $installer->installMany([ $this->getPackage() ]);
 
-        $installer->installMany([
-            [
-                'name' => 'test/test',
-                'package_classes' => [
-                    [
-                        'interface' => 'tests',
-                        'class' => SnuffRepository::class
-                    ]
-                ],
-                'tests' => [
-                    [
-                        'name' => 't1',
-                        'title' => 't1',
-                        'params' => [
-                            [
-                                'name' => 't1'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+        $this->registerSnuffRepos([
+            'tests' => SnuffRepository::class,
+            'pluginRepository' => PluginRepository::class,
+            'extensionRepository' => ExtensionRepository::class,
+            'installerOptionRepository'
         ]);
 
         $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
@@ -84,28 +70,7 @@ class InstallerOptionTest extends TestCase
             'class' => 'tests\\packages\\ChangeTestEntity'
         ]));
 
-        $installer->installMany([
-            [
-                'name' => 'test/test',
-                'package_classes' => [
-                    [
-                        'interface' => 'tests',
-                        'class' => SnuffRepository::class
-                    ]
-                ],
-                'tests' => [
-                    [
-                        'name' => 't1',
-                        'title' => 't1',
-                        'params' => [
-                            [
-                                'name' => 't1'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]);
+        $installer->installMany([ $this->getPackage() ]);
 
         $tests = $this->allSnuffRepos('tests');
         $this->assertCount(1, $tests);
@@ -122,5 +87,29 @@ class InstallerOptionTest extends TestCase
             $test,
             'Mismatched item config: ' . print_r($test, true)
         );
+    }
+
+    protected function getPackage(): array
+    {
+        return [
+            'name' => 'test/test',
+            'package_classes' => [
+                [
+                    'interface' => 'tests',
+                    'class' => SnuffRepository::class
+                ]
+            ],
+            'tests' => [
+                [
+                    'name' => 't1',
+                    'title' => 't1',
+                    'params' => [
+                        [
+                            'name' => 't1'
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 }
