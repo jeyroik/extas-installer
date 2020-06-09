@@ -1,20 +1,22 @@
 <?php
 namespace extas\components\plugins;
 
-use extas\components\packages\entities\Entity;
-use extas\components\packages\installers\InstallerOptions;
-use extas\components\packages\PackageEntity;
 use extas\interfaces\IHasClass;
 use extas\interfaces\IItem;
-use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\packages\ICrawler;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\packages\installers\IInstallerStageItem;
 use extas\interfaces\packages\installers\IInstallerStageItems;
-use extas\interfaces\packages\IPackageEntityRepository;
 use extas\interfaces\plugins\IPluginInstallDefault;
 use extas\interfaces\repositories\IRepository;
+
+use extas\components\packages\entities\Entity;
+use extas\components\packages\entities\EntityRepository;
+use extas\components\packages\installers\InstallerOptions;
+use extas\components\packages\PackageEntity;
+use extas\components\packages\PackageEntityRepository;
 use extas\components\SystemContainer;
+
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -70,15 +72,12 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             $uid = $this->getUidValue($item, $this->packageConfig);
 
             if ($existed = $this->findItem($item, $repo)) {
-                $theSame = true;
-                foreach ($item as $field => $value) {
-                    if (!isset($existed[$field]) || ($existed[$field] != $value)) {
-                        $theSame = false;
-                        $existed[$field] = $value;
-                    }
-                }
-                if (!$theSame && $this->isRewriteAllow($this->packageConfig)) {
-                    $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
+                $hashExisted = sha1(json_encode($existed->__toArray()));
+                $hashCurrent = sha1(json_encode($item));
+                $theSame = $hashExisted == $hashCurrent;
+
+                if (!$theSame) {
+                    $this->install($uid, $output, $item, $repo, 'update');
                 } else {
                     $this->alreadyInstalled($uid, $this->selfName, $output);
                 }
@@ -158,6 +157,8 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     }
 
     /**
+     * @deprecated
+     * 
      * @param $config
      *
      * @return bool
@@ -264,16 +265,9 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             PackageEntity::FIELD__ID => '@uuid4'
         ]);
 
-        /**
-         * @var $repo IPackageEntityRepository
-         */
-        $repo = SystemContainer::getItem(IPackageEntityRepository::class);
+        $repo = new PackageEntityRepository();
         $repo->create($packageEntity);
-
-        /**
-         * @var $entityRepo IEntityRepository
-         */
-        $entityRepo = SystemContainer::getItem(IEntityRepository::class);
+        $entityRepo = new EntityRepository();
         $entity = $entityRepo->one([Entity::FIELD__NAME => $this->selfSection]);
         if (!$entity) {
             $entity = new Entity([
