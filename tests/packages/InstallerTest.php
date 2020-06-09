@@ -4,6 +4,7 @@ namespace tests\packages;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\extensions\TSnuffExtensions;
+use extas\components\items\SnuffRepository;
 use extas\components\packages\entities\EntityRepository;
 use extas\components\packages\installers\InstallerOption;
 use extas\components\packages\installers\InstallerOptionRepository;
@@ -63,6 +64,7 @@ class InstallerTest extends TestCase
         };
 
         $this->addReposForExt([
+            'tests' => SnuffRepository::class,
             INothingRepository::class => NothingRepository::class,
             IPackageEntityRepository::class => PackageEntityRepository::class,
             IEntityRepository::class => EntityRepository::class
@@ -91,6 +93,12 @@ class InstallerTest extends TestCase
         ]);
         $installer->install([
             'name' => 'test',
+            'package_classes' => [
+                [
+                    'interface' => 'tests',
+                    'class' => SnuffRepository::class
+                ]
+            ],
             'plugins' => [
                 [
                     Plugin::FIELD__STAGE => 'test.install.stage',

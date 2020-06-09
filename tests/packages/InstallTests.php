@@ -2,7 +2,6 @@
 namespace tests\packages;
 
 use extas\components\items\SnuffItem;
-use extas\components\items\SnuffRepository;
 use extas\components\plugins\PluginInstallDefault;
 
 /**
