@@ -85,8 +85,8 @@ class InstallerOptionTest extends TestCase
                     'new_params' => 'empty'
                 ]
             ],
-            $test,
-            'Mismatched item config: ' . print_r($test, true)
+            $test->__toArray(),
+            'Mismatched item config: ' . print_r($test->__toArray(), true)
         );
     }
 
