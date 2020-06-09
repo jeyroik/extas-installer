@@ -184,7 +184,7 @@ class InstallerTest extends TestCase
                 'is ok again',
                 $nothing['value'],
                 print_r($nothing)
-            ;
+            );
             $nothing['name'] == 'test1' && $this->assertEquals(
                 'is ok 1',
                 $nothing['value'],
