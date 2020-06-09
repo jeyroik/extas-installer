@@ -46,7 +46,7 @@ class InstallerOptionTest extends TestCase
     public function testChangingAlreadyInstalledEntity()
     {
         $installer = new Installer([
-            Installer::FIELD__INPUT => $this->getInput(['test' => true]),
+            Installer::FIELD__INPUT => $this->getInput(['change' => true]),
             Installer::FIELD__OUTPUT => $this->getOutput()
         ]);
 
@@ -61,7 +61,7 @@ class InstallerOptionTest extends TestCase
         ]);
 
         $this->createWithSnuffRepo('installerOptionRepository', new InstallerOption([
-            'name' => 'test',
+            'name' => 'change',
             'title' => 'test',
             'description' => 'test',
             'shortcut' => '',

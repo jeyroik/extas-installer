@@ -1,6 +1,7 @@
 <?php
 namespace tests\packages;
 
+use extas\components\console\TSnuffConsole;
 use extas\components\extensions\Extension;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\extensions\TSnuffExtensions;
@@ -39,6 +40,7 @@ use tests\PluginInstallNothing;
 class InstallerTest extends TestCase
 {
     use TSnuffExtensions;
+    use TSnuffConsole;
 
     /**
      * @var IRepository|null
@@ -89,7 +91,8 @@ class InstallerTest extends TestCase
     public function testInstall()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->install([
             'name' => 'test',
@@ -116,7 +119,8 @@ class InstallerTest extends TestCase
     public function testInstallMany()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installMany([
             [
@@ -153,12 +157,8 @@ class InstallerTest extends TestCase
             'title' => 'test'
         ]));
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => new ArrayInput([
-                '--test' => true
-            ], new InputDefinition([
-                new InputOption('test')
-            ]))
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput(['test' => true])
         ]);
         $this->optRepository->create(new InstallerOption([
             InstallerOption::FIELD__NAME => 'test',
@@ -201,12 +201,8 @@ class InstallerTest extends TestCase
     public function testInstallerOptionsApplying()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput(),
-            Installer::FIELD__INPUT => new ArrayInput([
-                '--test' => true
-            ], new InputDefinition([
-                new InputOption('test')
-            ]))
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput(['test' => true])
         ]);
         $this->optRepository->create(new InstallerOption([
             InstallerOption::FIELD__NAME => 'test',
@@ -243,7 +239,8 @@ class InstallerTest extends TestCase
     public function testInstallOnePluginForMultipleStages()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installMany([
             [
@@ -272,7 +269,8 @@ class InstallerTest extends TestCase
     public function testInstallMultiplePluginForOneStage()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installMany([
             [
@@ -297,7 +295,8 @@ class InstallerTest extends TestCase
     public function testInstallMultiplePluginForMultipleStages()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->installMany([
             [
@@ -326,7 +325,8 @@ class InstallerTest extends TestCase
     public function testExtensionMethodsUpdate()
     {
         $installer = new Installer([
-            Installer::FIELD__OUTPUT => new NullOutput()
+            Installer::FIELD__OUTPUT => $this->getOutput(),
+            Installer::FIELD__INPUT => $this->getInput()
         ]);
         $installer->install([
             'name' => 'test',
