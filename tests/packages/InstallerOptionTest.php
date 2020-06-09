@@ -68,7 +68,7 @@ class InstallerOptionTest extends TestCase
             'mode' => 4,
             'default' => true,
             'stage' => 'items',
-            'class' => 'tests\\packages\\ChangeTestEntity'
+            'class' => ChangeTestEntity::class
         ]));
 
         $installer->installMany([ $this->getPackage() ]);
