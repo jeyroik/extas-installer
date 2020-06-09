@@ -13,6 +13,10 @@ class ChangeTestEntity extends InstallerStageItems
 {
     public function __invoke(): array
     {
+        if (!$this->getPlugin() instanceof InstallTests) {
+            return [];
+        }
+
         $config = $this->getInstaller()->getPackageConfig();
         $tests = $config[$this->getPlugin()->getPluginSection()];
 
