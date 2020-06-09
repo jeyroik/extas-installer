@@ -82,7 +82,7 @@ class InstallerOptionTest extends TestCase
                 'title' => 't1',
                 'params' => [
                     'prev_params' => [['name' => 't1']],
-                    'new_params' => 'empty'
+                    'new_params' => 'Empty'
                 ]
             ],
             $test->__toArray(),
