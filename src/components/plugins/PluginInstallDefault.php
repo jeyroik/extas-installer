@@ -70,14 +70,11 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
             $uid = $this->getUidValue($item, $this->packageConfig);
 
             if ($existed = $this->findItem($item, $repo)) {
-                $theSame = true;
-                foreach ($item as $field => $value) {
-                    if (!isset($existed[$field]) || ($existed[$field] != $value)) {
-                        $theSame = false;
-                        $existed[$field] = $value;
-                    }
-                }
-                if (!$theSame && $this->isRewriteAllow($this->packageConfig)) {
+                $hashExisted = sha1(json_encode($existed->__toArray()));
+                $hasCurrent = sha1(json_encode($item));
+                $theSame = $hashExisted == $hasCurrent;
+
+                if (!$theSame) {
                     $this->install($uid, $output, $existed->__toArray(), $repo, 'update');
                 } else {
                     $this->alreadyInstalled($uid, $this->selfName, $output);
@@ -158,6 +155,8 @@ abstract class PluginInstallDefault extends Plugin implements IPluginInstallDefa
     }
 
     /**
+     * @deprecated
+     * 
      * @param $config
      *
      * @return bool
