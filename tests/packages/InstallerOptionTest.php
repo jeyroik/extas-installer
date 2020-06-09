@@ -46,7 +46,7 @@ class InstallerOptionTest extends TestCase
     public function testChangingAlreadyInstalledEntity()
     {
         $installer = new Installer([
-            Installer::FIELD__INPUT => $this->getInput(),
+            Installer::FIELD__INPUT => $this->getInput(['test' => true]),
             Installer::FIELD__OUTPUT => $this->getOutput()
         ]);
 
