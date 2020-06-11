@@ -1,6 +1,9 @@
 ![tests](https://github.com/jeyroik/extas-installer/workflows/PHP%20Composer/badge.svg?branch=master&event=push)
 ![codecov.io](https://codecov.io/gh/jeyroik/extas-installer/coverage.svg?branch=master)
 <a href="https://codeclimate.com/github/jeyroik/extas-installer/maintainability"><img src="https://api.codeclimate.com/v1/badges/fe6ec4044e95484071b5/maintainability" /></a>
+[![Latest Stable Version](https://poser.pugx.org/jeyroik/extas-installer/v)](//packagist.org/packages/jeyroik/extas-jsonrpc)
+[![Total Downloads](https://poser.pugx.org/jeyroik/extas-installer/downloads)](//packagist.org/packages/jeyroik/extas-jsonrpc)
+[![Dependents](https://poser.pugx.org/jeyroik/extas-installer/dependents)](//packagist.org/packages/jeyroik/extas-jsonrpc)
 
 # Описание
 
