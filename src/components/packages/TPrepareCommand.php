@@ -33,7 +33,9 @@ trait TPrepareCommand
         /**
          * @var ICrawler[] $crawlers
          */
-        $crawlers = $this->getExtasApplication()->crawlerRepository()->all([]);
+        $crawlers = $this->getExtasApplication()->crawlerRepository()->all([
+            ICrawler::FIELD__TAGS => 'extas-package'
+        ]);
 
         $packages = [];
         foreach ($crawlers as $crawler) {
