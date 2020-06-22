@@ -2,6 +2,7 @@
 namespace extas\components\plugins\uninstall;
 
 use extas\components\plugins\Plugin;
+use extas\components\THasIndex;
 use extas\components\THasIO;
 use extas\interfaces\stages\IStageUninstalledPackage;
 use extas\interfaces\stages\IStageUninstallPackage;
@@ -16,6 +17,7 @@ use extas\interfaces\stages\IStageUninstallSection;
 class UninstallPackage extends Plugin implements IStageUninstallPackage
 {
     use THasIO;
+    use THasIndex;
 
     /**
      * @param string $packageName
@@ -52,12 +54,15 @@ class UninstallPackage extends Plugin implements IStageUninstallPackage
      */
     protected function uninstallSections(array $sections): void
     {
-        foreach ($sections as $sectionName => $sectionData) {
+        $index = $this->getIndex($sections, 'uninstall');
+
+        foreach ($index as $sectionName) {
+            $sectionData = $sections[$sectionName] ?? [];
             if (!is_array($sectionData)) {
                 $this->errorLn(['Skip section ' . $sectionName . ' - it is not an array.']);
-            } else {
-                $this->uninstallSection($sectionName, $sectionData);
+                continue;
             }
+            $this->uninstallSection($sectionName, $sectionData);
         }
     }
 

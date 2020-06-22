@@ -1,6 +1,7 @@
 <?php
 namespace extas\components;
 
+use extas\components\exceptions\MissedOrUnknown;
 use extas\interfaces\IHasRepository;
 use extas\interfaces\repositories\IRepository;
 
@@ -16,7 +17,7 @@ trait THasRepository
 {
     /**
      * @return IRepository
-     * @throws \Exception
+     * @throws MissedOrUnknown
      */
     public function getRepository(): IRepository
     {
@@ -25,7 +26,7 @@ trait THasRepository
         try {
             return $this->$repoName();
         } catch (\Exception $e) {
-            throw new \Exception('Missed item repo ' . $repoName . ' in ' . get_class($this));
+            throw new MissedOrUnknown('item repo ' . $repoName . ' in ' . get_class($this));
         }
     }
 }
