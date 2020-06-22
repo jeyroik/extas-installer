@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\install;
 
+use extas\components\exceptions\MissedOrUnknown;
 use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
 use extas\components\THasIO;
@@ -32,7 +33,7 @@ class InstallSection extends Plugin implements IStageInstallSection
      * @param string $sectionName
      * @param array $sectionData
      * @param IInstaller $installer
-     * @throws \Exception
+     * @throws MissedOrUnknown
      */
     public function __invoke(string $sectionName, array &$sectionData, IInstaller &$installer): void
     {
@@ -64,7 +65,7 @@ class InstallSection extends Plugin implements IStageInstallSection
     /**
      * @param array $item
      * @return mixed
-     * @throws \Exception
+     * @throws MissedOrUnknown
      */
     protected function findExisted(array $item)
     {
@@ -73,7 +74,7 @@ class InstallSection extends Plugin implements IStageInstallSection
             $repo = $this->$repoName();
             return $repo->one([$this->selfUID => $item[$this->selfUID] ?? '']);
         } catch (\Exception $e) {
-            throw new \Exception('Missed item repository ' . $repoName);
+            throw new MissedOrUnknown('item repository ' . $repoName);
         }
     }
 
