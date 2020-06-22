@@ -26,7 +26,7 @@ trait THasRepository
         try {
             return $this->$repoName();
         } catch (\Exception $e) {
-            throw new MissedOrUnknown('item repo ' . $repoName . ' in ' . get_class($this));
+            throw new MissedOrUnknown('item repository ' . $repoName . ' in ' . get_class($this));
         }
     }
 }
