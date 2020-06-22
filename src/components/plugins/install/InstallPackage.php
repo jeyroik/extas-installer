@@ -2,6 +2,7 @@
 namespace extas\components\plugins\install;
 
 use extas\components\plugins\Plugin;
+use extas\components\THasIndex;
 use extas\components\THasIO;
 use extas\interfaces\IHasName;
 use extas\interfaces\packages\IInstaller;
@@ -18,6 +19,7 @@ use extas\interfaces\stages\IStageInstallSection;
 class InstallPackage extends Plugin implements IStageInstallPackage
 {
     use THasIO;
+    use THasIndex;
 
     /**
      * @param array $package
@@ -25,10 +27,15 @@ class InstallPackage extends Plugin implements IStageInstallPackage
      */
     public function __invoke(array &$package, IInstaller &$installer): void
     {
-        foreach ($package as $sectionName => $sectionData) {
-            if (is_array($sectionData)) {
-                $this->installSection($sectionName, $sectionData, $installer);
+        $index = $this->getIndex($package, 'install');
+
+        foreach ($index as $sectionName) {
+            $sectionData = $package[$sectionName] ?? [];
+            if (!is_array($sectionData)) {
+                $this->writeLn(['Skip section "' . $sectionName . '": content is not applicable.']);
+                continue;
             }
+            $this->installSection($sectionName, $sectionData, $installer);
         }
 
         $this->runAfter($package, $installer);

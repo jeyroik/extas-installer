@@ -9,7 +9,8 @@
     "jeyroik/extas-foundation": "5.*",
     "jeyroik/extas-repositories-fields-uuid": "0.*",
     "jeyroik/extas-crawlers": "0.*",
-    "jeyroik/extas-commands-options": "0.*"
+    "jeyroik/extas-commands-options": "0.*",
+    "jeyroik/extas-exceptions": "0.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",

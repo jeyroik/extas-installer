@@ -2,6 +2,7 @@
 namespace extas\components\plugins\init;
 
 use extas\components\plugins\Plugin;
+use extas\components\THasIndex;
 use extas\components\THasIO;
 use extas\interfaces\IHasInput;
 use extas\interfaces\IHasOutput;
@@ -17,6 +18,7 @@ use extas\interfaces\stages\IStageInitializeSection;
 class Init extends Plugin implements IStageInitialize
 {
     use THasIO;
+    use THasIndex;
 
     /**
      * @param string $packageName
@@ -24,9 +26,12 @@ class Init extends Plugin implements IStageInitialize
      */
     public function __invoke(string $packageName, array $package): void
     {
-        foreach ($package as $sectionName => $sectionData) {
+        $index = $this->getIndex($package, 'init');
+
+        foreach ($index as $sectionName) {
+            $sectionData = $package[$sectionName] ?? [];
             if (!is_array($sectionData)) {
-                $this->writeLn(['Skip section "' . $sectionName . '": content is not an array.']);
+                $this->writeLn(['Skip section "' . $sectionName . '": content is not applicable.']);
                 continue;
             }
             $this->initSection($sectionName, $sectionData);
