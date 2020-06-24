@@ -1,7 +1,6 @@
 <?php
 namespace extas\components;
 
-use extas\interfaces\IHasClass;
 use extas\interfaces\IHasRepository;
 use extas\interfaces\repositories\IRepository;
 
@@ -15,27 +14,13 @@ use extas\interfaces\repositories\IRepository;
  */
 trait THasRepository
 {
+    use THasClassHolder;
+
     /**
      * @return IRepository
      */
     public function getRepository(): IRepository
     {
-        return $this->getRepositoryWrapper()->buildClassWithParameters();
-    }
-
-    /**
-     * @return Item
-     */
-    protected function getRepositoryWrapper()
-    {
-        return new class ([
-            IHasClass::FIELD__CLASS => $this->config[IHasRepository::FIELD__REPOSITORY]
-        ]) extends Item {
-            use THasClass;
-            protected function getSubjectForExtension(): string
-            {
-                return '';
-            }
-        };
+        return $this->getClassHolder($this->config[IHasRepository::FIELD__REPOSITORY])->buildClassWithParameters();
     }
 }
