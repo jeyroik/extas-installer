@@ -1,3 +1,7 @@
+# 3.5.0
+
+- Using `extas-base` logic for getting repository class.
+
 # 3.4.0
 
 - Added index support for `extas.json`.
