@@ -150,7 +150,7 @@ class InstallCommandTest extends TestCase
             $output
         );
         $outputText = $output->fetch();
-        $this->assertStringContainsString('Missed or unknown item repository', $outputText);
+        $this->assertStringContainsString('Missed or unknown class ', $outputText);
     }
 
     /**

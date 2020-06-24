@@ -97,7 +97,7 @@ class InitCommandTest extends TestCase
 
         $outputText = $output->fetch();
         $this->assertStringContainsString(
-            'Missed or unknown item repository',
+            'Missed or unknown class',
             $outputText
         );
     }

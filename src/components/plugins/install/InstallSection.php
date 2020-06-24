@@ -2,9 +2,13 @@
 namespace extas\components\plugins\install;
 
 use extas\components\exceptions\MissedOrUnknown;
+use extas\components\Item;
 use extas\components\packages\entities\TInstallEntities;
 use extas\components\plugins\Plugin;
+use extas\components\THasClass;
+use extas\components\THasClassHolder;
 use extas\components\THasIO;
+use extas\interfaces\IHasClass;
 use extas\interfaces\IItem;
 use extas\interfaces\packages\IInstaller;
 use extas\interfaces\stages\IStageAfterInstallSection;
@@ -22,6 +26,7 @@ class InstallSection extends Plugin implements IStageInstallSection
 {
     use THasIO;
     use TInstallEntities;
+    use THasClassHolder;
 
     protected string $selfSection = '';
     protected string $selfName = '';
@@ -65,17 +70,12 @@ class InstallSection extends Plugin implements IStageInstallSection
     /**
      * @param array $item
      * @return mixed
-     * @throws MissedOrUnknown
      */
     protected function findExisted(array $item)
     {
-        $repoName = $this->selfRepositoryClass;
-        try {
-            $repo = $this->$repoName();
-            return $repo->one([$this->selfUID => $item[$this->selfUID] ?? '']);
-        } catch (\Exception $e) {
-            throw new MissedOrUnknown('item repository ' . $repoName);
-        }
+        return $this->getClassHolder($this->selfRepositoryClass)
+            ->buildClassWithParameters()
+            ->one([$this->selfUID => $item[$this->selfUID] ?? '']);
     }
 
     /**

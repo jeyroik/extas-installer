@@ -1,7 +1,6 @@
 <?php
 namespace extas\components;
 
-use extas\components\exceptions\MissedOrUnknown;
 use extas\interfaces\IHasRepository;
 use extas\interfaces\repositories\IRepository;
 
@@ -15,18 +14,13 @@ use extas\interfaces\repositories\IRepository;
  */
 trait THasRepository
 {
+    use THasClassHolder;
+
     /**
      * @return IRepository
-     * @throws MissedOrUnknown
      */
     public function getRepository(): IRepository
     {
-        $repoName = $this->config[IHasRepository::FIELD__REPOSITORY] ?? '';
-
-        try {
-            return $this->$repoName();
-        } catch (\Exception $e) {
-            throw new MissedOrUnknown('item repository ' . $repoName . ' in ' . get_class($this));
-        }
+        return $this->getClassHolder($this->config[IHasRepository::FIELD__REPOSITORY])->buildClassWithParameters();
     }
 }
