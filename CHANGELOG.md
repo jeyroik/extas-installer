@@ -1,3 +1,7 @@
+# 3.6.0
+
+- Added stage `after.init`.
+
 # 3.5.0
 
 - Using `extas-base` logic for getting repository class.
