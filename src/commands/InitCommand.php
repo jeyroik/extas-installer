@@ -21,6 +21,7 @@ class InitCommand extends DefaultCommand
     protected string $commandTitle = 'Extas initializer';
 
     protected const OPTION__CONTAINER_REWRITE = 'container-rewrite';
+    protected const OPTION__PACKAGE_FILENAME = 'package_filename';
 
     /**
      * Configure the current command.
@@ -38,6 +39,12 @@ class InitCommand extends DefaultCommand
                 InputOption::VALUE_OPTIONAL,
                 'Rewrite class-container file',
                 true
+            )->addOption(
+                static::OPTION__PACKAGE_FILENAME,
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Extas-compatible package name',
+                'extas.json'
             )
         ;
     }
@@ -56,7 +63,7 @@ class InitCommand extends DefaultCommand
                 Crawler::FIELD__PARAMETERS => [
                     'package_name' => [
                         ISampleParameter::FIELD__NAME => 'package_name',
-                        ISampleParameter::FIELD__VALUE => 'extas.json'
+                        ISampleParameter::FIELD__VALUE => $input->getOption(static::OPTION__PACKAGE_FILENAME)
                     ],
                     'run_after' => [
                         ISampleParameter::FIELD__NAME => 'run_after',

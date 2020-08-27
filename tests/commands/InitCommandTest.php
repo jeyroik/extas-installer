@@ -1,20 +1,31 @@
 <?php
 namespace tests\commands;
 
+use extas\interfaces\stages\IStageInitialize;
+use extas\interfaces\stages\IStageInitializeItem;
+use extas\interfaces\stages\IStageInitializeSection;
+
 use extas\commands\InitCommand;
 use extas\components\console\TSnuffConsole;
+use extas\components\crawlers\Crawler;
 use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
+use extas\components\packages\CrawlerExtas;
 use extas\components\packages\entities\EntityRepository;
 use extas\components\plugins\Plugin;
+use extas\components\plugins\init\Init;
+use extas\components\plugins\init\InitItem;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
+
 use Dotenv\Dotenv;
 use extas\interfaces\stages\IStageAfterInit;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tests\commands\misc\PluginAfterInit;
+
+use tests\InitSnuffItems;
 
 /**
  * Class InitCommandTest
@@ -72,6 +83,30 @@ class InitCommandTest extends TestCase
 
         $this->assertStringContainsString(
             'Container lock file already exists and rewrite is restricted.',
+            $outputText
+        );
+    }
+
+    public function testUnknownRepository()
+    {
+        $this->createWithSnuffRepo('crawlerRepository', new Crawler([
+            Crawler::FIELD__CLASS => CrawlerExtas::class,
+            Crawler::FIELD__TAGS => ['extas-package']
+        ]));
+        $this->createSnuffPlugin(Init::class, [IStageInitialize::NAME]);
+        $this->createSnuffPlugin(InitSnuffItems::class, [IStageInitializeSection::NAME . '.snuff_items']);
+        $this->createSnuffPlugin(InitItem::class, [IStageInitializeItem::NAME]);
+
+        $command = new InitCommand();
+        /**
+         * @var BufferedOutput $output
+         */
+        $output = $this->getOutput(true);
+        $command->run($this->getInput(['package_filename' => 'test.extas.json']), $output);
+
+        $outputText = $output->fetch();
+        $this->assertStringContainsString(
+            'Missed or unknown class',
             $outputText
         );
     }

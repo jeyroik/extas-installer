@@ -14,18 +14,13 @@ use extas\interfaces\repositories\IRepository;
  */
 trait THasRepository
 {
+    use THasClassHolder;
+
     /**
      * @return IRepository
-     * @throws \Exception
      */
     public function getRepository(): IRepository
     {
-        $repoName = $this->config[IHasRepository::FIELD__REPOSITORY] ?? '';
-
-        try {
-            return $this->$repoName();
-        } catch (\Exception $e) {
-            throw new \Exception('Missed item repo ' . $repoName . ' in ' . get_class($this));
-        }
+        return $this->getClassHolder($this->config[IHasRepository::FIELD__REPOSITORY])->buildClassWithParameters();
     }
 }

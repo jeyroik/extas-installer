@@ -39,6 +39,16 @@
   ],
   "plugins": [
     {
+      "class": "extas\\components\\plugins\\PluginCommandInstall",
+      "stage": "extas.installer.command",
+      "install_on": "initialization"
+    },
+    {
+      "class": "extas\\components\\plugins\\PluginCommandUninstall",
+      "stage": "extas.installer.command",
+      "install_on": "initialization"
+    },
+    {
       "class": "extas\\components\\plugins\\init\\Init",
       "stage": "extas.init",
       "install_on": "initialization"
