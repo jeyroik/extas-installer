@@ -12,6 +12,7 @@ use extas\components\crawlers\CrawlerRepository;
 use extas\components\extensions\ExtensionRepository;
 use extas\components\packages\CrawlerExtas;
 use extas\components\packages\entities\EntityRepository;
+use extas\components\plugins\Plugin;
 use extas\components\plugins\init\Init;
 use extas\components\plugins\init\InitItem;
 use extas\components\plugins\PluginRepository;
@@ -19,8 +20,11 @@ use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepository;
 
 use Dotenv\Dotenv;
+use extas\interfaces\stages\IStageAfterInit;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use tests\commands\misc\PluginAfterInit;
+
 use tests\InitSnuffItems;
 
 /**
@@ -46,6 +50,10 @@ class InitCommandTest extends TestCase
             'extRepo' => ExtensionRepository::class,
             'crawlerRepository' => CrawlerRepository::class
         ]);
+        $this->createWithSnuffRepo('pluginRepo', new Plugin([
+            Plugin::FIELD__CLASS => PluginAfterInit::class,
+            Plugin::FIELD__STAGE => IStageAfterInit::NAME
+        ]));
     }
 
     protected function tearDown(): void
@@ -67,6 +75,7 @@ class InitCommandTest extends TestCase
         $this->assertStringContainsString('Installing extensions...', $outputText);
         $this->assertStringContainsString('Installing plugins...', $outputText);
         $this->assertStringContainsString('Copied container lock file to', $outputText);
+        $this->assertStringContainsString('after init', $outputText);
 
         $output = $this->getOutput(true);
         $command->run($this->getInput(['container-rewrite' => false]), $output);

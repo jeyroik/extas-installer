@@ -5,8 +5,7 @@ use extas\components\extensions\ExtensionRepository;
 use extas\components\Plugins;
 use extas\components\plugins\PluginRepository;
 use extas\components\THasExtensions;
-use extas\components\THasInput;
-use extas\components\THasOutput;
+use extas\components\THasIO;
 use extas\components\THasPackageClasses;
 use extas\components\THasPlugins;
 use extas\interfaces\IHasExtensions;
@@ -17,6 +16,7 @@ use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\repositories\IRepository;
+use extas\interfaces\stages\IStageAfterInit;
 use extas\interfaces\stages\IStageInitialize;
 
 /**
@@ -29,8 +29,7 @@ class Initializer implements IInitializer
 {
     use THasPlugins;
     use THasExtensions;
-    use THasInput;
-    use THasOutput;
+    use THasIO;
     use THasPackageClasses;
 
     protected array $packageConfig;
@@ -67,6 +66,13 @@ class Initializer implements IInitializer
             $this->msgInit($packageName, 'secondary.init');
             $this->initSecondaryEntities($packageName, $package);
             $this->msgInit($packageName, 'secondary.initialized');
+        }
+
+        foreach (Plugins::byStage(IStageAfterInit::NAME, $this, $this->getIO()) as $plugin) {
+            /**
+             * @var IStageAfterInit $plugin
+             */
+            $plugin($packages);
         }
     }
 
