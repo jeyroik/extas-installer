@@ -7,6 +7,7 @@ use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\repositories\IRepository;
+use extas\interfaces\samples\parameters\ISampleParameter;
 
 /**
  * Trait THasPlugins
@@ -84,10 +85,8 @@ trait THasPlugins
      */
     protected function installSinglePlugin(string $pluginStage, string $pluginClass, array $plugin): void
     {
-        if ($this->pluginRepo->one([
-            IPlugin::FIELD__CLASS => $pluginClass,
-            IPlugin::FIELD__STAGE => $pluginStage
-        ])) {
+        $existed = $this->pluginRepo->one($plugin);
+        if ($existed) {
             $this->writeLn([
                 '<info>NOTICE: Plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
             ]);
@@ -106,10 +105,6 @@ trait THasPlugins
         $this->writeLn([
             '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
         ]);
-
-        if (isset($plugin[IInitializer::FIELD__INSTALL_ON])) {
-            unset($plugin[IInitializer::FIELD__INSTALL_ON]);
-        }
 
         $pluginObj = new Plugin($plugin);
         $this->pluginRepo->create($pluginObj);
