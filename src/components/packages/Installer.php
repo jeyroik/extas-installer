@@ -10,6 +10,7 @@ use extas\interfaces\IHasPlugins;
 use extas\interfaces\packages\IInitializer;
 use extas\interfaces\packages\IInstaller;
 use extas\components\Item;
+use extas\interfaces\plugins\IPlugin;
 use extas\interfaces\stages\IStageInstallPackage;
 
 /**
@@ -116,7 +117,7 @@ class Installer extends Item implements IInstaller
      */
     public function isAllowInstallPlugin(array $plugin): bool
     {
-        $installOn = $plugin[IInitializer::FIELD__INSTALL_ON] ?? IInitializer::ON__INITIALIZATION;
+        $installOn = $plugin[IPlugin::FIELD__INSTALL_ON] ?? IInitializer::ON__INITIALIZATION;
 
         return $installOn == IInitializer::ON__INSTALL;
     }

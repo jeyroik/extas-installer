@@ -161,7 +161,7 @@ class Initializer implements IInitializer
      */
     public function isAllowInstallExtension(array $extension): bool
     {
-        $installOn = $extension[static::FIELD__INSTALL_ON] ?? static::ON__INITIALIZATION;
+        $installOn = $extension[IPlugin::FIELD__INSTALL_ON] ?? static::ON__INITIALIZATION;
 
         return $installOn == static::ON__INITIALIZATION;
     }

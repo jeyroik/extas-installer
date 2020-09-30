@@ -1,3 +1,7 @@
+# 3.6.2
+
+- Search plugins by their hash.
+
 # 3.6.1
 
 - Plugins with the same class and stage, but different parameters are now available for installation.
