@@ -85,7 +85,9 @@ trait THasPlugins
      */
     protected function installSinglePlugin(string $pluginStage, string $pluginClass, array $plugin): void
     {
-        $existed = $this->pluginRepo->one($plugin);
+        $existed = $this->pluginRepo->one([
+            Plugin::FIELD__HASH => $this->createPluginHash($plugin)
+        ]);
         if ($existed) {
             $this->writeLn([
                 '<info>NOTICE: Plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]</info> is already installed.'
@@ -106,10 +108,20 @@ trait THasPlugins
             '<info>Installing plugin "' . $pluginClass . '" [ ' . $pluginStage . ' ]...</info>'
         ]);
 
+        $plugin[Plugin::FIELD__HASH] = $this->createPluginHash($plugin);
         $pluginObj = new Plugin($plugin);
         $this->pluginRepo->create($pluginObj);
 
         $this->writeLn(['<info>[ CREATE ] Plugin installed.</info>']);
+    }
+
+    /**
+     * @param array $plugin
+     * @return string
+     */
+    protected function createPluginHash(array $plugin): string
+    {
+        return sha1(json_encode($plugin));
     }
 
     /**

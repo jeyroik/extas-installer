@@ -62,7 +62,7 @@ class InstallerTest extends TestCase
                     [
                         Plugin::FIELD__STAGE => 'test.install.stage',
                         Plugin::FIELD__CLASS => PluginEmpty::class,
-                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                        Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -75,6 +75,26 @@ class InstallerTest extends TestCase
         }
 
         $this->assertEquals(1, PluginEmpty::$worked);
+
+        $plugins = $this->allSnuffRepos('pluginRepo');
+        $this->assertCount(1, $plugins, 'Incorrect plugins count');
+
+        $plugin = array_shift($plugins);
+        $hash = sha1(json_encode([
+            Plugin::FIELD__STAGE => 'test.install.stage',
+            Plugin::FIELD__CLASS => PluginEmpty::class,
+            Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+        ]));
+        $this->assertEquals(
+            [
+                Plugin::FIELD__STAGE => 'test.install.stage',
+                Plugin::FIELD__CLASS => PluginEmpty::class,
+                Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL,
+                Plugin::FIELD__HASH => $hash
+            ],
+            $plugin->__toArray(),
+            'Incorrect plugin: ' . print_r($plugin, true)
+        );
     }
 
     public function testInstallOnePluginForMultipleStages()
@@ -87,7 +107,7 @@ class InstallerTest extends TestCase
                     [
                         Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
                         Plugin::FIELD__CLASS => PluginEmpty::class,
-                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                        Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -113,7 +133,7 @@ class InstallerTest extends TestCase
                     [
                         Plugin::FIELD__STAGE => 'test.install.stage',
                         Plugin::FIELD__CLASS => [PluginEmpty::class, PluginEmpty::class],
-                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                        Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
@@ -135,7 +155,7 @@ class InstallerTest extends TestCase
                     [
                         Plugin::FIELD__STAGE => ['test.install.stage', 'test2.install.stage'],
                         Plugin::FIELD__CLASS => [PluginEmpty::class, PluginEmpty::class],
-                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                        Plugin::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
                     ]
                 ]
             ]
