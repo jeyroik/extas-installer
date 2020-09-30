@@ -151,6 +151,29 @@ class InstallerTest extends TestCase
         }
     }
 
+    public function testInstallExtensionsForMultipleSubjects()
+    {
+        $installer = $this->getInstaller();
+        $installer->installPackages([
+            [
+                'name' => 'test',
+                'extensions' => [
+                    [
+                        Extension::FIELD__SUBJECT => ['test.install.stage', 'test2.install.stage'],
+                        Extension::FIELD__CLASS => PluginEmpty::class,
+                        IInitializer::FIELD__INSTALL_ON => IInitializer::ON__INSTALL
+                    ]
+                ]
+            ]
+        ]);
+
+        /**
+         * @var IExtension[] $extensions
+         */
+        $extensions = $this->allSnuffRepos('extRepo', [Extension::FIELD__CLASS => PluginEmpty::class]);
+        $this->assertCount(2, $extensions);
+    }
+
     public function testExtensionMethodsUpdate()
     {
         $installer = $this->getInstaller();
